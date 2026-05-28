@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a2e">
+<title>🏗️ Kernsanierung Mühltal</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--primary:#1a1a2e;--blue:#0f3460;--teal:#1d9e75;--amber:#e8a838;--red:#e74c3c;--purple:#534ab7;--bg:#f5f6fa;--card:#fff;--border:#e0e4ec;--text:#1a1a2e;--muted:#6b7280;--small:#9ca3af;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;overscroll-behavior:none}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;font-size:10px;color:var(--muted);border:none;background:none;cursor:pointer;gap:3px}
+.nav-btn.active{color:var(--teal)}
+.nav-btn svg{width:22px;height:22px}
+.page-header{background:var(--primary);color:#fff;padding:52px 16px 16px}
+.page-header h1{font-size:20px;font-weight:700}
+.page-header p{font-size:13px;opacity:.7;margin-top:3px}
+.content{padding:16px;padding-bottom:90px;max-width:600px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.card-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h2{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.card-body{padding:14px 16px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.metric{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.metric .label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.metric .value{font-size:22px;font-weight:700}
+.metric .sub{font-size:11px;color:var(--small);margin-top:2px}
+.metric.green .value{color:var(--teal)}
+.metric.amber .value{color:var(--amber)}
+.alert{border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.5}
+.alert.red{background:#fef2f2;border-left:4px solid var(--red);color:#7f1d1d}
+.alert.amber{background:#fffbeb;border-left:4px solid var(--amber);color:#78350f}
+.alert.green{background:#f0fdf4;border-left:4px solid var(--teal);color:#14532d}
+.alert.blue{background:#eff6ff;border-left:4px solid #3b82f6;color:#1e3a8a}
+.alert strong{font-weight:600;display:block;margin-bottom:2px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-purple{background:#ede9fe;color:#4c1d95}
+.badge-grey{background:#f3f4f6;color:#374151}
+/* GANTT */
+.gantt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gantt-table{border-collapse:collapse;font-size:11px;min-width:560px}
+.gantt-table th{background:var(--primary);color:#fff;padding:7px 5px;font-weight:600;font-size:10px;white-space:nowrap;text-align:center}
+.gantt-table th:first-child{text-align:left;padding-left:10px;min-width:130px}
+.gantt-table td{padding:4px 3px;border-bottom:1px solid var(--border);vertical-align:middle}
+.gantt-table td:first-child{font-size:11px;font-weight:500;padding-left:10px;white-space:nowrap}
+.gantt-section td{background:#f0f4ff;font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;padding:7px 10px}
+.gantt-cell{width:26px;height:24px}
+.gantt-bar{border-radius:3px;height:18px;margin:3px 1px}
+/* TODO */
+.todo-phase-header{display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px}
+.todo-phase-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.todo-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.todo-item:last-child{border-bottom:none}
+.todo-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;cursor:pointer}
+.todo-check.done{background:var(--teal);border-color:var(--teal)}
+.todo-check.done::after{content:'';width:11px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);display:block}
+.todo-content{flex:1;cursor:pointer}
+.todo-title{font-size:14px;font-weight:500;line-height:1.4}
+.todo-title.done{text-decoration:line-through;color:var(--small)}
+.todo-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+.todo-prio{flex-shrink:0;margin-top:2px}
+.todo-edit-btn{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:2px 4px;flex-shrink:0;margin-top:1px}
+.progress-wrap{margin-bottom:16px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .5s}
+/* KOSTEN */
+.kosten-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:8px}
+.kosten-row:last-child{border-bottom:none}
+.kosten-left{flex:1;min-width:0}
+.kosten-name{font-size:13px;font-weight:500}
+.kosten-note{font-size:11px;color:var(--muted);margin-top:2px}
+.kosten-right{text-align:right;flex-shrink:0;display:flex;align-items:center;gap:8px}
+.kosten-amount{text-align:right}
+.kosten-von-bis{font-size:13px;font-weight:600}
+.kosten-foerd{font-size:11px;color:var(--teal)}
+.kosten-edit-btn{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:2px 4px}
+.kosten-total{background:var(--primary);border-radius:10px;padding:14px 16px;color:#fff;margin-top:14px}
+.kosten-total .row{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.kosten-total .row.main{font-size:17px;font-weight:700;border-top:1px solid rgba(255,255,255,.2);padding-top:10px;margin-top:6px}
+.kosten-total .green{color:#6ee7b7}
+.foerder-box{background:linear-gradient(135deg,#065f46,#047857);border-radius:var(--radius);padding:16px;color:#fff;margin-bottom:14px}
+.foerder-box h3{font-size:14px;font-weight:700;margin-bottom:12px;opacity:.9}
+.foerder-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.15);font-size:13px}
+.foerder-row:last-child{border-bottom:none;font-weight:700;font-size:15px;padding-top:10px;margin-top:4px;border-top:1px solid rgba(255,255,255,.3)}
+/* ANGEBOTE */
+.angebot-block{margin-bottom:14px}
+.angebot-gewerk{font-size:13px;font-weight:700;color:var(--blue);padding:10px 0 6px;border-bottom:2px solid var(--blue);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.angebot-card{background:#f9fafb;border-radius:8px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px}
+.angebot-card.best{background:#f0fdf4;border:1.5px solid var(--teal)}
+.angebot-info{flex:1}
+.angebot-firma{font-size:13px;font-weight:600}
+.angebot-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.angebot-right{text-align:right;flex-shrink:0}
+.angebot-price{font-size:15px;font-weight:700}
+.angebot-actions{display:flex;gap:5px;margin-top:5px;justify-content:flex-end}
+.btn-small{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:500}
+.add-btn{width:100%;padding:10px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;margin-top:4px}
+/* TIMELINE */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-22px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--teal);border:2px solid #fff;box-shadow:0 0 0 2px var(--teal)}
+.tl-item.urlaub::before{background:var(--amber);box-shadow:0 0 0 2px var(--amber)}
+.tl-item.helfer::before{background:var(--purple);box-shadow:0 0 0 2px var(--purple)}
+.tl-item.asbest::before{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+.tl-date{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.tl-card{background:#fff;border-radius:10px;padding:12px 14px;box-shadow:var(--shadow);border-left:3px solid var(--teal)}
+.tl-card.urlaub{border-left-color:var(--amber)}
+.tl-card.helfer{border-left-color:var(--purple)}
+.tl-card.asbest{border-left-color:var(--red)}
+.tl-card h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.tl-task{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-top:1px solid #f5f5f5;font-size:13px}
+.tl-task:first-of-type{border-top:none}
+.tl-task-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.tl-task-text{flex:1;line-height:1.4}
+.tl-task-text small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.helfer-block{background:#f5f3ff;border-radius:10px;padding:11px 13px;margin-top:8px}
+.helfer-block h5{font-size:12px;font-weight:700;color:#4c1d95;margin-bottom:6px}
+.helfer-row{display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:12px;color:#4c1d95}
+.helfer-row::before{content:'→';flex-shrink:0;font-weight:700}
+.maschinen-block{background:#f0fdf4;border-radius:10px;padding:11px 13px;margin-top:8px}
+.maschinen-block h5{font-size:12px;font-weight:700;color:#065f46;margin-bottom:6px}
+.maschinen-row{display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:12px;color:#065f46}
+.maschinen-row::before{content:'🔧';flex-shrink:0}
+.container-badge{display:inline-flex;align-items:center;gap:5px;background:#fff3e0;border:1px solid #f59e0b;border-radius:8px;padding:5px 10px;font-size:12px;color:#92400e;font-weight:500;margin-top:6px;margin-right:5px}
+.flex-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.flex-item:last-child{border-bottom:none}
+.flex-item-icon{font-size:16px;flex-shrink:0}
+.flex-item-text{flex:1;line-height:1.4}
+.flex-item-text small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.flex-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:12px 0 6px}
+.steckbrief-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px}
+.steckbrief-row:last-child{border-bottom:none}
+.steckbrief-row .key{color:var(--muted);font-weight:500}
+.steckbrief-row .val{font-weight:600;text-align:right}
+/* NOTIZEN */
+.notiz-input{width:100%;padding:12px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;background:#fff;resize:vertical;min-height:80px;font-family:inherit;margin-bottom:10px}
+.notiz-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--teal);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.notiz-card{background:#fff;border-radius:10px;padding:12px 14px;margin-top:10px;box-shadow:var(--shadow);position:relative}
+.notiz-ts{font-size:11px;color:var(--small);margin-bottom:6px}
+.notiz-text{font-size:13px;line-height:1.6;white-space:pre-wrap}
+.notiz-del{position:absolute;top:10px;right:12px;font-size:20px;color:var(--small);background:none;border:none;cursor:pointer}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.form-field{margin-bottom:14px}
+.form-field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-family:inherit;color:var(--text)}
+.form-field textarea{resize:vertical;min-height:60px}
+.modal-btns{display:flex;gap:10px;margin-top:6px}
+.modal-btns button{flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-cancel{background:#f3f4f6;color:var(--text)}
+.btn-save{background:var(--teal);color:#fff}
+.btn-delete{background:#fee2e2;color:#991b1b}
+
+/* AUSGABEN */
+.ausg-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.ausg-card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.ausg-card .label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.ausg-card .value{font-size:20px;font-weight:700}
+.ausg-card .sub{font-size:11px;margin-top:2px}
+.ausg-card.ok .value{color:var(--teal)}
+.ausg-card.warn .value{color:var(--amber)}
+.ausg-card.over .value{color:var(--red)}
+.ausg-bar-wrap{background:var(--border);border-radius:3px;height:6px;margin:8px 0 14px;overflow:hidden}
+.ausg-bar{height:100%;border-radius:3px;transition:width .5s}
+.ausg-kat{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+.ausg-kat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.ausg-kat-icon{font-size:18px;flex-shrink:0}
+.ausg-kat-info{flex:1;min-width:0}
+.ausg-kat-name{font-size:13px;font-weight:600}
+.ausg-kat-nums{font-size:11px;color:var(--muted);margin-top:2px}
+.ausg-kat-right{text-align:right;flex-shrink:0}
+.ausg-kat-ist{font-size:15px;font-weight:700}
+.ausg-kat-diff{font-size:11px;margin-top:2px}
+.ausg-kat-diff.ok{color:var(--teal)}
+.ausg-kat-diff.warn{color:var(--amber)}
+.ausg-kat-diff.over{color:var(--red)}
+.ausg-kat-body{border-top:1px solid var(--border);display:none}
+.ausg-beleg{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.ausg-beleg:last-child{border-bottom:none}
+.ausg-beleg-info{flex:1}
+.ausg-beleg-titel{font-weight:500}
+.ausg-beleg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.ausg-beleg-betrag{font-size:14px;font-weight:600;flex-shrink:0}
+.ausg-beleg-del{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:0 4px;flex-shrink:0}
+.ausg-add-btn{width:100%;padding:10px 14px;font-size:12px;border:none;background:#f9fafb;color:var(--muted);cursor:pointer;text-align:left;display:flex;align-items:center;gap:6px}
+.ausg-add-btn:hover{background:#f0f0f0}
+.foerder-hinweis{background:#f0fdf4;border-radius:10px;padding:12px 14px;font-size:12px;color:#065f46;margin-bottom:14px;line-height:1.6}
+
+</style>
+</head>
+<body>
+<div class="page-header">
+  <h1 id="page-title">🏗️ Kernsanierung Mühltal</h1>
+  <p id="page-sub">Schleifmühlenweg 7a · Jul 2026 – Aug 2027</p>
+</div>
+<div class="content">
+
+  <div class="page active" id="page-uebersicht">
+    <div class="alert red"><strong>⚠️ Celar Estrichbau</strong>Angebot läuft am 23.06.2026 ab – jetzt entscheiden!</div>
+    <div class="alert red"><strong>☣️ Asbest-Firma beauftragen</strong>Vorlaufzeit 4–6 Wochen – muss während Urlaub (17.–28. Jul) arbeiten!</div>
+    <div class="alert amber"><strong>🏛️ BAFA/KfW</strong>Uwe Wäckerle ab 20.5. beauftragen – iSFP zuerst, dann Antrag, DANN erst Aufträge!</div>
+    <div class="metrics">
+      <div class="metric"><div class="label">Baustart</div><div class="value" style="font-size:16px">Jul 2026</div><div class="sub">Einzug Aug 2027</div></div>
+      <div class="metric green"><div class="label">Förderung</div><div class="value">43k €</div><div class="sub">BAFA + KfW</div></div>
+      <div class="metric"><div class="label">Kosten (real.)</div><div class="value" style="font-size:16px">~230k €</div><div class="sub">vor Förderung</div></div>
+      <div class="metric amber"><div class="label">Eigenanteil</div><div class="value" style="font-size:16px">~187k €</div><div class="sub">nach Förderung</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Projektsteckbrief</h2></div>
+      <div class="card-body" style="padding:0 16px">
+        <div class="steckbrief-row"><span class="key">Objekt</span><span class="val">DHH, Baujahr 1972</span></div>
+        <div class="steckbrief-row"><span class="key">Wohnfläche</span><span class="val">135m² + 66m² Nutzfl.</span></div>
+        <div class="steckbrief-row"><span class="key">Schlüssel</span><span class="val">01.–08. Juli 2026</span></div>
+        <div class="steckbrief-row"><span class="key">Urlaub</span><span class="val">17.–28. Juli 2026</span></div>
+        <div class="steckbrief-row"><span class="key">Frei bis</span><span class="val">09. August 2026</span></div>
+        <div class="steckbrief-row"><span class="key">Einzug geplant</span><span class="val">August 2027</span></div>
+        <div class="steckbrief-row"><span class="key">Energieberater</span><span class="val">Uwe Wäckerle</span></div>
+        <div class="steckbrief-row"><span class="key">heat consult</span><span class="val">+49 151 54073185</span></div>
+        <div class="steckbrief-row"><span class="key">Container</span><span class="val">Klöppinger · 06258-9057485</span></div>
+        <div class="steckbrief-row"><span class="key">Estrich</span><span class="val">Celar · 0170-8205385</span></div>
+      </div>
+    </div>
+
+    <!-- EXPORT / IMPORT -->
+    <div style="display:flex;gap:8px;margin-bottom:4px">
+      <button onclick="exportDaten()" style="flex:1;padding:11px;border-radius:10px;border:0.5px solid var(--teal);background:#f0fdf4;color:#065f46;font-size:13px;font-weight:600;cursor:pointer">⬇ Daten exportieren</button>
+      <button onclick="document.getElementById('import-file').click()" style="flex:1;padding:11px;border-radius:10px;border:0.5px solid var(--border);background:#f9fafb;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer">⬆ Daten importieren</button>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importDaten(event)"/>
+    <p style="font-size:11px;color:var(--small);text-align:center;margin-bottom:14px">Exportiere vor jedem App-Update · alle Daten bleiben lokal bei dir</p>
+
+  </div>
+
+  <div class="page" id="page-entkernung">
+    <div class="card">
+      <div class="card-header"><h2>Entkernungsplan Jul–Aug 2026</h2></div>
+      <div class="card-body" style="padding:10px 16px">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-date">01.–08. Juli · Schlüsselübergabe</div>
+            <div class="tl-card">
+              <h4>🏠 Erste Erkundung + Start</h4>
+              <div class="tl-task"><div class="tl-task-icon">📸</div><div class="tl-task-text">Haus dokumentieren, alle Räume fotografieren<small>Schimmelstellen OG markieren</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">📢</div><div class="tl-task-text">Holzvertäfelung auf Ebay Kleinanzeigen einstellen<small>Selbst abschrauben + abholen – spart Arbeit und Container</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🧻</div><div class="tl-task-text">Mit Tapeten anfangen (Raum für Raum)<small>Dampftapetenlöser leihen ~20€/Tag · mehrere Lagen möglich!</small></div></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">08.–16. Juli · Eigenleistung alleine / zu zweit</div>
+            <div class="tl-card">
+              <h4>🧻 Tapeten + Teppiche + Kleinarbeiten</h4>
+              <div class="tl-task"><div class="tl-task-icon">🧻</div><div class="tl-task-text">Tapeten im gesamten Haus abziehen<small>Realistisch 4–5 Tage · abends gut machbar</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🟫</div><div class="tl-task-text">Teppiche in Streifen schneiden + rollen (~120m²)<small>Geklebt! Bodenspachtel + Heißluftfön · Sperrmüll anmelden!</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🚿</div><div class="tl-task-text">Heizkörper + Sanitärkeramik demontieren wenn Zeit</div></div>
+              <div class="tl-task"><div class="tl-task-icon">🚪</div><div class="tl-task-text">Türen + Zargen demontieren wenn Zeit<small>Sperrmüll</small></div></div>
+              <div class="maschinen-block">
+                <h5>🔧 Werkzeug</h5>
+                <div class="maschinen-row">Dampftapetenlöser (leihen ~20€/Tag)</div>
+                <div class="maschinen-row">Bodenspachtel 40cm für Teppichkleber</div>
+                <div class="maschinen-row">Heißluftfön für hartnäckigen Kleber</div>
+                <div class="maschinen-row">Cuttermesser · Akkuschrauber</div>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item urlaub">
+            <div class="tl-date">17.–28. Juli · Urlaub 🌴</div>
+            <div class="tl-card urlaub">
+              <h4>☣️ Asbest-Firma arbeitet</h4>
+              <div class="tl-task"><div class="tl-task-icon">☣️</div><div class="tl-task-text">Asbest-Entfernung Küche + Keller<small>Fachfirma · niemand sonst im Haus!</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">📋</div><div class="tl-task-text">Schriftliche Freigabemeldung anfordern<small>Muss vorliegen bevor ihr am 02. Aug wieder reingeht!</small></div></div>
+            </div>
+          </div>
+          <div class="tl-item helfer">
+            <div class="tl-date">Samstag, 02. August · Samstagsdienst 1</div>
+            <div class="tl-card helfer">
+              <h4>🔨 Fliesen + Schimmelputz + Wanddurchbruch <span class="badge badge-purple">5–6 Helfer</span></h4>
+              <div class="tl-task"><div class="tl-task-icon">🟦</div><div class="tl-task-text">Fliesen Bad (11m²) + Küche (10m²) stemmen<small>→ Container 2 (Bauschutt)</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🦠</div><div class="tl-task-text">Schimmelputz OG abschlagen (trocken, in Säcke!)<small>→ Container 3 · FFP3 Pflicht!</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🧱</div><div class="tl-task-text">Wanddurchbruch Küche → Esszimmer<small>Nicht tragend · Hohlblock → Container 2</small></div></div>
+              <div class="helfer-block">
+                <h5>👥 Einteilung 5–6 Personen</h5>
+                <div class="helfer-row">2 Pers: Fliesen stemmen (alle 45 Min. wechseln)</div>
+                <div class="helfer-row">1–2 Pers: Schimmelputz (FFP3! isoliert)</div>
+                <div class="helfer-row">1–2 Pers: Wanddurchbruch + Schuttschleppen</div>
+                <div class="helfer-row">1 Pers: Container-Management + Verpflegung</div>
+              </div>
+              <div class="maschinen-block">
+                <h5>🔧 Maschinen</h5>
+                <div class="maschinen-row">2× Bohrhammer mit Meißel (~35€/Tag je)</div>
+                <div class="maschinen-row">Winkelschleifer für Wanddurchbruch</div>
+                <div class="maschinen-row">FFP3-Masken + Schutzbrillen für ALLE</div>
+                <div class="maschinen-row">Staubschutzfolie + Klebeband</div>
+              </div>
+              <div style="margin-top:8px">
+                <div class="container-badge">📦 Container 2: Do 31. Jul · 6m³ Bauschutt</div>
+                <div class="container-badge">📦 Container 3: Do 31. Jul · 7m³ Leichtbaustoffe</div>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">03.–08. August · Einer hat frei</div>
+            <div class="tl-card">
+              <h4>🔧 Flexible Einzelarbeiten</h4>
+              <div class="tl-task"><div class="tl-task-icon">🏚️</div><div class="tl-task-text">Kellerentkernung<small>Kein Lärm, gut alleine</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">✏️</div><div class="tl-task-text">Elektroschlitze markieren</div></div>
+              <div class="tl-task"><div class="tl-task-icon">📦</div><div class="tl-task-text">Container 4+5+6 bestellen: Do 07. August<small>3× 6m³ für Estrich – 3 Stück wegen 15–16t!</small></div></div>
+            </div>
+          </div>
+          <div class="tl-item helfer">
+            <div class="tl-date">Samstag, 09. August · Samstagsdienst 2</div>
+            <div class="tl-card helfer">
+              <h4>💪 Estrichabbruch EG + OG <span class="badge badge-purple">6–7 Helfer</span></h4>
+              <div class="tl-task"><div class="tl-task-icon">💪</div><div class="tl-task-text">Estrich EG + OG stemmen (~122m², 15–16 Tonnen)<small>Alle 30–45 Min. wechseln!</small></div></div>
+              <div class="tl-task"><div class="tl-task-icon">⚠️</div><div class="tl-task-text">Blumenkasten Balkon (Stahlbeton)<small>NUR nach Statiker-Freigabe · eigener Betoncontainer!</small></div></div>
+              <div class="helfer-block">
+                <h5>👥 Einteilung 6–7 Personen</h5>
+                <div class="helfer-row">2–3 Pers: Presslufthammer (IMMER abwechseln!)</div>
+                <div class="helfer-row">2 Pers: Schutt schleppen</div>
+                <div class="helfer-row">1 Pers: Container-Management</div>
+                <div class="helfer-row">1 Pers: Verpflegung + Werkzeugnachschub</div>
+              </div>
+              <div class="maschinen-block">
+                <h5>🔧 Maschinen</h5>
+                <div class="maschinen-row">2× Presslufthammer Hilti TE 500/700 (~70€/Tag je) · FRÜH buchen!</div>
+                <div class="maschinen-row">KEIN normaler Bohrhammer – zu schwach!</div>
+                <div class="maschinen-row">2× Schubkarre · FFP3-Masken · Erste-Hilfe</div>
+              </div>
+              <div style="margin-top:8px">
+                <div class="container-badge">📦 3× 6m³ Bauschutt: Do 07. Aug</div>
+                <div class="container-badge" style="background:#fee2e2;border-color:#e74c3c;color:#7f1d1d">⚠️ Balkon-Beton: eigener Container</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="alert amber" style="margin-top:4px"><strong>💡 Sperrmüll anmelden</strong>Teppiche, Tapeten, Holzvertäfelung, Türen → Landkreis Darmstadt-Dieburg kostenlos. NICHT in Container!</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Flexibel (alleine / zu zweit)</h2></div>
+      <div class="card-body" style="padding:0 16px">
+        <div class="flex-title">Jederzeit möglich</div>
+        <div class="flex-item"><div class="flex-item-icon">🧻</div><div class="flex-item-text">Tapeten abziehen<small>Abends gut · Dampftapetenlöser leihen</small></div><span class="badge badge-green">Alleine</span></div>
+        <div class="flex-item"><div class="flex-item-icon">🚿</div><div class="flex-item-text">Heizkörper + Sanitär demontieren</div><span class="badge badge-green">Zu zweit</span></div>
+        <div class="flex-item"><div class="flex-item-icon">🏚️</div><div class="flex-item-text">Kellerentkernung<small>Kein Lärm, perfekt abends</small></div><span class="badge badge-green">Alleine</span></div>
+        <div class="flex-item"><div class="flex-item-icon">🚪</div><div class="flex-item-text">Türen + Zargen demontieren</div><span class="badge badge-green">Zu zweit</span></div>
+        <div class="flex-title">Braucht Helfer</div>
+        <div class="flex-item"><div class="flex-item-icon">🟫</div><div class="flex-item-text">Teppiche raus (geklebt!)</div><span class="badge badge-red">4–5 Pers.</span></div>
+        <div class="flex-item"><div class="flex-item-icon">💪</div><div class="flex-item-text">Estrichabbruch (~122m²)</div><span class="badge badge-red">6–7 Pers.</span></div>
+        <div class="flex-item"><div class="flex-item-icon">🔧</div><div class="flex-item-text">❓ Altes Rohrnetz raus<small>Datum offen · nach Heizungsbauer-Termin</small></div><span class="badge badge-amber">3–4 Pers.</span></div>
+        <div class="flex-item"><div class="flex-item-icon">⚠️</div><div class="flex-item-text">Balkon Blumenkasten<small>Erst nach Statiker-Freigabe!</small></div><span class="badge badge-red">3–4 Pers.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-zeitplan">
+    <div class="card">
+      <div class="card-header"><h2>Gantt – Jul 2026 bis Aug 2027</h2></div>
+      <div class="card-body" style="padding:10px 0">
+        <div id="gantt-wrap-inner"></div>
+      </div>
+    </div>
+    <div class="alert green"><strong>✅ Estrich RapidoWitt</strong>10–14 Tage mit Bauheizer trocknen (Feb 27) → Verputzen ab Mär 27. Fassade läuft parallel draußen. Umzug August 2027 mit Puffer.</div>
+    <div class="alert amber"><strong>❓ Altes Rohrnetz</strong>Datum noch offen – abhängig vom Heizungsbauer-Termin. Gasleitung NUR vom Fachmann trennen!</div>
+  </div>
+
+  <div class="page" id="page-todos">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Fortschritt</span><span id="progress-text">0 / 0 erledigt</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div id="todos-container"></div>
+  </div>
+
+  <div class="page" id="page-kosten">
+
+    <!-- SUB-TABS -->
+    <div style="display:flex;gap:4px;margin-bottom:14px;background:#fff;border-radius:10px;padding:5px;box-shadow:var(--shadow)">
+      <button id="ktab-ist" onclick="showKTab('ist')" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:7px;border:none;background:#1a1a2e;color:#fff;cursor:pointer">💶 Ist-Kosten</button>
+      <button id="ktab-plan" onclick="showKTab('plan')" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer">📋 Budgetplan</button>
+    </div>
+
+    <!-- IST-KOSTEN -->
+    <div id="ktab-ist-content">
+      <div class="ausg-summary" id="ausg-summary"></div>
+      <div class="ausg-bar-wrap"><div class="ausg-bar" id="ausg-bar"></div></div>
+      <div class="foerder-hinweis">💡 <strong>Gesamtbudget: 622.379 €</strong> (Kredit + Eigenkapital)<br>Kauf + Nebenkosten: 389.379 € · Sanierung: 233.000 €<br>Förderung ~43.300 € wird nach Fertigstellung erstattet (BAFA + KfW).</div>
+      <div id="ausg-list"></div>
+    </div>
+
+    <!-- BUDGETPLAN -->
+    <div id="ktab-plan-content" style="display:none">
+      <div class="foerder-box">
+        <h3>💡 Förderung (Uwe Wäckerle, heat consult)</h3>
+        <div class="foerder-row"><span>Dachsanierung (BAFA BEG EM)</span><span>8.000 €</span></div>
+        <div class="foerder-row"><span>Heizung/WP (KfW BEG EM)</span><span>16.500 €</span></div>
+        <div class="foerder-row"><span>Fenster + Tür (BAFA BEG EM)</span><span>8.200 €</span></div>
+        <div class="foerder-row"><span>Lüftung (BAFA BEG EM)</span><span>1.600 €</span></div>
+        <div class="foerder-row"><span>Fassadendämmung (BAFA BEG EM)</span><span>7.000 €</span></div>
+        <div class="foerder-row"><span>Energieberatung</span><span>2.000 €</span></div>
+        <div class="foerder-row"><span>Gesamt Förderung</span><span>43.300 €</span></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Kostenpositionen</h2>
+          <button style="padding:6px 12px;font-size:12px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer" onclick="openKostenModal(null)">+ Neu</button>
+        </div>
+        <div class="card-body" style="padding:0 16px"><div id="kosten-list"></div></div>
+      </div>
+      <div class="kosten-total" id="kosten-total"></div>
+    </div>
+
+  </div>
+
+  <div class="page" id="page-angebote"><div id="angebote-container"></div></div>
+
+  <div class="page" id="page-notizen">
+    <textarea class="notiz-input" id="notiz-input" placeholder="Baustellennotiz…"></textarea>
+    <button class="notiz-btn" onclick="addNotiz()">Notiz speichern</button>
+    <div id="notiz-list"></div>
+  </div>
+
+</div>
+
+<nav class="nav-bar">
+  <button class="nav-btn active" onclick="showPage('uebersicht',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Übersicht</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('entkernung',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+    <span>Entkernung</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('zeitplan',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Zeitplan</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('todos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    <span>To-Dos</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('kosten',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    <span>Kosten</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('notizen',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span>Notizen</span>
+  </button>
+</nav>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="todo-modal">
+  <div class="modal">
+    <h3 id="todo-modal-title">Aufgabe</h3>
+    <div class="form-field"><label>Aufgabe</label><input type="text" id="tm-title"/></div>
+    <div class="form-field"><label>Details</label><textarea id="tm-sub"></textarea></div>
+    <div class="form-field"><label>Priorität</label>
+      <select id="tm-prio">
+        <option value="h">🔴 Hoch</option><option value="m">🟡 Mittel</option>
+        <option value="i">🔵 Info</option><option value="e">🟢 Eigenleistung</option>
+        <option value="n">🟣 Nach Einzug</option><option value="nb">⚪ Nachbarn</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="tm-del" onclick="deleteTodo()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveTodo()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="kosten-modal">
+  <div class="modal">
+    <h3 id="kosten-modal-title">Kostenposition</h3>
+    <div class="form-field"><label>Name</label><input type="text" id="km-name"/></div>
+    <div class="form-field"><label>Von (€)</label><input type="number" id="km-von"/></div>
+    <div class="form-field"><label>Bis (€)</label><input type="number" id="km-bis"/></div>
+    <div class="form-field"><label>Förderung (€)</label><input type="number" id="km-foerd"/></div>
+    <div class="form-field"><label>Typ</label>
+      <select id="km-typ"><option value="g">Gewerk</option><option value="e">Eigenleistung</option><option value="s">Sonstiges</option></select>
+    </div>
+    <div class="form-field"><label>Hinweis</label><input type="text" id="km-note"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="km-del" onclick="deleteKosten()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveKosten()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="angebot-modal">
+  <div class="modal">
+    <h3 id="ang-title">Angebot</h3>
+    <div class="form-field"><label>Firma</label><input type="text" id="af-firma"/></div>
+    <div class="form-field"><label>Betrag brutto (€)</label><input type="number" id="af-betrag"/></div>
+    <div class="form-field"><label>Datum</label><input type="date" id="af-datum"/></div>
+    <div class="form-field"><label>Status</label>
+      <select id="af-status"><option value="offen">In Prüfung</option><option value="beauftragt">Beauftragt ✓</option><option value="abgelehnt">Abgelehnt</option></select>
+    </div>
+    <div class="form-field"><label>Notiz</label><textarea id="af-notiz"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-save" onclick="saveAngebot()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUSGABEN MODAL -->
+<div class="modal-overlay" id="ausg-modal">
+  <div class="modal">
+    <h3 id="ausg-modal-title">Ausgabe eintragen</h3>
+    <div class="form-field"><label>Bezeichnung</label><input type="text" id="am-titel" placeholder="z.B. Rechnung Celar Estrichbau"/></div>
+    <div class="form-field"><label>Betrag (€)</label><input type="number" id="am-betrag" placeholder="z.B. 9163"/></div>
+    <div class="form-field"><label>Datum</label><input type="date" id="am-datum"/></div>
+    <div class="form-field"><label>Kategorie</label><select id="am-kat"></select></div>
+    <div class="form-field"><label>Notiz (optional)</label><input type="text" id="am-notiz" placeholder="z.B. Abschlagsrechnung 1"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="am-del" onclick="deleteAusg()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveAusg()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATA + APP LOGIC -->
+<script>
+// ═══════════════════════════════════════════════════════
+// KERNSANIERUNG MÜHLTAL – ALLE DATEN HIER BEARBEITEN
+// ═══════════════════════════════════════════════════════
+
+window.BAU_DATA = {
+
+// ── GANTT ─────────────────────────────────────────────
+gantt: [
+  {section:'Phase 1 – Entkernung & Hülle'},
+  {l:'Eigenleistung (Tapeten/Teppiche)', s:0, e:1, c:'#1d9e75'},
+  {l:'Asbest-Firma (im Urlaub)',         s:0, e:1, c:'#e74c3c'},
+  {l:'Sa 02.08 Fliesen+Putz+Durchbruch', s:1, e:1, c:'#534ab7'},
+  {l:'Sa 09.08 Estrichabbruch',          s:1, e:1, c:'#534ab7'},
+  {l:'Flachdach Sanierung',              s:2, e:3, c:'#0f3460'},
+  {l:'Fenster + Haustür',               s:3, e:4, c:'#0f3460'},
+  {section:'Phase 2 – Rohinstallation'},
+  {l:'Elektro Schlitze + Kabel',         s:3, e:5, c:'#1d9e75'},
+  {l:'❓ Altes Rohrnetz raus (EL+GWI)',  s:3, e:4, c:'#e8a838'},
+  {l:'Gasleitung trennen (Fachmann!)',   s:3, e:3, c:'#e74c3c'},
+  {l:'Neue Wasser-/Abwasserrohre',       s:4, e:6, c:'#534ab7'},
+  {l:'Sanitär Rohbau (Vorwände etc.)',   s:4, e:6, c:'#534ab7'},
+  {l:'❓ Wärmepumpe + BWP',             s:6, e:7, c:'#0f3460'},
+  {l:'FBH Rohre verlegen',              s:7, e:7, c:'#534ab7'},
+  {l:'Estrich Celar (RapidoWitt)',       s:7, e:7, c:'#0f3460'},
+  {section:'Phase 3 – Trocknung & Hülle (parallel!)'},
+  {l:'Estrich trocknet (Bauheizer)',     s:8, e:8, c:'#e8a838'},
+  {l:'Belegreifheizen FBH',             s:8, e:8, c:'#e8a838'},
+  {l:'Fassadendämmung WDVS',            s:8, e:10, c:'#0f3460'},
+  {section:'Phase 4 – Innenausbau'},
+  {l:'Verputzen',                        s:8, e:9, c:'#0f3460'},
+  {l:'Fliesen Bad + Küche',             s:9, e:10, c:'#0f3460'},
+  {l:'Boden verlegen',                  s:10, e:10, c:'#0f3460'},
+  {l:'Sanitär Endmontage',              s:10, e:11, c:'#534ab7'},
+  {l:'Elektro + E-Check',               s:10, e:11, c:'#1d9e75'},
+  {l:'Küche + Feinschliff',             s:11, e:12, c:'#1d9e75'},
+  {l:'🎉 Umzug',                        s:13, e:13, c:'#1d9e75'},
+],
+
+legende: [
+  {c:'#1d9e75', l:'Eigenleistung'},
+  {c:'#0f3460', l:'Gewerk (Fachfirma)'},
+  {c:'#534ab7', l:'GWI-Freund + Gewerk'},
+  {c:'#e74c3c', l:'Schadstoffe / Pflicht-Fachmann'},
+  {c:'#e8a838', l:'Puffer / Datum offen'},
+],
+
+todos: [
+  {phase:'Sofort (ab 20. Mai 2026)', items:[
+    {t:'Termin mit Nachbar Berthold',               s:'Baugleiches Haus ansehen',                                    p:'nb'},
+    {t:'Mit WEG-Nachbarn sprechen',                 s:'Umbauplanung, Gerüst/Lärm abstimmen',                        p:'nb'},
+    {t:'Statiker beauftragen',                      s:'Balkon-Blumenkasten + Wanddurchbruch Küche/Esszimmer',       p:'h'},
+    {t:'Uwe Wäckerle beauftragen (iSFP)',           s:'heat consult · +49 151 54073185',                            p:'h'},
+    {t:'Celar Estrichbau beauftragen',              s:'Angebot läuft 23.06.2026 ab!',                               p:'h'},
+    {t:'Asbest-Firma beauftragen',                  s:'Vorlaufzeit 4–6 Wochen · muss 17.–28. Juli arbeiten',        p:'h'},
+    {t:'Sanitärbetrieb anfragen',                   s:'3 Angebote · Vorlaufzeit 4–6 Monate',                        p:'h'},
+    {t:'Dachdecker anfragen – NICHT beauftragen',   s:'Erst nach BAFA-Bescheid · Einsatz Sep/Okt 26',               p:'h'},
+    {t:'Fensterbauer anfragen',                     s:'Bodentiefes OG-Fenster · Einsatz Okt/Nov 26',                p:'h'},
+    {t:'Heizungsbauer anfragen – NICHT beauftragen',s:'Erst nach KfW-Bescheid',                                     p:'h'},
+    {t:'Sperrmüll anmelden',                        s:'Landkreis Darmstadt-Dieburg · Teppiche, Tapeten, Türen',     p:'m'},
+    {t:'Holzvertäfelung auf Ebay Kleinanzeigen',    s:'Selbst abschrauben + abholen',                               p:'m'},
+    {t:'Presslufthammer für 09. Aug reservieren',   s:'Mind. 2 Stück · Hilti TE 500/700 · FRÜH buchen!',           p:'m'},
+    {t:'Stromanbieter für Baustelle auswählen',     s:'Check24/Verivox · Vertrag mit Startdatum = Übergabetag',     p:'h'},
+  ]},
+  {phase:'Container (Klöppinger · 06258-9057485)', items:[
+    {t:'Container 2+3 bestellen: Do 31. Juli',      s:'6m³ Bauschutt + 7m³ Leichtbaustoffe',                        p:'h'},
+    {t:'Container 4+5+6 bestellen: Do 07. Aug',     s:'3× 6m³ Bauschutt für Estrich (15–16t = 3 Container!)',       p:'h'},
+    {t:'Container Beton (nach Statiker-Freigabe)',   s:'Bewehrter Beton Balkon · 35–42,50€/t',                       p:'m'},
+  ]},
+  {phase:'BAFA/KfW-Prozess', items:[
+    {t:'iSFP erstellen lassen',                     s:'~1–2 Wochen · Förderquote auf 20%',                          p:'h'},
+    {t:'BAFA + KfW Antrag stellen',                 s:'VOR Auftragserteilung!',                                     p:'h'},
+    {t:'Bewilligungsbescheid abwarten (~6 Wochen)', s:'Keine Aufträge unterschreiben bis Bescheid!',                p:'m'},
+    {t:'Aufträge erteilen: Dach, WP, Fenster, Fassade', s:'Erst nach Bescheid – ca. Aug 2026',                     p:'h'},
+    {t:'Rechnungen + Nachweise sammeln',            s:'Aug 26 – Jun 27',                                            p:'m'},
+    {t:'Verwendungsnachweis → ~43.300 €',           s:'Nach Fertigstellung Aug 2027',                               p:'h'},
+  ]},
+  {phase:'Schlüsselübergabe (01.–08. Juli) – sofort erledigen', items:[
+    {t:'Zählerstand Strom ablesen + fotografieren', s:'Rückwirkende Ummeldung ab Juni 2025 nicht mehr möglich',     p:'h'},
+    {t:'Strom anmelden beim neuen Anbieter',        s:'14 Werktage Voranmeldepflicht · Startdatum = Übergabetag',   p:'h'},
+    {t:'Heizkörper abhängen (Eigenleistung)',       s:'Absperrventile zudrehen · Wasser auffangen · kein Fachmann', p:'m'},
+    {t:'Asbest-Firma Schlüsselübergabe organisiert?',s:'Wer ist Ansprechpartner während Urlaub?',                   p:'h'},
+  ]},
+  {phase:'Vor Urlaub prüfen (16. Juli)', items:[
+    {t:'Schriftliche Freigabe nach Asbest anfordern',s:'Muss vor 02. Aug vorliegen!',                               p:'h'},
+  ]},
+  {phase:'Samstagsdienst 1 – Vorbereitung (vor 02. Aug)', items:[
+    {t:'5–6 Freunde für Sa 02. Aug einladen',       s:'Fliesen, Schimmelputz, Wanddurchbruch',                      p:'h'},
+    {t:'2× Bohrhammer reservieren',                 s:'~35€/Tag je',                                                p:'h'},
+    {t:'FFP3-Masken kaufen (mind. 10 Stk.)',        s:'Pflicht beim Schimmelputz + Fliesen',                        p:'h'},
+    {t:'Staubschutzfolie + Klebeband',              s:'Schimmelbereich abdichten',                                  p:'m'},
+  ]},
+  {phase:'Samstagsdienst 2 – Vorbereitung (vor 09. Aug)', items:[
+    {t:'6–7 Freunde für Sa 09. Aug einladen',       s:'Estrichabbruch – härteste Runde!',                           p:'h'},
+    {t:'2× Presslufthammer (Hilti TE 500/700) abholen',s:'Tag vorher abholen',                                     p:'h'},
+    {t:'Verpflegung planen',                        s:'Viel Essen + Trinken · lange schwere Arbeit',                p:'m'},
+    {t:'Erste-Hilfe-Kasten bereitstellen',          s:'',                                                           p:'m'},
+  ]},
+  {phase:'❓ Altes Rohrnetz entfernen (Datum offen)', items:[
+    {t:'Gasleitung trennen – NUR konzessionierter Gasinstallateur!',s:'Erster Schritt · Heizung läuft bis dahin normal weiter',p:'h'},
+    {t:'Alte Therme / Heizkessel entfernen',        s:'Erst nach Gastrennung · schwer, Helfer nötig',               p:'h'},
+    {t:'Alte Heizkörper-Zuleitungen raus',          s:'EL + GWI-Freund · Heizkörper selbst schon im Juli abgehängt',p:'h'},
+    {t:'Alte Wasserleitungen raus',                 s:'EL + GWI-Freund · Kupfer/Stahl → Schrotthändler',            p:'h'},
+    {t:'Abwasserrohre prüfen',                      s:'Hauptstränge bleiben oft · nur Abzweigungen neu',            p:'m'},
+    {t:'Termin mit Heizungsbauer abstimmen',        s:'❓ Noch offen – beeinflusst Phase-2-Start',                  p:'h'},
+  ]},
+  {phase:'Gewerke anfragen (Jul–Sep 2026)', items:[
+    {t:'Elektriker für Planung einladen',           s:'Schaltplan + Schlitze anzeichnen',                           p:'h'},
+    {t:'Verputzer anfragen (3 Angebote)',           s:'Vorlaufzeit 6–9 Monate · Einsatz Mär 27',                   p:'h'},
+    {t:'Bodenleger anfragen (2–3 Angebote)',        s:'Vorlaufzeit 4–6 Monate · Einsatz Mai 27',                   p:'m'},
+  ]},
+  {phase:'Phase 2–4 (Okt 26 – Aug 27)', items:[
+    {t:'Fensteröffnungen + Lüftungsfalz festlegen', s:'Bodentiefes OG-Fenster abstimmen',                           p:'h'},
+    {t:'Rollladen-Kabel verlegen (vor Estrich)',    s:'Leerrohre zu allen Fenstern',                                p:'h'},
+    {t:'Druckprüfung neue Wasserleitungen',         s:'Vor Einputzen!',                                             p:'h'},
+    {t:'Fliesen + Armaturen bestellen',             s:'Lieferzeiten beachten',                                      p:'h'},
+    {t:'Bauheizer mieten für Estrichtrocknung',     s:'~50–80€/Tag · 10–14 Tage · nach Celar-Einbau',              p:'h'},
+    {t:'Baustrom beauftragen (Elektriker)',         s:'Elektriker beantragt beim Netzbetreiber · Okt/Nov 26',        p:'m'},
+    {t:'14 Werktage vor Elektrikerstart: Strom abmelden',s:'Außerordentliche Kündigung möglich (Baustelle)',        p:'h'},
+    {t:'Nach Fertigstellung Elektro: neuen Vertrag',s:'Wärmepumpen-Tarif wählen! Günstigere kWh-Preise',           p:'m'},
+    {t:'CM-Messung Estrich-Belegreife prüfen',      s:'RapidoWitt: nach Trocknung + Belegreifheizen',               p:'h'},
+    {t:'Hydraulischen Abgleich durchführen',        s:'Pflicht KfW/BAFA',                                           p:'h'},
+    {t:'E-Check vor Einzug',                        s:'Elektriker nimmt Anlage ab',                                 p:'h'},
+    {t:'Küche liefern/montieren',                   s:'Jul/Aug 2027',                                               p:'m'},
+  ]},
+  {phase:'Nach Einzug – Keller', items:[
+    {t:'Vorratsraum Putz abschlagen',               s:'Nur betroffene Stelle',                                      p:'n'},
+    {t:'Injektage Feuchtigkeit (EL)',               s:'Remmers oder Sievert',                                       p:'e'},
+    {t:'Neu verputzen',                             s:'Kalkzementputz · 2 Lagen',                                   p:'e'},
+  ]},
+],
+
+kosten: [
+  {n:'Dachsanierung',               von:40000, bis:40000, foerd:8000,  t:'g', note:'Sep/Okt 26'},
+  {n:'Heizung: WP + Brauchwasser-WP',von:45000,bis:50000, foerd:16500, t:'g', note:'KfW BEG EM bis 55% · ❓ Termin offen'},
+  {n:'Fenster + Haustür (4-fach)',   von:39000, bis:41000, foerd:8200,  t:'g', note:'Okt/Nov 26 · OG bodentief'},
+  {n:'Lüftung',                      von:8000,  bis:8000,  foerd:1600,  t:'g', note:'Pendellüfter + Falzlüftung'},
+  {n:'Fassadendämmung',              von:35000, bis:35000, foerd:7000,  t:'g', note:'EPS 140–160mm WDVS'},
+  {n:'Estrich – Celar Estrichbau',   von:9163,  bis:9163,  foerd:0,     t:'g', note:'Angebot bis 23.06.2026'},
+  {n:'FBH Rohre verlegen',           von:5000,  bis:6000,  foerd:0,     t:'g', note:'GWI-Freund'},
+  {n:'Wasser-/Abwasserleitungen',    von:6000,  bis:10000, foerd:0,     t:'g', note:'Gewerk + GWI-Freund'},
+  {n:'Verputzen Innen',              von:8000,  bis:14000, foerd:0,     t:'g', note:'~135m²'},
+  {n:'Boden verlegen',               von:8000,  bis:15000, foerd:0,     t:'g', note:'~100m²'},
+  {n:'Elektro (Material)',           von:5000,  bis:8000,  foerd:0,     t:'e', note:'Eigenleistung'},
+  {n:'Sanitär & Bäder',              von:12000, bis:18000, foerd:0,     t:'e', note:'2 Bäder + Leitungen'},
+  {n:'Asbest-Entsorgung',            von:3000,  bis:6000,  foerd:0,     t:'s', note:'Fachfirma Küche + Keller'},
+  {n:'Container Klöppinger',         von:3500,  bis:5000,  foerd:0,     t:'e', note:'~6 Container'},
+  {n:'Sperrmüll / Wertstoffstation', von:0,     bis:300,   foerd:0,     t:'e', note:''},
+  {n:'Innenausbau / Fliesen / Farbe',von:6000,  bis:10000, foerd:0,     t:'e', note:''},
+  {n:'Küche',                        von:10000, bis:20000, foerd:0,     t:'e', note:'Jul/Aug 27'},
+  {n:'Energieberatung',              von:4500,  bis:4500,  foerd:2000,  t:'s', note:'Uwe Wäckerle · Eigenanteil 2.500€'},
+  {n:'Bauheizer Estrichtrocknung',   von:500,   bis:1200,  foerd:0,     t:'e', note:'~50–80€/Tag · 10–14 Tage'},
+  {n:'Werkzeugmiete + Schutzausrüstung',von:2000,bis:3500, foerd:0,     t:'e', note:''},
+  {n:'Puffer +15%',                  von:33245, bis:46395, foerd:0,     t:'s', note:'Pflichtreserve'},
+],
+
+gewerke: [
+  {id:'dach',      n:'Dachsanierung',             budget:40000},
+  {id:'heizung',   n:'Wärmepumpe + Heizung',      budget:47500},
+  {id:'fenster',   n:'Fenster + Haustür',          budget:40000},
+  {id:'lueftung',  n:'Lüftungsanlage',             budget:8000},
+  {id:'fassade',   n:'Fassadendämmung',            budget:35000},
+  {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:9163},
+  {id:'asbest',    n:'Asbest-Entsorgung',          budget:6000},
+  {id:'container', n:'Container Klöppinger',       budget:5000},
+  {id:'sanitaer',  n:'Wasser-/Abwasserleitungen',  budget:8000},
+  {id:'verputzen', n:'Verputzen Innen',             budget:11000},
+  {id:'boden',     n:'Boden verlegen',              budget:11500},
+],
+
+ausgabenKategorien: [
+  {id:'kaufpreis',   name:'Kaufpreis',                  budget:349000,   icon:'🏠'},
+  {id:'makler',      name:'Makler',                     budget:12459.30, icon:'🤝'},
+  {id:'notar',       name:'Notar & Grundbuch',          budget:6980,     icon:'📜'},
+  {id:'grunderwerb', name:'Grunderwerbsteuer',          budget:20940,    icon:'🏛️'},
+  {id:'dach',        name:'Dachsanierung',              budget:40000,    icon:'🏗️'},
+  {id:'heizung',     name:'Heizung / Wärmepumpe',       budget:47500,    icon:'🔥'},
+  {id:'fenster',     name:'Fenster + Haustür',           budget:40000,    icon:'🪟'},
+  {id:'lueftung',    name:'Lüftungsanlage',              budget:8000,     icon:'💨'},
+  {id:'fassade',     name:'Fassadendämmung',             budget:35000,    icon:'🧱'},
+  {id:'estrich',     name:'Estrich (Celar)',              budget:9163,     icon:'🪨'},
+  {id:'sanitaer',    name:'Sanitär & Wasser/Abwasser',   budget:18000,    icon:'🚿'},
+  {id:'elektro',     name:'Elektro',                     budget:8000,     icon:'⚡'},
+  {id:'verputzen',   name:'Verputzen',                   budget:11000,    icon:'🖌️'},
+  {id:'boden',       name:'Boden verlegen',              budget:11500,    icon:'🟫'},
+  {id:'asbest',      name:'Asbest-Entsorgung',           budget:6000,     icon:'☣️'},
+  {id:'container',   name:'Container & Entsorgung',      budget:5000,     icon:'📦'},
+  {id:'kueche',      name:'Küche',                       budget:15000,    icon:'🍳'},
+  {id:'material',    name:'Material & Eigenleistung',    budget:10000,    icon:'🔧'},
+  {id:'sonstiges',   name:'Sonstiges / Puffer',          budget:5000,     icon:'📋'},
+],
+
+}; // Ende BAU_DATA
+
+</script>
+<script>
+// Supabase dynamisch laden
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.onload = function() { if(window._supabaseReady) window._supabaseReady(); };
+  document.head.appendChild(s);
+})();
+
+const MONTHS=['Jul','Aug','Sep','Okt','Nov','Dez','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug'];
+const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls:'badge-blue',l:'Info'},e:{cls:'badge-green',l:'Eigenl.'},n:{cls:'badge-purple',l:'Nach Einzug'},nb:{cls:'badge-grey',l:'Nachbarn'}};
+
+// State (user actions only - not content)
+let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'offen',notiz:'Bekotec+RapidoWitt · Gültig bis 23.06.2026!'}],container:[{firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'}]},notizen:[]};
+let eTodoPI=null,eTodoII=null,eKostenI=null,eAngGw=null;
+
+function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);S.checks=p.checks||{};S.todosEdited=p.todosEdited||null;S.kostenEdited=p.kostenEdited||null;if(p.angebote)S.angebote=p.angebote;if(p.notizen)S.notizen=p.notizen;}}catch(e){}}
+function saveS(){try{localStorage.setItem('bau_s',JSON.stringify(S));}catch(e){}saveToCloud();}
+
+// ── SUPABASE (Frankfurt) ─────────────────────────────
+const SUPA_URL = 'https://ygjjhtfeavnkujetgvbh.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnampodGZlYXZua3VqZXRndmJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MzQ0MjYsImV4cCI6MjA5NTQxMDQyNn0.p_gDikzeTCKjsGEWvbS4r1gT3OaMzm7h5Sq-H96IfGA';
+let supaClient = null;
+
+function initSupabase(){
+  try{
+    if(typeof window.supabase !== 'undefined'){
+      supaClient = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    }
+  }catch(e){}
+}
+
+async function loadFromCloud(){
+  if(!supaClient) return false;
+  try{
+    const {data,error} = await supaClient
+      .from('bau_state').select('state').eq('id','bau-muehltal-v1').single();
+    if(error||!data) return false;
+    const p=JSON.parse(data.state);
+    S.checks=p.checks||{};
+    S.todosEdited=p.todosEdited||null;
+    S.kostenEdited=p.kostenEdited||null;
+    if(p.angebote)S.angebote=p.angebote;
+    if(p.ausgaben)S.ausgaben=p.ausgaben;
+    if(p.notizen)S.notizen=p.notizen;
+    return true;
+  }catch(e){ return false; }
+}
+
+let _saveTimer=null;
+function saveToCloud(){
+  if(!supaClient) return;
+  if(_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(async function(){
+    try{
+      await supaClient.from('bau_state')
+        .upsert({id:'bau-muehltal-v1',state:JSON.stringify(S),updated_at:new Date().toISOString()});
+    }catch(e){}
+  },1000);
+}
+
+function getTodos(){return S.todosEdited||BAU_DATA.todos;}
+function getKosten(){return S.kostenEdited||BAU_DATA.kosten;}
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');btn.classList.add('active');
+  const T={uebersicht:'🏗️ Kernsanierung Mühltal',entkernung:'🔨 Entkernung & Container',zeitplan:'📅 Zeitplan',todos:'✅ To-Dos',kosten:'💶 Kosten',notizen:'📝 Notizen'};
+  const Sub={uebersicht:'Schleifmühlenweg 7a · Jul 2026–Aug 2027',entkernung:'Samstagsdienste + Maschinen',zeitplan:'Verputzen ab Mär · Umzug Aug 2027',todos:'Aufgaben verwalten',kosten:'Budget & Förderung',notizen:'Baustellentagebuch'};
+  document.getElementById('page-title').textContent=T[id]||id;
+  document.getElementById('page-sub').textContent=Sub[id]||'';
+}
+
+function renderGantt(){
+  // Legende
+  let leg='<div style="display:flex;flex-wrap:wrap;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)">';
+  BAU_DATA.legende.forEach(item=>{
+    leg+=`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:12px;height:12px;border-radius:3px;background:${item.c};flex-shrink:0;display:inline-block"></span>${item.l}</span>`;
+  });
+  leg+='</div>';
+  // Gantt
+  let h='<thead><tr><th>Gewerk / Phase</th>';
+  MONTHS.forEach(m=>h+=`<th>${m}</th>`);
+  h+='</tr></thead><tbody>';
+  BAU_DATA.gantt.forEach(row=>{
+    if(row.section){h+=`<tr class="gantt-section"><td colspan="${MONTHS.length+1}">${row.section}</td></tr>`;return;}
+    h+=`<tr><td>${row.l}</td>`;
+    for(let i=0;i<MONTHS.length;i++)h+=i>=row.s&&i<=row.e?`<td class="gantt-cell"><div class="gantt-bar" style="background:${row.c}"></div></td>`:`<td class="gantt-cell"></td>`;
+    h+='</tr>';
+  });
+  document.getElementById('gantt-wrap-inner').innerHTML=leg+'<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="gantt-table">'+h+'</tbody></table></div>';
+}
+
+function renderTodos(){
+  const todos=getTodos();
+  let tot=0,don=0,h='';
+  todos.forEach((ph,pi)=>{
+    let pd=0;ph.items.forEach((_,ii)=>{tot++;if(S.checks[`${pi}-${ii}`]){don++;pd++;}});
+    h+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px"><span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${ph.phase}</span><button style="padding:5px 10px;font-size:11px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer" onclick="openTodoModal(${pi},null)">+ Aufgabe</button></div>`;
+    ph.items.forEach((item,ii)=>{
+      const key=`${pi}-${ii}`,isDone=!!S.checks[key];
+      const p=PRIO[item.p]||PRIO.m;
+      h+=`<div style="display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)">
+        <div class="todo-check${isDone?' done':''}" onclick="togTodo('${key}')"></div>
+        <div style="flex:1;cursor:pointer" onclick="togTodo('${key}')">
+          <div style="font-size:14px;font-weight:500;line-height:1.4${isDone?';text-decoration:line-through;color:var(--small)':''}">${item.t}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">${item.s}</div>
+        </div>
+        <span class="badge ${p.cls}" style="flex-shrink:0;margin-top:2px">${p.l}</span>
+        <button style="font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:2px 4px;flex-shrink:0" onclick="openTodoModal(${pi},${ii})">✏️</button>
+      </div>`;
+    });
+  });
+  document.getElementById('todos-container').innerHTML=h;
+  document.getElementById('progress-text').textContent=`${don} / ${tot} erledigt`;
+  document.getElementById('progress-fill').style.width=tot?Math.round(don/tot*100)+'%':'0%';
+}
+function togTodo(k){S.checks[k]=!S.checks[k];saveS();renderTodos();}
+
+function openTodoModal(pi,ii){
+  eTodoPI=pi;eTodoII=ii;
+  const isNew=ii===null;
+  document.getElementById('todo-modal-title').textContent=isNew?'Neue Aufgabe':'Aufgabe bearbeiten';
+  document.getElementById('tm-del').style.display=isNew?'none':'block';
+  if(isNew){document.getElementById('tm-title').value='';document.getElementById('tm-sub').value='';document.getElementById('tm-prio').value='m';}
+  else{const item=getTodos()[pi].items[ii];document.getElementById('tm-title').value=item.t;document.getElementById('tm-sub').value=item.s;document.getElementById('tm-prio').value=item.p;}
+  document.getElementById('todo-modal').classList.add('open');
+}
+function saveTodo(){
+  const t=document.getElementById('tm-title').value.trim();if(!t){alert('Titel eingeben');return;}
+  if(!S.todosEdited)S.todosEdited=JSON.parse(JSON.stringify(BAU_DATA.todos));
+  const item={t,s:document.getElementById('tm-sub').value.trim(),p:document.getElementById('tm-prio').value};
+  if(eTodoII===null)S.todosEdited[eTodoPI].items.push(item);
+  else S.todosEdited[eTodoPI].items[eTodoII]=item;
+  saveS();closeModals();renderTodos();
+}
+function deleteTodo(){
+  if(!confirm('Löschen?'))return;
+  if(!S.todosEdited)S.todosEdited=JSON.parse(JSON.stringify(BAU_DATA.todos));
+  S.todosEdited[eTodoPI].items.splice(eTodoII,1);
+  saveS();closeModals();renderTodos();
+}
+
+function renderKosten(){
+  const K=getKosten();let sv=0,sb=0,sf=0,h='';
+  K.forEach((k,i)=>{
+    sv+=k.von;sb+=k.bis;sf+=(k.foerd||0);
+    const tc=k.t==='g'?'badge-blue':k.t==='e'?'badge-green':'badge-grey';
+    const tl=k.t==='g'?'Gewerk':k.t==='e'?'EL':'Sonst.';
+    h+=`<div class="kosten-row">
+      <div class="kosten-left"><div class="kosten-name">${k.n} <span class="badge ${tc}" style="font-size:10px">${tl}</span></div>${k.note?`<div class="kosten-note">${k.note}</div>`:''}</div>
+      <div class="kosten-right">
+        <div class="kosten-amount"><div class="kosten-von-bis">${k.von.toLocaleString('de')}–${k.bis.toLocaleString('de')} €</div>${k.foerd?`<div class="kosten-foerd">−${k.foerd.toLocaleString('de')} € Förd.</div>`:''}</div>
+        <button class="kosten-edit-btn" onclick="openKostenModal(${i})">✏️</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('kosten-list').innerHTML=h;
+  const mid=Math.round((sv+sb)/2);
+  document.getElementById('kosten-total').innerHTML=`
+    <div class="row"><span>Minimum</span><span>${sv.toLocaleString('de')} €</span></div>
+    <div class="row"><span>Maximum</span><span>${sb.toLocaleString('de')} €</span></div>
+    <div class="row"><span class="green">Förderung BAFA+KfW</span><span class="green">−43.300 €</span></div>
+    <div class="row main"><span>Eigenanteil (realist.)</span><span>${(mid-43300).toLocaleString('de')} €</span></div>`;
+}
+function openKostenModal(i){
+  eKostenI=i;const isNew=i===null;
+  document.getElementById('kosten-modal-title').textContent=isNew?'Neue Position':'Position bearbeiten';
+  document.getElementById('km-del').style.display=isNew?'none':'block';
+  if(isNew){['km-name','km-note'].forEach(id=>document.getElementById(id).value='');document.getElementById('km-von').value='';document.getElementById('km-bis').value='';document.getElementById('km-foerd').value='0';document.getElementById('km-typ').value='g';}
+  else{const k=getKosten()[i];document.getElementById('km-name').value=k.n;document.getElementById('km-von').value=k.von;document.getElementById('km-bis').value=k.bis;document.getElementById('km-foerd').value=k.foerd||0;document.getElementById('km-typ').value=k.t;document.getElementById('km-note').value=k.note||'';}
+  document.getElementById('kosten-modal').classList.add('open');
+}
+function saveKosten(){
+  const n=document.getElementById('km-name').value.trim();if(!n){alert('Name eingeben');return;}
+  if(!S.kostenEdited)S.kostenEdited=JSON.parse(JSON.stringify(BAU_DATA.kosten));
+  const item={n,von:parseFloat(document.getElementById('km-von').value)||0,bis:parseFloat(document.getElementById('km-bis').value)||0,foerd:parseFloat(document.getElementById('km-foerd').value)||0,t:document.getElementById('km-typ').value,note:document.getElementById('km-note').value.trim()};
+  if(eKostenI===null)S.kostenEdited.push(item);else S.kostenEdited[eKostenI]=item;
+  saveS();closeModals();renderKosten();
+}
+function deleteKosten(){
+  if(!confirm('Löschen?'))return;
+  if(!S.kostenEdited)S.kostenEdited=JSON.parse(JSON.stringify(BAU_DATA.kosten));
+  S.kostenEdited.splice(eKostenI,1);
+  saveS();closeModals();renderKosten();
+}
+
+function renderAngebote(){
+  let h='';
+  BAU_DATA.gewerke.forEach(gw=>{
+    const liste=S.angebote[gw.id]||[];
+    const best=liste.find(a=>a.status==='beauftragt');
+    const over=best&&best.betrag>gw.budget;
+    h+=`<div class="angebot-block"><div class="angebot-gewerk"><span>${gw.n}</span><span style="font-size:12px;color:${over?'#e74c3c':'#6b7280'};font-weight:500">Budget: ${gw.budget.toLocaleString('de')} €${best?' → '+best.betrag.toLocaleString('de')+' €':''}</span></div>`;
+    if(!liste.length)h+=`<p style="font-size:13px;color:#9ca3af;padding:6px 0">Noch kein Angebot</p>`;
+    else [...liste].sort((a,b)=>a.betrag-b.betrag).forEach((a,si)=>{
+      const oi=liste.indexOf(a),isBest=a.status==='beauftragt';
+      const sb=isBest?'<span class="badge badge-green">✓ Beauftragt</span>':a.status==='abgelehnt'?'<span class="badge badge-red">Abgelehnt</span>':'<span class="badge badge-amber">In Prüfung</span>';
+      h+=`<div class="angebot-card${isBest?' best':''}"><div style="font-size:20px">📄</div><div class="angebot-info"><div class="angebot-firma">${a.firma}</div><div class="angebot-meta">${a.datum?new Date(a.datum).toLocaleDateString('de-DE'):''}${a.notiz?' · '+a.notiz:''}</div></div><div class="angebot-right"><div class="angebot-price">${Number(a.betrag).toLocaleString('de')} €</div>${sb}<div class="angebot-actions"><button class="btn-small" onclick="cycleAng('${gw.id}',${oi})">Status ▾</button><button class="btn-small" onclick="delAng('${gw.id}',${oi})">✕</button></div></div></div>`;
+    });
+    h+=`<button class="add-btn" onclick="openAngModal('${gw.id}')">+ Angebot hinzufügen</button></div>`;
+  });
+  document.getElementById('angebote-container').innerHTML=h;
+}
+function openAngModal(gwId){eAngGw=gwId;const gw=BAU_DATA.gewerke.find(g=>g.id===gwId);document.getElementById('ang-title').textContent='Angebot: '+gw.n;['af-firma','af-notiz'].forEach(id=>document.getElementById(id).value='');document.getElementById('af-betrag').value='';document.getElementById('af-datum').value=new Date().toISOString().split('T')[0];document.getElementById('af-status').value='offen';document.getElementById('angebot-modal').classList.add('open');}
+function saveAngebot(){const f=document.getElementById('af-firma').value.trim(),b=parseFloat(document.getElementById('af-betrag').value)||0;if(!f||!b){alert('Firma und Betrag angeben');return;}if(!S.angebote[eAngGw])S.angebote[eAngGw]=[];S.angebote[eAngGw].push({firma:f,betrag:b,datum:document.getElementById('af-datum').value,status:document.getElementById('af-status').value,notiz:document.getElementById('af-notiz').value.trim()});saveS();closeModals();renderAngebote();}
+function cycleAng(gwId,i){const opts=['offen','beauftragt','abgelehnt'];S.angebote[gwId][i].status=opts[(opts.indexOf(S.angebote[gwId][i].status)+1)%3];saveS();renderAngebote();}
+function delAng(gwId,i){if(confirm('Löschen?')){S.angebote[gwId].splice(i,1);saveS();renderAngebote();}}
+
+function renderNotizen(){let h='';if(!S.notizen.length)h='<p style="color:#9ca3af;font-size:13px;margin-top:12px">Noch keine Notizen.</p>';else S.notizen.slice().reverse().forEach((n,ri)=>{const i=S.notizen.length-1-ri;h+=`<div class="notiz-card"><div class="notiz-ts">${n.ts}</div><button class="notiz-del" onclick="delN(${i})">×</button><div class="notiz-text">${n.text}</div></div>`;});document.getElementById('notiz-list').innerHTML=h;}
+function addNotiz(){const el=document.getElementById('notiz-input'),t=el.value.trim();if(!t)return;const now=new Date(),ts=now.toLocaleDateString('de-DE')+' '+now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});S.notizen.push({text:t,ts});el.value='';saveS();renderNotizen();}
+function delN(i){S.notizen.splice(i,1);saveS();renderNotizen();}
+
+function closeModals(){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModals();}));
+
+
+// ── AUSGABEN ──────────────────────────────────────────
+let eAusgKat=null, eAusgIdx=null;
+
+function showKTab(tab){
+  document.getElementById('ktab-ist-content').style.display = tab==='ist'?'block':'none';
+  document.getElementById('ktab-plan-content').style.display = tab==='plan'?'block':'none';
+  document.getElementById('ktab-ist').style.background = tab==='ist'?'#1a1a2e':'transparent';
+  document.getElementById('ktab-ist').style.color = tab==='ist'?'#fff':'var(--muted)';
+  document.getElementById('ktab-plan').style.background = tab==='plan'?'#1a1a2e':'transparent';
+  document.getElementById('ktab-plan').style.color = tab==='plan'?'#fff':'var(--muted)';
+}
+
+function getAusgaben(katId){return (S.ausgaben||{})[katId]||[];}
+
+function renderAusgaben(){
+  const kats = BAU_DATA.ausgabenKategorien;
+  // Totals – Gesamtbudget fest: 622.379,30 €
+  const TOTAL_BUDGET = 622379.30;
+  let totalIst=0;
+  kats.forEach(k=>getAusgaben(k.id).forEach(a=>totalIst+=a.betrag));
+  const pct = Math.min(100,Math.round(totalIst/TOTAL_BUDGET*100));
+  const diff = TOTAL_BUDGET - totalIst;
+  const cls = pct<80?'ok':pct<100?'warn':'over';
+  const barColor = pct<80?'#1d9e75':pct<100?'#e8a838':'#e74c3c';
+
+  document.getElementById('ausg-summary').innerHTML=`
+    <div class="ausg-card"><div class="label">Ausgegeben</div><div class="value ${cls}">${totalIst.toLocaleString('de')} €</div><div class="sub">${pct}% des Gesamtbudgets</div></div>
+    <div class="ausg-card"><div class="label">${diff>=0?'Noch verfügbar':'Über Budget!'}</div><div class="value ${diff>=0?(pct<80?'ok':'warn'):'over'}">${diff.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div><div class="sub">Gesamt: 622.379 €</div></div>`;
+  document.getElementById('ausg-bar').style.cssText=`width:${pct}%;background:${barColor}`;
+
+  let h='';
+  kats.forEach(k=>{
+    const belege=getAusgaben(k.id);
+    const ist=belege.reduce((s,a)=>s+a.betrag,0);
+    const pctK=k.budget>0?Math.min(100,Math.round(ist/k.budget*100)):ist>0?100:0;
+    const diffK=k.budget-ist;
+    const clsK=k.budget===0?'':pctK<80?'ok':pctK<100?'warn':'over';
+    const diffTxt=k.budget===0?(ist>0?`${ist.toLocaleString('de')} € ausgegeben`:'Kein Budget geplant'):(diffK>=0?`${diffK.toLocaleString('de')} € verfügbar`:`${Math.abs(diffK).toLocaleString('de')} € über Budget`);
+
+    h+=`<div class="ausg-kat">
+      <div class="ausg-kat-head" onclick="togAusgKat('${k.id}')">
+        <div class="ausg-kat-icon">${k.icon}</div>
+        <div class="ausg-kat-info">
+          <div class="ausg-kat-name">${k.name}</div>
+          <div class="ausg-kat-nums">${k.budget>0?`Budget: ${k.budget.toLocaleString('de')} €`:'Kein Budget'} · ${belege.length} Beleg${belege.length!==1?'e':''}</div>
+        </div>
+        <div class="ausg-kat-right">
+          <div class="ausg-kat-ist">${ist>0?ist.toLocaleString('de')+' €':'–'}</div>
+          <div class="ausg-kat-diff ${clsK}">${diffTxt}</div>
+        </div>
+      </div>
+      <div class="ausg-kat-body" id="ausg-body-${k.id}">`;
+
+    if(belege.length){
+      [...belege].sort((a,b)=>new Date(b.datum)-new Date(a.datum)).forEach((b,bi)=>{
+        const oi=belege.indexOf(b);
+        h+=`<div class="ausg-beleg">
+          <div class="ausg-beleg-info">
+            <div class="ausg-beleg-titel">${b.titel}</div>
+            <div class="ausg-beleg-meta">${b.datum?new Date(b.datum).toLocaleDateString('de-DE'):''}${b.notiz?' · '+b.notiz:''}</div>
+          </div>
+          <div class="ausg-beleg-betrag">${b.betrag.toLocaleString('de')} €</div>
+          <button class="ausg-beleg-del" onclick="openAusgModal('${k.id}',${oi})">✏️</button>
+        </div>`;
+      });
+    } else {
+      h+=`<div style="padding:10px 14px;font-size:13px;color:var(--small)">Noch keine Ausgaben</div>`;
+    }
+    h+=`<button class="ausg-add-btn" onclick="openAusgModal('${k.id}',null)">+ Ausgabe / Rechnung eintragen</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('ausg-list').innerHTML=h;
+}
+
+function togAusgKat(id){
+  const el=document.getElementById('ausg-body-'+id);
+  el.style.display=el.style.display==='block'?'none':'block';
+}
+
+function openAusgModal(katId, idx){
+  eAusgKat=katId; eAusgIdx=idx;
+  const isNew=idx===null;
+  document.getElementById('ausg-modal-title').textContent=isNew?'Ausgabe eintragen':'Ausgabe bearbeiten';
+  document.getElementById('am-del').style.display=isNew?'none':'block';
+  // Populate category dropdown
+  const sel=document.getElementById('am-kat');
+  sel.innerHTML=BAU_DATA.ausgabenKategorien.map(k=>`<option value="${k.id}"${k.id===katId?' selected':''}>${k.icon} ${k.name}</option>`).join('');
+  if(isNew){
+    document.getElementById('am-titel').value='';
+    document.getElementById('am-betrag').value='';
+    document.getElementById('am-datum').value=new Date().toISOString().split('T')[0];
+    document.getElementById('am-notiz').value='';
+  } else {
+    const b=getAusgaben(katId)[idx];
+    document.getElementById('am-titel').value=b.titel;
+    document.getElementById('am-betrag').value=b.betrag;
+    document.getElementById('am-datum').value=b.datum;
+    document.getElementById('am-notiz').value=b.notiz||'';
+    sel.value=katId;
+  }
+  document.getElementById('ausg-modal').classList.add('open');
+}
+
+function saveAusg(){
+  const titel=document.getElementById('am-titel').value.trim();
+  const betrag=parseFloat(document.getElementById('am-betrag').value)||0;
+  if(!titel||!betrag){alert('Bezeichnung und Betrag angeben');return;}
+  if(!S.ausgaben)S.ausgaben={};
+  const newKat=document.getElementById('am-kat').value;
+  const entry={titel,betrag,datum:document.getElementById('am-datum').value,notiz:document.getElementById('am-notiz').value.trim()};
+  // If category changed during edit, remove from old
+  if(eAusgIdx!==null && newKat!==eAusgKat){
+    if(S.ausgaben[eAusgKat])S.ausgaben[eAusgKat].splice(eAusgIdx,1);
+    if(!S.ausgaben[newKat])S.ausgaben[newKat]=[];
+    S.ausgaben[newKat].push(entry);
+  } else {
+    if(!S.ausgaben[newKat])S.ausgaben[newKat]=[];
+    if(eAusgIdx===null)S.ausgaben[newKat].push(entry);
+    else S.ausgaben[newKat][eAusgIdx]=entry;
+  }
+  saveS();closeModals();renderAusgaben();
+}
+
+function deleteAusg(){
+  if(!confirm('Ausgabe löschen?'))return;
+  if(S.ausgaben&&S.ausgaben[eAusgKat])S.ausgaben[eAusgKat].splice(eAusgIdx,1);
+  saveS();closeModals();renderAusgaben();
+}
+
+
+// ── EXPORT / IMPORT ───────────────────────────────────
+function exportDaten(){
+  const exportData = {
+    version: 1,
+    exportiert: new Date().toISOString(),
+    checks: S.checks,
+    todosEdited: S.todosEdited,
+    kostenEdited: S.kostenEdited,
+    angebote: S.angebote,
+    ausgaben: S.ausgaben||{},
+    notizen: S.notizen,
+  };
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const datum = new Date().toLocaleDateString('de-DE').replace(/\./g,'-');
+  a.href = url;
+  a.download = `bau-muehltal-${datum}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importDaten(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.version){alert('Ungültige Datei');return;}
+      if(!confirm(`Daten vom ${new Date(data.exportiert).toLocaleDateString('de-DE')} importieren? Aktuelle Einträge werden überschrieben.`))return;
+      S.checks = data.checks||{};
+      S.todosEdited = data.todosEdited||null;
+      S.kostenEdited = data.kostenEdited||null;
+      S.angebote = data.angebote||{};
+      S.ausgaben = data.ausgaben||{};
+      S.notizen = data.notizen||[];
+      saveS();
+      renderGantt();renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();
+      alert('✓ Import erfolgreich!');
+    }catch(err){
+      alert('Fehler beim Import: '+err.message);
+    }
+    event.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+// Init: alles nach DOM-Load
+// Init
+loadS();
+renderGantt();
+renderTodos();
+renderKosten();
+renderAngebote();
+renderNotizen();
+renderAusgaben();
+// Supabase + Cloud nachladen
+var supaSdk = document.createElement('script');
+supaSdk.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+supaSdk.onload = function(){
+  initSupabase();
+  loadFromCloud().then(function(ok){
+    if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();}
+  });
+};
+document.head.appendChild(supaSdk);
+</script>
+</body>
+</html>
