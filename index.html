@@ -1077,7 +1077,16 @@ function showKTab(tab){
 function getAusgaben(katId){return (S.ausgaben||{})[katId]||[];}
 
 function renderAusgaben(){
-  const kats = BAU_DATA.ausgabenKategorien;
+  // Budget aus Budgetplan übernehmen
+  const plan = getBudget();
+  const planMap = {};
+  plan.forEach(p => { planMap[p.id] = p.betrag||0; });
+
+  // Kategorien mit aktuellem Budget aus Budgetplan
+  const kats = BAU_DATA.ausgabenKategorien.map(k => {
+    const planBetrag = planMap[k.id];
+    return planBetrag !== undefined ? {...k, budget: planBetrag} : k;
+  });
   // Totals – Gesamtbudget fest: 622.379,30 €
   const TOTAL_BUDGET = 622379.30;
   let totalIst=0;
