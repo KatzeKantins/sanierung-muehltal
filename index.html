@@ -163,6 +163,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-cancel{background:#f3f4f6;color:var(--text)}
 .btn-save{background:var(--teal);color:#fff}
 .btn-delete{background:#fee2e2;color:#991b1b}
+/* BUDGET */
+.budget-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.budget-row:last-child{border-bottom:none}
+.budget-name{flex:1;font-size:13px;font-weight:500}
+.budget-note{font-size:11px;color:var(--muted);margin-top:2px}
+.budget-input{width:110px;padding:7px 10px;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:8px;text-align:right;background:#fff;font-family:inherit}
+.budget-input:focus{outline:none;border-color:var(--teal)}
+.budget-foerd{font-size:11px;color:var(--teal);text-align:right;margin-top:2px}
+.budget-del{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:0 2px;flex-shrink:0}
+.budget-section{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:12px 0 4px}
 
 /* AUSGABEN */
 .ausg-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
@@ -406,30 +416,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="ktab-ist-content">
       <div class="ausg-summary" id="ausg-summary"></div>
       <div class="ausg-bar-wrap"><div class="ausg-bar" id="ausg-bar"></div></div>
-      <div class="foerder-hinweis">💡 <strong>Gesamtbudget: 622.379 €</strong> (Kredit + Eigenkapital)<br>Kauf + Nebenkosten: 389.379 € · Sanierung: 233.000 €<br>Förderung ~43.300 € wird nach Fertigstellung erstattet (BAFA + KfW).</div>
+      <div class="foerder-hinweis" id="foerder-hinweis-ist">💡 <strong>Gesamtbudget: 622.379 €</strong> (Kredit + Eigenkapital)<br>Kauf + Nebenkosten: 389.379 € · Sanierung: 233.000 €<br>Förderung wird nach Fertigstellung erstattet (BAFA + KfW) → aktuell geplant: <span id="foerder-ist-sum">43.300 €</span></div>
       <div id="ausg-list"></div>
     </div>
 
     <!-- BUDGETPLAN -->
     <div id="ktab-plan-content" style="display:none">
-      <div class="foerder-box">
-        <h3>💡 Förderung (Uwe Wäckerle, heat consult)</h3>
-        <div class="foerder-row"><span>Dachsanierung (BAFA BEG EM)</span><span>8.000 €</span></div>
-        <div class="foerder-row"><span>Heizung/WP (KfW BEG EM)</span><span>16.500 €</span></div>
-        <div class="foerder-row"><span>Fenster + Tür (BAFA BEG EM)</span><span>8.200 €</span></div>
-        <div class="foerder-row"><span>Lüftung (BAFA BEG EM)</span><span>1.600 €</span></div>
-        <div class="foerder-row"><span>Fassadendämmung (BAFA BEG EM)</span><span>7.000 €</span></div>
-        <div class="foerder-row"><span>Energieberatung</span><span>2.000 €</span></div>
-        <div class="foerder-row"><span>Gesamt Förderung</span><span>43.300 €</span></div>
+      <div class="foerder-box" id="foerder-box-dynamic">
+        <!-- dynamisch befüllt via renderBudget() -->
       </div>
       <div class="card">
         <div class="card-header">
-          <h2>Kostenpositionen</h2>
-          <button style="padding:6px 12px;font-size:12px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer" onclick="openKostenModal(null)">+ Neu</button>
+          <h2>Budgetplan</h2>
+          <button style="padding:6px 12px;font-size:12px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer" onclick="addBudgetPos()">+ Position</button>
         </div>
-        <div class="card-body" style="padding:0 16px"><div id="kosten-list"></div></div>
+        <div class="card-body" style="padding:0 16px"><div id="budget-list"></div></div>
       </div>
-      <div class="kosten-total" id="kosten-total"></div>
+      <div class="kosten-total" id="budget-total"></div>
     </div>
 
   </div>
@@ -1189,6 +1192,109 @@ function deleteAusg(){
 }
 
 
+// ── BUDGETPLAN ───────────────────────────────────────
+const BUDGET_DEFAULT = [
+  {id:'kauf',      n:'Kaufpreis',              betrag:349000,  foerd:0,     note:''},
+  {id:'makler',    n:'Makler',                 betrag:12459,   foerd:0,     note:''},
+  {id:'notar',     n:'Notar & Grundbuch',      betrag:6980,    foerd:0,     note:''},
+  {id:'grunderw',  n:'Grunderwerbsteuer',       betrag:20940,   foerd:0,     note:''},
+  {id:'dach',      n:'Dachsanierung',           betrag:40000,   foerd:8000,  note:'BAFA BEG EM'},
+  {id:'heizung',   n:'Heizung / Wärmepumpe',   betrag:47500,   foerd:16500, note:'KfW BEG EM'},
+  {id:'fenster',   n:'Fenster + Haustür',       betrag:40000,   foerd:8200,  note:'BAFA BEG EM'},
+  {id:'lueftung',  n:'Lüftung',                 betrag:2500,    foerd:1600,  note:'BAFA BEG EM'},
+  {id:'fassade',   n:'Fassadendämmung',         betrag:35000,   foerd:7000,  note:'BAFA BEG EM'},
+  {id:'estrich',   n:'Estrich (Celar)',          betrag:9163,    foerd:0,     note:'Angebot vorliegend'},
+  {id:'sanitaer',  n:'Sanitär & Wasser',        betrag:18000,   foerd:0,     note:''},
+  {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     note:'Eigenleistung'},
+  {id:'verputzen', n:'Verputzen Innen',          betrag:11000,   foerd:0,     note:''},
+  {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     note:''},
+  {id:'asbest',    n:'Asbest-Entsorgung',        betrag:6000,    foerd:0,     note:''},
+  {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     note:''},
+  {id:'kueche',    n:'Küche',                    betrag:15000,   foerd:0,     note:''},
+  {id:'energie',   n:'Energieberatung',          betrag:4500,    foerd:2000,  note:'Eigenanteil 2.500€'},
+  {id:'sonstiges', n:'Sonstiges / Puffer',       betrag:20000,   foerd:0,     note:''},
+];
+
+function getBudget(){return S.budgetPlan||JSON.parse(JSON.stringify(BUDGET_DEFAULT));}
+
+function renderBudget(){
+  const TOTAL = 622379.30;
+  const plan = getBudget();
+  let sumBetrag = 0, sumFoerd = 0;
+
+  const sections = [
+    {label:'🏠 Kauf & Nebenkosten', ids:['kauf','makler','notar','grunderw']},
+    {label:'🏗️ Sanierung – Gewerke', ids:['dach','heizung','fenster','lueftung','fassade','estrich','sanitaer','elektro','verputzen','boden','asbest','container','kueche']},
+    {label:'📋 Sonstiges', ids:['energie','sonstiges']},
+  ];
+
+  let h = '';
+  sections.forEach(sec => {
+    const items = plan.filter(p => sec.ids.includes(p.id));
+    if(!items.length) return;
+    h += `<div class="budget-section">${sec.label}</div>`;
+    items.forEach((item, i) => {
+      const pi = plan.indexOf(item);
+      sumBetrag += item.betrag||0;
+      sumFoerd += item.foerd||0;
+      h += `<div class="budget-row">
+        <div style="flex:1;min-width:0">
+          <div class="budget-name">${item.n}</div>
+          ${item.note?`<div class="budget-note">${item.note}</div>`:''}
+          ${item.foerd?`<div class="budget-foerd">−${item.foerd.toLocaleString('de')} € Förderung</div>`:''}
+        </div>
+        <input class="budget-input" type="number" value="${item.betrag||''}"
+          onchange="updateBudget(${pi}, this.value)"
+          placeholder="0"/>
+        <button class="budget-del" onclick="deleteBudgetPos(${pi})">✕</button>
+      </div>`;
+    });
+  });
+
+  document.getElementById('budget-list').innerHTML = h;
+
+  // Dynamischer Förderblock
+  const foerdItems = plan.filter(p => p.foerd > 0);
+  let foerdHtml = '<h3>💡 Förderung (Uwe Wäckerle, heat consult)</h3>';
+  foerdItems.forEach(p => {
+    foerdHtml += `<div class="foerder-row"><span>${p.n}${p.note?' ('+p.note+')':''}</span><span>${p.foerd.toLocaleString('de')} €</span></div>`;
+  });
+  foerdHtml += `<div class="foerder-row"><span>Gesamt Förderung</span><span>${sumFoerd.toLocaleString('de')} €</span></div>`;
+  const foerdBox = document.getElementById('foerder-box-dynamic');
+  if(foerdBox) foerdBox.innerHTML = foerdHtml;
+  // Update Ist-Kosten Hinweis
+  const foerdIstSum = document.getElementById('foerder-ist-sum');
+  if(foerdIstSum) foerdIstSum.textContent = sumFoerd.toLocaleString('de') + ' €';
+
+  const rest = TOTAL - sumBetrag;
+  const eigenanteil = sumBetrag - sumFoerd;
+  document.getElementById('budget-total').innerHTML = `
+    <div class="row"><span>Geplant gesamt</span><span>${sumBetrag.toLocaleString('de')} €</span></div>
+    <div class="row"><span class="green">Förderung BAFA+KfW</span><span class="green">−${sumFoerd.toLocaleString('de')} €</span></div>
+    <div class="row"><span>Eigenanteil (geplant)</span><span>${eigenanteil.toLocaleString('de')} €</span></div>
+    <div class="row main"><span>${rest>=0?'Noch ungeplant / Puffer':'⚠️ Über Budget!'}</span><span style="color:${rest>=0?'#6ee7b7':'#f87171'}">${Math.abs(rest).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>`;
+}
+
+function updateBudget(idx, val){
+  if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+  S.budgetPlan[idx].betrag = parseFloat(val)||0;
+  saveS(); renderBudget();
+}
+
+function deleteBudgetPos(idx){
+  if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+  S.budgetPlan.splice(idx,1);
+  saveS(); renderBudget();
+}
+
+function addBudgetPos(){
+  const n = prompt('Bezeichnung der neuen Position:');
+  if(!n) return;
+  if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+  S.budgetPlan.push({id:'custom_'+Date.now(), n, betrag:0, foerd:0, note:''});
+  saveS(); renderBudget();
+}
+
 // ── SYNC ─────────────────────────────────────────────
 async function syncCloud(){
   const btn = document.getElementById('sync-btn');
@@ -1196,7 +1302,7 @@ async function syncCloud(){
   btn.style.opacity = '0.6';
   const ok = await loadFromCloud();
   if(ok){
-    renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();
+    renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
     btn.textContent = '✓ Sync';
     setTimeout(()=>{ btn.textContent = '↻ Sync'; btn.style.opacity = '1'; }, 2000);
   } else {
@@ -1243,7 +1349,7 @@ function importDaten(event){
       S.ausgaben = data.ausgaben||{};
       S.notizen = data.notizen||[];
       saveS();
-      renderGantt();renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();
+      renderGantt();renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
       alert('✓ Import erfolgreich!');
     }catch(err){
       alert('Fehler beim Import: '+err.message);
@@ -1268,7 +1374,7 @@ supaSdk.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 supaSdk.onload = function(){
   initSupabase();
   loadFromCloud().then(function(ok){
-    if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();}
+    if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();}
   });
 };
 document.head.appendChild(supaSdk);
