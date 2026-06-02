@@ -967,9 +967,10 @@ function renderKosten(){
       </div>
     </div>`;
   });
-  document.getElementById('kosten-list').innerHTML=h;
+  const kl=document.getElementById('kosten-list'); if(kl) kl.innerHTML=h;
   const mid=Math.round((sv+sb)/2);
-  document.getElementById('kosten-total').innerHTML=`
+  const kt=document.getElementById('kosten-total'); if(!kt) return;
+  kt.innerHTML=`
     <div class="row"><span>Minimum</span><span>${sv.toLocaleString('de')} €</span></div>
     <div class="row"><span>Maximum</span><span>${sb.toLocaleString('de')} €</span></div>
     <div class="row"><span class="green">Förderung BAFA+KfW</span><span class="green">−43.300 €</span></div>
@@ -1086,10 +1087,11 @@ function renderAusgaben(){
   const cls = pct<80?'ok':pct<100?'warn':'over';
   const barColor = pct<80?'#1d9e75':pct<100?'#e8a838':'#e74c3c';
 
-  document.getElementById('ausg-summary').innerHTML=`
+  const as=document.getElementById('ausg-summary'); if(!as) return;
+  as.innerHTML=`
     <div class="ausg-card"><div class="label">Ausgegeben</div><div class="value ${cls}">${totalIst.toLocaleString('de')} €</div><div class="sub">${pct}% des Gesamtbudgets</div></div>
     <div class="ausg-card"><div class="label">${diff>=0?'Noch verfügbar':'Über Budget!'}</div><div class="value ${diff>=0?(pct<80?'ok':'warn'):'over'}">${diff.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div><div class="sub">Gesamt: 622.379 €</div></div>`;
-  document.getElementById('ausg-bar').style.cssText=`width:${pct}%;background:${barColor}`;
+  const ab=document.getElementById('ausg-bar'); if(ab) ab.style.cssText=`width:${pct}%;background:${barColor}`;
 
   let h='';
   kats.forEach(k=>{
@@ -1133,7 +1135,7 @@ function renderAusgaben(){
       </div>
     </div>`;
   });
-  document.getElementById('ausg-list').innerHTML=h;
+  const al=document.getElementById('ausg-list'); if(al) al.innerHTML=h;
 }
 
 function togAusgKat(id){
@@ -1251,7 +1253,8 @@ function renderBudget(){
     });
   });
 
-  document.getElementById('budget-list').innerHTML = h;
+  const bl=document.getElementById('budget-list'); if(!bl) return;
+  bl.innerHTML = h;
 
   // Dynamischer Förderblock
   const foerdItems = plan.filter(p => p.foerd > 0);
@@ -1359,8 +1362,8 @@ function importDaten(event){
   reader.readAsText(file);
 }
 
-// Init: alles nach DOM-Load
 // Init
+initSupabase(); // Versuche sofort - Supabase könnte schon geladen sein
 loadS();
 renderGantt();
 renderTodos();
@@ -1368,16 +1371,27 @@ renderKosten();
 renderAngebote();
 renderNotizen();
 renderAusgaben();
-// Supabase + Cloud nachladen
-var supaSdk = document.createElement('script');
-supaSdk.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-supaSdk.onload = function(){
-  initSupabase();
-  loadFromCloud().then(function(ok){
-    if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();}
-  });
-};
-document.head.appendChild(supaSdk);
+renderBudget();
+// Cloud nachladen
+function tryCloudLoad(){
+  if(supaClient){
+    loadFromCloud().then(function(ok){
+      if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();}
+    });
+  } else {
+    // Supabase noch nicht bereit - SDK nachladen
+    var supaSdk=document.createElement('script');
+    supaSdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    supaSdk.onload=function(){
+      initSupabase();
+      loadFromCloud().then(function(ok){
+        if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();}
+      });
+    };
+    document.head.appendChild(supaSdk);
+  }
+}
+setTimeout(tryCloudLoad, 300);
 </script>
 </body>
 </html>
