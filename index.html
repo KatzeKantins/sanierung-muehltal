@@ -1212,7 +1212,7 @@ const BUDGET_DEFAULT = [
   {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     note:''},
   {id:'asbest',    n:'Asbest-Entsorgung',        betrag:6000,    foerd:0,     note:''},
   {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     note:''},
-  {id:'kueche',    n:'Küche',                    betrag:15000,   foerd:0,     note:''},
+  {id:'kueche',    n:'Küche',                    betrag:3000,    foerd:0,     note:'Gesamtkosten ~15.000 € · davon 12.000 € Zuschuss Eltern'},
   {id:'energie',   n:'Energieberatung',          betrag:4500,    foerd:2000,  note:'Eigenanteil 2.500€'},
   {id:'sonstiges', n:'Sonstiges / Puffer',       betrag:20000,   foerd:0,     note:''},
 ];
@@ -1269,13 +1269,13 @@ function renderBudget(){
   const foerdIstSum = document.getElementById('foerder-ist-sum');
   if(foerdIstSum) foerdIstSum.textContent = sumFoerd.toLocaleString('de') + ' €';
 
-  const rest = TOTAL - sumBetrag;
-  const eigenanteil = sumBetrag - sumFoerd;
-  document.getElementById('budget-total').innerHTML = `
+  const diff = sumBetrag - TOTAL;
+  const isOver = diff > 0;
+  const bt = document.getElementById('budget-total'); if(!bt) return;
+  bt.innerHTML = `
     <div class="row"><span>Geplant gesamt</span><span>${sumBetrag.toLocaleString('de')} €</span></div>
-    <div class="row"><span class="green">Förderung BAFA+KfW</span><span class="green">−${sumFoerd.toLocaleString('de')} €</span></div>
-    <div class="row"><span>Eigenanteil (geplant)</span><span>${eigenanteil.toLocaleString('de')} €</span></div>
-    <div class="row main"><span>${rest>=0?'Noch ungeplant / Puffer':'⚠️ Über Budget!'}</span><span style="color:${rest>=0?'#6ee7b7':'#f87171'}">${Math.abs(rest).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>`;
+    <div class="row"><span>Gesamtbudget (Kredit + EK)</span><span>622.379 €</span></div>
+    <div class="row main"><span>${isOver?'⚠️ Über Budget':'✅ Unter Budget'}</span><span style="color:${isOver?'#f87171':'#6ee7b7'}">${isOver?'+':'−'}${Math.abs(diff).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>`;
 }
 
 function editBudget(idx, el){
