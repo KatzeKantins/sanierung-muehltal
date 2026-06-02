@@ -1416,7 +1416,7 @@ function importDaten(event){
 }
 
 // Init
-initSupabase(); // Versuche sofort - Supabase könnte schon geladen sein
+initSupabase();
 loadS();
 renderGantt();
 renderTodos();
@@ -1425,14 +1425,17 @@ renderAngebote();
 renderNotizen();
 renderAusgaben();
 renderBudget();
-// Cloud nachladen
+
+// Cloud laden - überschreibt lokale Daten mit aktuellen Cloud-Daten
 function tryCloudLoad(){
   if(supaClient){
     loadFromCloud().then(function(ok){
-      if(ok){renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();}
+      if(ok){
+        // Alle Tabs neu rendern mit Cloud-Daten
+        renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+      }
     });
   } else {
-    // Supabase noch nicht bereit - SDK nachladen
     var supaSdk=document.createElement('script');
     supaSdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
     supaSdk.onload=function(){
@@ -1444,7 +1447,11 @@ function tryCloudLoad(){
     document.head.appendChild(supaSdk);
   }
 }
-setTimeout(tryCloudLoad, 300);
+// Sofort versuchen, dann nochmal nach 1s als Fallback
+tryCloudLoad();
+setTimeout(function(){
+  if(!supaClient){ tryCloudLoad(); }
+}, 1000);
 </script>
 </body>
 </html>
