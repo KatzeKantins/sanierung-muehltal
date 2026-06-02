@@ -465,6 +465,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
     <span>Kosten</span>
   </button>
+  <button class="nav-btn" onclick="showPage('angebote',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Gewerke</span>
+  </button>
   <button class="nav-btn" onclick="showPage('notizen',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     <span>Notizen</span>
@@ -730,17 +734,18 @@ kosten: [
 ],
 
 gewerke: [
-  {id:'dach',      n:'Dachsanierung',             budget:40000},
-  {id:'heizung',   n:'Wärmepumpe + Heizung',      budget:47500},
-  {id:'fenster',   n:'Fenster + Haustür',          budget:40000},
-  {id:'lueftung',  n:'Lüftungsanlage',             budget:8000},
-  {id:'fassade',   n:'Fassadendämmung',            budget:35000},
-  {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:9163},
-  {id:'asbest',    n:'Asbest-Entsorgung',          budget:6000},
-  {id:'container', n:'Container Klöppinger',       budget:5000},
-  {id:'sanitaer',  n:'Wasser-/Abwasserleitungen',  budget:8000},
-  {id:'verputzen', n:'Verputzen Innen',             budget:11000},
-  {id:'boden',     n:'Boden verlegen',              budget:11500},
+  {id:'asbest',    n:'Asbest-Entsorgung',          budget:6000,   icon:'☣️',  prio:1},
+  {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:9163,   icon:'🪨',  prio:1},
+  {id:'container', n:'Container Klöppinger',       budget:5000,   icon:'📦',  prio:1},
+  {id:'heizung',   n:'Heizung / Wärmepumpe',       budget:47500,  icon:'🔥',  prio:1},
+  {id:'sanitaer',  n:'Sanitär & Wasser/Abwasser',  budget:18000,  icon:'🚿',  prio:1},
+  {id:'fenster',   n:'Fenster + Haustür',           budget:40000,  icon:'🪟',  prio:1},
+  {id:'dach',      n:'Dachsanierung',               budget:40000,  icon:'🏗️', prio:2},
+  {id:'elektro',   n:'Elektro',                     budget:8000,   icon:'⚡',  prio:2},
+  {id:'fassade',   n:'Fassadendämmung',             budget:35000,  icon:'🧱',  prio:2},
+  {id:'verputzen', n:'Verputzen Innen',              budget:11000,  icon:'🖌️', prio:3},
+  {id:'boden',     n:'Boden verlegen',               budget:11500,  icon:'🟫',  prio:3},
+  {id:'kueche',    n:'Küche',                        budget:15000,  icon:'🍳',  prio:3},
 ],
 
 ausgabenKategorien: [
@@ -782,7 +787,39 @@ const MONTHS=['Jul','Aug','Sep','Okt','Nov','Dez','Jan','Feb','Mär','Apr','Mai'
 const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls:'badge-blue',l:'Info'},e:{cls:'badge-green',l:'Eigenl.'},n:{cls:'badge-purple',l:'Nach Einzug'},nb:{cls:'badge-grey',l:'Nachbarn'}};
 
 // State (user actions only - not content)
-let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'offen',notiz:'Bekotec+RapidoWitt · Gültig bis 23.06.2026!'}],container:[{firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'}]},notizen:[]};
+let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
+  estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'beauftragt',notiz:'Bekotec+RapidoWitt · Gültig bis 23.06.2026!'}],
+  container:[{firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'}],
+  dach:[
+    {firma:'Hagen Schleidt',betrag:0,datum:'2026-05-29',status:'offen',notiz:'Vor-Ort-Termin 29.05. · Warten auf Angebot · ERST nach BAFA beauftragen!'},
+    {firma:'MG Dachdecker – Maksymilian Grzyb',betrag:0,datum:'2026-05-29',status:'offen',notiz:'Vor-Ort-Termin 29.05. · Warten auf Angebot · ERST nach BAFA beauftragen!'},
+    {firma:'MN Flachdach',betrag:0,datum:'2026-06-08',status:'offen',notiz:'Vor-Ort-Termin 08.06. 10:00 Uhr · ERST nach BAFA beauftragen!'},
+  ],
+  fenster:[
+    {firma:'Kühne',betrag:0,datum:'2026-05-27',status:'offen',notiz:'Ausstellung besucht · Angebot Fenster angefragt · Angebot Haustür bereits verfügbar'},
+  ],
+  sanitaer:[
+    {firma:'❓ Name noch eintragen',betrag:0,datum:'2026-06-03',status:'offen',notiz:'Vor-Ort-Termin 03.06. 15:00 Uhr · Patrick kennt Betrieb'},
+    {firma:'Külah Sanitär',betrag:0,datum:'2026-06-12',status:'offen',notiz:'Vor-Ort-Termin 12.06. 12:00 Uhr'},
+    {firma:'Richter Reinheim',betrag:0,datum:'2026-06-01',status:'offen',notiz:'Angefragt · Wartet auf Rückruf'},
+  ],
+  verputzen:[
+    {firma:'Gärtner Bensheim',betrag:0,datum:'2026-06-30',status:'offen',notiz:'Vor-Ort-Termin 30.06. 18:00 Uhr · Empfehlung von Philip'},
+  ],
+},gewerkStatus:{
+  estrich:'beauftragt',
+  container:'angefragt',
+  fenster:'ausstehend',
+  heizung:'angefragt',
+  sanitaer:'termin',
+  asbest:'offen',
+  dach:'ausstehend',
+  verputzen:'termin',
+  boden:'offen',
+  elektro:'offen',
+  fassade:'offen',
+  kueche:'offen',
+},notizen:[]};
 let eTodoPI=null,eTodoII=null,eKostenI=null,eAngGw=null;
 
 function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);S.checks=p.checks||{};S.todosEdited=p.todosEdited||null;S.kostenEdited=p.kostenEdited||null;if(p.angebote)S.angebote=p.angebote;if(p.notizen)S.notizen=p.notizen;}}catch(e){}}
@@ -957,20 +994,54 @@ function deleteKosten(){
   saveS();closeModals();renderKosten();
 }
 
+// Gewerk Status
+const GW_STATUS=[
+  {id:'offen',      l:'⚪ Noch nicht angefragt', cls:'badge-grey'},
+  {id:'angefragt',  l:'📤 Angefragt',             cls:'badge-amber'},
+  {id:'termin',     l:'📅 Termin vereinbart',      cls:'badge-blue'},
+  {id:'ausstehend', l:'📋 Angebot ausstehend',     cls:'badge-purple'},
+  {id:'erhalten',   l:'✅ Angebot erhalten',       cls:'badge-green'},
+  {id:'beauftragt', l:'✍️ Beauftragt',             cls:'badge-green'},
+];
+function getGwStatus(id){return S.gewerkStatus&&S.gewerkStatus[id]||'offen';}
+function cycleGwStatus(id){
+  if(!S.gewerkStatus)S.gewerkStatus={};
+  const cur=getGwStatus(id);
+  const idx=GW_STATUS.findIndex(s=>s.id===cur);
+  S.gewerkStatus[id]=GW_STATUS[(idx+1)%GW_STATUS.length].id;
+  saveS();renderAngebote();
+}
+
 function renderAngebote(){
   let h='';
-  BAU_DATA.gewerke.forEach(gw=>{
-    const liste=S.angebote[gw.id]||[];
-    const best=liste.find(a=>a.status==='beauftragt');
-    const over=best&&best.betrag>gw.budget;
-    h+=`<div class="angebot-block"><div class="angebot-gewerk"><span>${gw.n}</span><span style="font-size:12px;color:${over?'#e74c3c':'#6b7280'};font-weight:500">Budget: ${gw.budget.toLocaleString('de')} €${best?' → '+best.betrag.toLocaleString('de')+' €':''}</span></div>`;
-    if(!liste.length)h+=`<p style="font-size:13px;color:#9ca3af;padding:6px 0">Noch kein Angebot</p>`;
-    else [...liste].sort((a,b)=>a.betrag-b.betrag).forEach((a,si)=>{
-      const oi=liste.indexOf(a),isBest=a.status==='beauftragt';
-      const sb=isBest?'<span class="badge badge-green">✓ Beauftragt</span>':a.status==='abgelehnt'?'<span class="badge badge-red">Abgelehnt</span>':'<span class="badge badge-amber">In Prüfung</span>';
-      h+=`<div class="angebot-card${isBest?' best':''}"><div style="font-size:20px">📄</div><div class="angebot-info"><div class="angebot-firma">${a.firma}</div><div class="angebot-meta">${a.datum?new Date(a.datum).toLocaleDateString('de-DE'):''}${a.notiz?' · '+a.notiz:''}</div></div><div class="angebot-right"><div class="angebot-price">${Number(a.betrag).toLocaleString('de')} €</div>${sb}<div class="angebot-actions"><button class="btn-small" onclick="cycleAng('${gw.id}',${oi})">Status ▾</button><button class="btn-small" onclick="delAng('${gw.id}',${oi})">✕</button></div></div></div>`;
+  // Group by prio
+  const prios=[1,2,3];
+  const prioLabels={1:'🔴 Jetzt anfragen',2:'🟡 Bald anfragen',3:'🟢 Später'};
+  prios.forEach(p=>{
+    const gws=BAU_DATA.gewerke.filter(g=>g.prio===p);
+    if(!gws.length)return;
+    h+=`<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:14px 0 6px">${prioLabels[p]}</div>`;
+    gws.forEach(gw=>{
+      const liste=S.angebote[gw.id]||[];
+      const gwSt=GW_STATUS.find(s=>s.id===getGwStatus(gw.id))||GW_STATUS[0];
+      const best=liste.find(a=>a.status==='beauftragt');
+      const over=best&&best.betrag>gw.budget;
+      h+=`<div class="angebot-block">
+        <div class="angebot-gewerk" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+            <span style="font-size:15px">${gw.icon||''} ${gw.n}</span>
+            <span style="font-size:11px;color:${over?'#e74c3c':'#6b7280'};font-weight:500">Budget: ${gw.budget.toLocaleString('de')} €</span>
+          </div>
+          <button onclick="cycleGwStatus('${gw.id}')" style="padding:5px 12px;font-size:12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-weight:600">${gwSt.l}</button>
+        </div>`;
+      if(!liste.length)h+=`<p style="font-size:13px;color:#9ca3af;padding:6px 14px">Noch kein Angebot eingetragen</p>`;
+      else [...liste].sort((a,b)=>a.betrag-b.betrag).forEach((a,si)=>{
+        const oi=liste.indexOf(a),isBest=a.status==='beauftragt';
+        const sb=isBest?'<span class="badge badge-green">✓ Beauftragt</span>':a.status==='abgelehnt'?'<span class="badge badge-red">Abgelehnt</span>':'<span class="badge badge-amber">In Prüfung</span>';
+        h+=`<div class="angebot-card${isBest?' best':''}"><div style="font-size:20px">📄</div><div class="angebot-info"><div class="angebot-firma">${a.firma}</div><div class="angebot-meta">${a.datum?new Date(a.datum).toLocaleDateString('de-DE'):''}${a.notiz?' · '+a.notiz:''}</div></div><div class="angebot-right"><div class="angebot-price">${Number(a.betrag).toLocaleString('de')} €</div>${sb}<div class="angebot-actions"><button class="btn-small" onclick="cycleAng('${gw.id}',${oi})">Status ▾</button><button class="btn-small" onclick="delAng('${gw.id}',${oi})">✕</button></div></div></div>`;
+      });
+      h+=`<button class="add-btn" onclick="openAngModal('${gw.id}')">+ Angebot eintragen</button></div>`;
     });
-    h+=`<button class="add-btn" onclick="openAngModal('${gw.id}')">+ Angebot hinzufügen</button></div>`;
   });
   document.getElementById('angebote-container').innerHTML=h;
 }
