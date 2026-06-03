@@ -750,7 +750,7 @@ gewerke: [
   {id:'dach',      n:'Dachsanierung',               budget:40000,  icon:'🏗️', prio:2},
   {id:'elektro',   n:'Elektro',                     budget:8000,   icon:'⚡',  prio:2},
   {id:'fassade',   n:'Fassadendämmung',             budget:35000,  icon:'🧱',  prio:2},
-  {id:'verputzen', n:'Verputzen Innen',              budget:11000,  icon:'🖌️', prio:3},
+  {id:'verputzen', n:'Verputzen Innen',              budget:5000,   icon:'🖌️', prio:3},
   {id:'boden',     n:'Boden verlegen',               budget:11500,  icon:'🟫',  prio:3},
   {id:'kueche',    n:'Küche',                        budget:15000,  icon:'🍳',  prio:3},
 ],
@@ -811,7 +811,7 @@ let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
     {firma:'Richter Reinheim',betrag:0,datum:'2026-06-01',status:'offen',notiz:'Angefragt · Wartet auf Rückruf'},
   ],
   verputzen:[
-    {firma:'Gärtner Bensheim',betrag:0,datum:'2026-06-30',status:'offen',notiz:'Vor-Ort-Termin 30.06. 18:00 Uhr · Empfehlung von Philip'},
+    {firma:'Gärtner Bensheim',betrag:0,datum:'2026-06-30',status:'offen',notiz:'Vor-Ort-Termin 30.06. 18:00 Uhr · Empfehlung von Philip · auch Innenputz Schimmelstellen anfragen!'},
   ],
 },gewerkStatus:{
   estrich:'beauftragt',
@@ -1230,7 +1230,7 @@ const BUDGET_DEFAULT = [
   {id:'estrich',   n:'Estrich (Celar)',          betrag:9163,    foerd:0,     note:'Angebot vorliegend'},
   {id:'sanitaer',  n:'Sanitär & Wasser',        betrag:18000,   foerd:0,     note:''},
   {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     note:'Eigenleistung'},
-  {id:'verputzen', n:'Verputzen Innen',          betrag:11000,   foerd:0,     note:''},
+  {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
   {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     note:''},
   {id:'asbest',    n:'Asbest-Entsorgung',        betrag:6000,    foerd:0,     note:''},
   {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     note:''},
