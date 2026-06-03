@@ -1319,7 +1319,7 @@ function editBudget(idx, el){
     if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
     const raw = input.value.replace(/[^0-9,.]/g,'').replace(',','.');
     S.budgetPlan[idx].betrag = parseFloat(raw)||0;
-    saveS(); renderBudget();
+    saveS(); renderBudget(); renderAusgaben();
   }
   input.addEventListener('blur', save);
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){_saved=true;renderBudget();} });
@@ -1344,7 +1344,7 @@ function editFoerd(idx, el){
     if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
     const raw = input.value.replace(/[^0-9,.]/g,'').replace(',','.');
     S.budgetPlan[idx].foerd = parseFloat(raw)||0;
-    saveS(); renderBudget();
+    saveS(); renderBudget(); renderAusgaben();
   }
   input.addEventListener('blur', save);
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){_savedF=true;renderBudget();} });
