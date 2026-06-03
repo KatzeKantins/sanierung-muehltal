@@ -829,13 +829,15 @@ let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
 let eTodoPI=null,eTodoII=null,eKostenI=null,eAngGw=null;
 
 function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);S.checks=p.checks||{};S.todosEdited=p.todosEdited||null;S.kostenEdited=p.kostenEdited||null;if(p.angebote)S.angebote=p.angebote;if(p.notizen)S.notizen=p.notizen;}}catch(e){}}
+var _cloudLoaded = false;
+var saveTimer = null;
 function saveS(){
   try{localStorage.setItem('bau_s',JSON.stringify(S));}catch(e){}
   // Nur in Cloud speichern wenn Cloud bereits geladen oder eigener budgetPlan vorhanden
   // Verhindert dass BUDGET_DEFAULT die Cloud-Daten überschreibt
   if(!_cloudLoaded && !S.budgetPlan) return;
   if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>saveToCloud(), 800);
+  saveTimer = setTimeout(function(){saveToCloud();}, 800);
 }
 
 // ── SUPABASE (Frankfurt) ─────────────────────────────
@@ -1309,14 +1311,17 @@ function editBudget(idx, el){
   el.appendChild(input);
   input.focus();
   input.select();
+  let _saved = false;
   function save(){
+    if(_saved) return;
+    _saved = true;
     if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
     const raw = input.value.replace(/[^0-9,.]/g,'').replace(',','.');
     S.budgetPlan[idx].betrag = parseFloat(raw)||0;
     saveS(); renderBudget();
   }
   input.addEventListener('blur', save);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){renderBudget();} });
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){_saved=true;renderBudget();} });
 }
 
 function editFoerd(idx, el){
@@ -1331,14 +1336,17 @@ function editFoerd(idx, el){
   el.appendChild(input);
   input.focus();
   input.select();
+  let _savedF = false;
   function save(){
+    if(_savedF) return;
+    _savedF = true;
     if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
     const raw = input.value.replace(/[^0-9,.]/g,'').replace(',','.');
     S.budgetPlan[idx].foerd = parseFloat(raw)||0;
     saveS(); renderBudget();
   }
   input.addEventListener('blur', save);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){renderBudget();} });
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){_savedF=true;renderBudget();} });
 }
 
 function updateBudget(idx, val){
