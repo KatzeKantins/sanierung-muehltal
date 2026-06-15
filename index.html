@@ -250,6 +250,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button onclick="document.getElementById('import-file').click()" style="flex:1;padding:11px;border-radius:10px;border:0.5px solid var(--border);background:#f9fafb;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer">⬆ Daten importieren</button>
     </div>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importDaten(event)"/>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <a href="wochenplan.html" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--purple);background:#ede9fe;color:#4c1d95;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;display:block">📅 Detaillierter Wochenplan</a>
+    </div>
     <div style="display:flex;gap:8px;margin-bottom:4px">
       <button id="sync-btn" onclick="syncCloud()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--blue);background:#eff6ff;color:#1e3a8a;font-size:13px;font-weight:600;cursor:pointer">↻ Cloud synchronisieren</button>
     </div>
@@ -795,7 +798,7 @@ const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls
 
 // State (user actions only - not content)
 let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
-  estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'beauftragt',notiz:'Bekotec+RapidoWitt · Gültig bis 23.06.2026!'}],
+  estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'beauftragt',notiz:'Bekotec+RapidoWitt · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'}],
   container:[{firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'}],
   dach:[
     {firma:'Hagen Schleidt',betrag:0,datum:'2026-05-29',status:'offen',notiz:'Vor-Ort-Termin 29.05. · Warten auf Angebot · ERST nach BAFA beauftragen!'},
@@ -803,7 +806,7 @@ let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
     {firma:'MN Flachdach',betrag:0,datum:'2026-06-08',status:'offen',notiz:'Vor-Ort-Termin 08.06. 10:00 Uhr · ERST nach BAFA beauftragen!'},
   ],
   fenster:[
-    {firma:'Kühne',betrag:0,datum:'2026-05-27',status:'offen',notiz:'Ausstellung besucht · Angebot Fenster angefragt · Angebot Haustür bereits verfügbar'},
+    {firma:'Kühne',betrag:0,datum:'2026-05-27',status:'offen',notiz:'Ausstellung besucht · Angebot Fenster angefragt · Angebot Haustür bereits verfügbar · ⚠️ Laibungsanschlüsse klären: Wer macht Außenputz + Fensterbank? Explizit abfragen!'},
   ],
   sanitaer:[
     {firma:'❓ Name noch eintragen',betrag:0,datum:'2026-06-03',status:'offen',notiz:'Vor-Ort-Termin 03.06. 15:00 Uhr · Patrick kennt Betrieb'},
