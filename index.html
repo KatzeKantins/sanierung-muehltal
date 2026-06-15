@@ -612,6 +612,7 @@ todos: [
     {t:'Mit WEG-Nachbarn sprechen',                 s:'Umbauplanung, Gerüst/Lärm abstimmen',                        p:'nb'},
     {t:'Statiker beauftragen',                      s:'Balkon-Blumenkasten + Wanddurchbruch Küche/Esszimmer',       p:'h'},
     {t:'❓ Balkon teilweise abstemmen – Baugenehmigung?', s:'Klären ob Rückbau genehmigungspflichtig · Gemeinde Mühltal oder Statiker fragen', p:'h'},
+    {t:'Stammumfang Baum vor Hauswand messen',          s:'Bei nächstem Besuch · ab 80cm Umfang (ca. 25cm Durchmesser) Fällgenehmigung Gemeinde Mühltal nötig!', p:'h'},
     {t:'Uwe Wäckerle beauftragen (iSFP)',           s:'heat consult · +49 151 54073185',                            p:'h'},
     {t:'Celar Estrichbau beauftragen',              s:'Angebot läuft 23.06.2026 ab!',                               p:'h'},
     {t:'Asbest-Firma beauftragen',                  s:'Vorlaufzeit 4–6 Wochen · muss 17.–28. Juli arbeiten',        p:'h'},
@@ -725,7 +726,7 @@ kosten: [
   {n:'Fenster + Haustür (4-fach)',   von:39000, bis:41000, foerd:8200,  t:'g', note:'Okt/Nov 26 · OG bodentief'},
   {n:'Lüftung',                      von:2000,  bis:2500,  foerd:1600,  t:'g', note:'❓ Entscheidung offen: a) Lunos ego Bad OG (2 Geräte, ~2.000€) b) 6x Bosch V2000D alle Räume OG + Shelly (~2.500€)'},
   {n:'Fassadendämmung',              von:35000, bis:35000, foerd:7000,  t:'g', note:'EPS 140–160mm WDVS'},
-  {n:'Estrich – Celar Estrichbau',   von:9163,  bis:9163,  foerd:0,     t:'g', note:'Angebot bis 23.06.2026'},
+  {n:'Estrich – Celar Estrichbau',   von:6300,  bis:9163,  foerd:0,     t:'g', note:'Angebot 9.163€ brutto · 💡 Option EL Platten: Bekotec+Ethafoam selbst verlegen → Celar ca. 6.300€ brutto · Ersparnis ~2.900€ · Celar fragen!'},
   {n:'FBH Rohre verlegen',           von:5000,  bis:6000,  foerd:0,     t:'g', note:'GWI-Freund'},
   {n:'Wasser-/Abwasserleitungen',    von:6000,  bis:10000, foerd:0,     t:'g', note:'Gewerk + GWI-Freund'},
   {n:'Verputzen Innen',              von:8000,  bis:14000, foerd:0,     t:'g', note:'~135m²'},
@@ -750,7 +751,7 @@ gewerke: [
   {id:'heizung',   n:'Heizung / Wärmepumpe',       budget:47500,  icon:'🔥',  prio:1},
   {id:'sanitaer',  n:'Sanitär & Wasser/Abwasser',  budget:18000,  icon:'🚿',  prio:1},
   {id:'fenster',   n:'Fenster + Haustür',           budget:40000,  icon:'🪟',  prio:1},
-  {id:'dach',      n:'Dachsanierung',               budget:40000,  icon:'🏗️', prio:2},
+  {id:'dach',      n:'Dachsanierung',               budget:55000,  icon:'🏗️', prio:2},
   {id:'elektro',   n:'Elektro',                     budget:8000,   icon:'⚡',  prio:2},
   {id:'fassade',   n:'Fassadendämmung',             budget:35000,  icon:'🧱',  prio:2},
   {id:'verputzen', n:'Verputzen Innen',              budget:5000,   icon:'🖌️', prio:3},
@@ -799,22 +800,29 @@ const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls
 // State (user actions only - not content)
 let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
   estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'beauftragt',notiz:'Bekotec+RapidoWitt · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'}],
-  container:[{firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'}],
+  container:[
+    {firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'},
+    {firma:'Windeck Containerdienst (Nieder-Ramstadt)',betrag:2490,datum:'2026-06-15',status:'offen',notiz:'80€ stellen+abfahren netto · Bauschutt 70€/m³ · Deponieschutt (Estrich/Fliesen/Putz >30%) 150€/m³ · max. 5m³ Container · ⚠️ Zufahrt prüfen: LKW braucht 2,5m Breite, sonst nur 2,5m³ Container möglich · 14 Tage mietfrei, dann 15€/Woche · Vorlaufzeit 1-2 Tage · Schuttrutschen 1€/m/Tag · Rechnungen zeitnah bezahlen sonst kein Tausch! · Kontakt: Katerina Bachmann-Fotiadis · 0160-98731731'},
+  ],
   dach:[
     {firma:'Hagen Schleidt',betrag:0,datum:'2026-05-29',status:'offen',notiz:'Vor-Ort-Termin 29.05. · Warten auf Angebot · ERST nach BAFA beauftragen!'},
-    {firma:'MG Dachdecker – Maksymilian Grzyb',betrag:0,datum:'2026-05-29',status:'offen',notiz:'Vor-Ort-Termin 29.05. · Warten auf Angebot · ERST nach BAFA beauftragen!'},
+    {firma:'MG Dachdeckerei – Maksymilian Grzyb',betrag:42711,datum:'2026-05-29',status:'offen',notiz:'Angebot vorliegend · 35.891€ netto / 42.711€ brutto · EPS 035 Gefälledämmung 150mm (U≤0,14) · Bauder Abdichtung · Attikaabdeckung · 1 Lichtkuppel fest Velux · ERST nach BAFA beauftragen! · ⚠️ Gerüst NICHT enthalten – separat anfragen!'},
     {firma:'MN Flachdach',betrag:0,datum:'2026-06-08',status:'offen',notiz:'Vor-Ort-Termin 08.06. 10:00 Uhr · ERST nach BAFA beauftragen!'},
   ],
   fenster:[
-    {firma:'Kühne',betrag:0,datum:'2026-05-27',status:'offen',notiz:'Ausstellung besucht · Angebot Fenster angefragt · Angebot Haustür bereits verfügbar · ⚠️ Laibungsanschlüsse klären: Wer macht Außenputz + Fensterbank? Explizit abfragen!'},
+    {firma:'Kühne',betrag:0,datum:'2026-05-27',status:'offen',notiz:'Ausstellung besucht · Angebot angefragt · ⚠️ Laibungsanschlüsse klären · Offen: Variante A/B/C, RAL-Farbe, Griffmulde, Shelly-Kompatibilität Warema'},
+    {firma:'Kolmer Erbach',betrag:41826,datum:'2026-06-15',status:'offen',notiz:'Angebot 4610364 · 35.148€ netto / 41.826€ brutto · FeBa NovoLife 76mm · Ug 0,6 · Uw 0,88 · ⚠️ Klären: Folienfarbe schriftlich fixieren (FO-FO = RAL 7044?), Pos.23 Tippfehler OG-04, Schwellenhöhe HST in mm, Montage 6.450€ aufschlüsseln, Haustür Ud 0,99 BAFA-kritisch · Varianten: Zip→Rollladen spart ~1.900€ netto (Südseite!), HST→Balkontür spart ~2.750€, Holz/Alu Aufpreis +10.246€ (nur ganz oder gar nicht!)'},
   ],
   sanitaer:[
-    {firma:'❓ Name noch eintragen',betrag:0,datum:'2026-06-03',status:'offen',notiz:'Vor-Ort-Termin 03.06. 15:00 Uhr · Patrick kennt Betrieb'},
+    {firma:'Marco Erdmann (GWI)',betrag:0,datum:'2026-06-03',status:'offen',notiz:'Vor-Ort-Termin 03.06. 15:00 Uhr · Patricks Bekannter · Sa 22.06. Elements Badausstellung gemeinsam besuchen'},
     {firma:'Külah Sanitär',betrag:0,datum:'2026-06-12',status:'offen',notiz:'Vor-Ort-Termin 12.06. 12:00 Uhr'},
     {firma:'Richter Reinheim',betrag:0,datum:'2026-06-01',status:'offen',notiz:'Angefragt · Wartet auf Rückruf'},
   ],
   verputzen:[
     {firma:'Gärtner Bensheim',betrag:0,datum:'2026-06-30',status:'offen',notiz:'Vor-Ort-Termin 30.06. 18:00 Uhr · Empfehlung von Philip · auch Innenputz Schimmelstellen anfragen!'},
+  ],
+  asbest:[
+    {firma:'Asbestsanierung-RheinMain (Marcus Hiermes)',betrag:3883,datum:'2026-05-01',status:'offen',notiz:'Angebot AN20260109 · 3.263€ netto / 3.883€ brutto · Floor-Flex 29m² + Kleber · Hiermes-Verfahren BT17 · Start 20.07. 7:30 Uhr · 3 Tage · ⚠️ Anruf ausstehend: Schlüsselübergabe-Infos + Stromverteiler Keller + Luftmessung am Ende klären!'},
   ],
 },gewerkStatus:{
   estrich:'beauftragt',
@@ -1225,7 +1233,7 @@ const BUDGET_DEFAULT = [
   {id:'makler',    n:'Makler',                 betrag:12459,   foerd:0,     note:''},
   {id:'notar',     n:'Notar & Grundbuch',      betrag:6980,    foerd:0,     note:''},
   {id:'grunderw',  n:'Grunderwerbsteuer',       betrag:20940,   foerd:0,     note:''},
-  {id:'dach',      n:'Dachsanierung',           betrag:40000,   foerd:8000,  note:'BAFA BEG EM'},
+  {id:'dach',      n:'Dachsanierung',           betrag:55000,   foerd:8000,  note:'BAFA BEG EM'},
   {id:'heizung',   n:'Heizung / Wärmepumpe',   betrag:47500,   foerd:16500, note:'KfW BEG EM'},
   {id:'fenster',   n:'Fenster + Haustür',       betrag:40000,   foerd:8200,  note:'BAFA BEG EM'},
   {id:'lueftung',  n:'Lüftung',                 betrag:2500,    foerd:1600,  note:'BAFA BEG EM'},
@@ -1296,11 +1304,18 @@ function renderBudget(){
 
   const diff = sumBetrag - TOTAL;
   const isOver = diff > 0;
+  const nachFoerd = sumBetrag - sumFoerd;
+  const diffNachFoerd = nachFoerd - TOTAL;
+  const isOverNachFoerd = diffNachFoerd > 0;
   const bt = document.getElementById('budget-total'); if(!bt) return;
   bt.innerHTML = `
     <div class="row"><span>Geplant gesamt</span><span>${sumBetrag.toLocaleString('de')} €</span></div>
     <div class="row"><span>Gesamtbudget (Kredit + EK)</span><span>622.379 €</span></div>
-    <div class="row main"><span>${isOver?'⚠️ Über Budget':'✅ Unter Budget'}</span><span style="color:${isOver?'#f87171':'#6ee7b7'}">${isOver?'+':'−'}${Math.abs(diff).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>`;
+    <div class="row main"><span>${isOver?'⚠️ Über Budget':'✅ Unter Budget'}</span><span style="color:${isOver?'#f87171':'#6ee7b7'}">${isOver?'+':'−'}${Math.abs(diff).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>
+    <div style="border-top:1px dashed var(--border);margin:10px 0"></div>
+    <div class="row"><span style="color:var(--teal)">− Förderung BAFA+KfW</span><span style="color:var(--teal)">−${sumFoerd.toLocaleString('de')} €</span></div>
+    <div class="row"><span>Eigenanteil nach Förderung</span><span>${nachFoerd.toLocaleString('de')} €</span></div>
+    <div class="row main"><span>${isOverNachFoerd?'⚠️ Über Budget (nach Förderung)':'✅ Unter Budget (nach Förderung)'}</span><span style="color:${isOverNachFoerd?'#f87171':'#6ee7b7'}">${isOverNachFoerd?'+':'−'}${Math.abs(diffNachFoerd).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>`;
 }
 
 function editBudget(idx, el){
