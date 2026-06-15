@@ -147,44 +147,55 @@ const DEFAULT_PLAN=[
       {id:'t8',title:'Sa 09. Aug: Estrichabbruch OG (4–5 Helfer)',sub:'',color:'#534ab7'},
     ]},
   ]},
-  {id:'m2',label:'September 2026 — Patrick Vollzeit (Woche 1–4)',weeks:[
+  {id:'m2',label:'September 2026 — Patrick Vollzeit · Fokus: Rohrnetz + Elektro-Vorbereitung',weeks:[
     {id:'w4',label:'KW 36',dates:'1.–5. Sep',tasks:[
-      {id:'t9',title:'Gasleitung trennen (konzessionierter Installateur)',sub:'Muss als erstes passieren',color:'#0f3460'},
-      {id:'t10',title:'Altes Rohrnetz raus (mit GWI-Freund)',sub:'Therme, Heizkörper, alte Leitungen → Schrotthändler',color:'#1d9e75'},
+      {id:'t8b',title:'Baum fällen vor Hauswand',sub:'⚠️ Vor Fundament WP — Baum steht im Weg · Baumfäller beauftragen oder selbst mit Genehmigung · Wurzeln entfernen!',color:'#e74c3c'},
+      {id:'t9',title:'Gasleitung trennen (konzessionierter Installateur)',sub:'⚠️ Muss als allererstes passieren — alles andere wartet darauf',color:'#e74c3c'},
+      {id:'t10',title:'Alte Heizkörper abhängen',sub:'Absperrventile zudrehen · Wasser auffangen · kein Fachmann nötig',color:'#1d9e75'},
+      {id:'t10b',title:'Alte Therme / Heizkessel entfernen',sub:'Erst nach Gastrennung · schwer → Helfer nötig',color:'#1d9e75'},
     ]},
     {id:'w5',label:'KW 37',dates:'8.–12. Sep',tasks:[
-      {id:'t11',title:'Elektro: Leerrohre im Boden verlegen',sub:'Vor Estrich — jetzt der richtige Zeitpunkt!',color:'#1d9e75'},
-      {id:'t12',title:'Elektroschlitze Wände stemmen EG',sub:'',color:'#1d9e75'},
-      {id:'t13',title:'Fundament Wärmepumpe vorbereiten',sub:'Erst nach WP-Angebot (Größe/Gewicht klären)',color:'#e8a838'},
+      {id:'t11',title:'Altes Rohrnetz raus (Heizkörperleitungen)',sub:'Mit GWI-Freund am Wochenende · Kupfer/Stahl → Schrotthändler',color:'#1d9e75'},
+      {id:'t11b',title:'Alte Wasserleitungen raus',sub:'Mit GWI-Freund · Puffer: kann auch KW 38',color:'#1d9e75'},
+      {id:'t11c',title:'Haus außen freigraben (50cm rundum)',sub:'Für WDVS Dämmung · Eigenleistung · Schaufel + Schubkarre · Material in Container · nicht zeitkritisch aber besser jetzt',color:'#1d9e75'},
+      {id:'t11d',title:'Hausanschluss Abwasser freigraben (2m tief)',sub:'Für zukünftige Dachentwässerung + evtl. Sanitärbetrieb braucht Zugang · mit Sanitär abstimmen ob Timing passt',color:'#e8a838'},
+      {id:'t12',title:'Materialien bestellen: Elektro',sub:'Kabel, Leerrohre, Dosen, Schalterdosen — VOR dem Stemmen bestellen!',color:'#e8a838'},
     ]},
-    {id:'w6',label:'KW 38',dates:'15.–19. Sep',tasks:[
-      {id:'t14',title:'Elektroschlitze OG + Kabel ziehen EG',sub:'',color:'#1d9e75'},
-      {id:'t15',title:'Trockenbau Vorwände aufstellen (Ständerwerk)',sub:'Noch NICHT schließen — Sanitär muss dahinter!',color:'#1d9e75'},
+    {id:'w6',label:'KW 38–39',dates:'15.–26. Sep',tasks:[
+      {id:'t13',title:'Elektroschlitze stemmen EG',sub:'Schaltplan vorher mit Elektriker abstimmen! · für Anfänger 4–5 Tage',color:'#1d9e75'},
+      {id:'t13b',title:'Leerrohre im Boden verlegen EG',sub:'Vor Estrich · einfach, 1–2 Tage',color:'#1d9e75'},
+      {id:'t14',title:'Fundament Wärmepumpe vorbereiten + gießen',sub:'Erst nach WP-Angebot · 4 Wochen aushärten',color:'#e8a838'},
     ]},
-    {id:'w7',label:'KW 39–40',dates:'22. Sep–3. Okt',tasks:[
-      {id:'t16',title:'Kabel ziehen OG · Dosen setzen',sub:'',color:'#1d9e75'},
-      {id:'t17',title:'Fundament WP gießen (4 Wochen aushärten)',sub:'',color:'#1d9e75'},
-      {id:'t18',title:'System klären: Bekotec-Noppen vs. Tackersystem',sub:'Celar + Heizungsbauer gemeinsam abstimmen!',color:'#e8a838'},
+    {id:'w7',label:'KW 40',dates:'29. Sep–3. Okt',tasks:[
+      {id:'t15',title:'Elektroschlitze stemmen OG',sub:'Puffer-Woche — September hat genug Raum für Verzögerungen',color:'#1d9e75'},
+      {id:'t15b',title:'Trockenbau Ständerwerk aufstellen',sub:'Noch NICHT schließen — Sanitär muss dahinter! · Puffer: kann auch Okt',color:'#1d9e75'},
+      {id:'t16',title:'⚠️ Muss fertig sein vor Sanitärbetrieb: Rohrnetz raus + Wände offen',sub:'Sanitär kann nicht anfangen wenn alte Leitungen noch drin sind',color:'#e74c3c'},
     ]},
   ]},
-  {id:'m3',label:'Oktober 2026 — Sanitär/Heizung + Patrick Vollzeit (Woche 5–8)',weeks:[
-    {id:'w8',label:'KW 41',dates:'6.–10. Okt',tasks:[
-      {id:'t19',title:'Sanitärbetrieb: Abwasserleitungen neu',sub:'Hauptstränge zuerst',color:'#0f3460'},
-      {id:'t20',title:'Sanitärbetrieb: Wasser-/Heizungsleitungen',sub:'',color:'#0f3460'},
+  {id:'m3',label:'Oktober/November 2026 — Sanitär/Heizung + Patrick parallel',weeks:[
+    {id:'w8',label:'KW 41–42',dates:'6.–17. Okt',tasks:[
+      {id:'t19',title:'Sanitärbetrieb: Abwasser + Wasserleitungen neu',sub:'⚠️ Patrick darf hier nicht im Weg sein — anderen Bereich arbeiten',color:'#0f3460'},
+      {id:'t19b',title:'Sanitärbetrieb: Heizungsverteiler setzen',sub:'Keller muss zugänglich sein',color:'#0f3460'},
+      {id:'t20',title:'Patrick parallel: Kabel ziehen EG + Dosen setzen',sub:'Anderen Bereich als Sanitär · kein Konflikt möglich',color:'#1d9e75'},
+      {id:'t20b',title:'Patrick parallel: Elektroschlitze OG falls noch offen',sub:'Puffer aus September',color:'#1d9e75'},
     ]},
-    {id:'w9',label:'KW 42',dates:'13.–17. Okt',tasks:[
-      {id:'t21',title:'Sanitärbetrieb: Heizungsverteiler + Hauptleitungen',sub:'',color:'#0f3460'},
-      {id:'t22',title:'FBH Dämmplatten + Rohre verlegen',sub:'Nach Systementscheidung Bekotec/Tackern',color:'#1d9e75'},
+    {id:'w9',label:'KW 43',dates:'20.–24. Okt',tasks:[
+      {id:'t20c',title:'Blumenkasten OG entfernen',sub:'⚠️ Muss VOR Fenstereinbau Kühne (KW 45) fertig sein · Statiker prüfen ob Verankerung tragend',color:'#e74c3c'},
+      {id:'t21',title:'Sanitärbetrieb fertig mit Rohverlegung',sub:'⚠️ Muss fertig sein bevor Vorwände geschlossen werden',color:'#e74c3c'},
+      {id:'t21b',title:'Patrick: Trockenbau Ständerwerk vervollständigen',sub:'Falls noch nicht fertig aus September',color:'#1d9e75'},
+      {id:'t22',title:'Patrick: FBH Bekotec-Platten verlegen',sub:'Ethafoam + Bekotec-EN 23F · ~120m² · für Anfänger 3–4 Tage',color:'#1d9e75'},
     ]},
-    {id:'w10',label:'KW 43',dates:'20.–24. Okt',tasks:[
-      {id:'t23',title:'Vorwände schließen (Gipskarton)',sub:'Erst jetzt — Sanitär hinter Wänden fertig',color:'#1d9e75'},
-      {id:'t24',title:'Rohrdämmung Keller',sub:'',color:'#1d9e75'},
-      {id:'t25',title:'Randdämmstreifen kleben (vor Estrich — Pflicht!)',sub:'Rund um jeden Raum',color:'#e74c3c'},
+    {id:'w10',label:'KW 44',dates:'27.–31. Okt',tasks:[
+      {id:'t23',title:'Patrick: FBH Rohre verlegen',sub:'Nach Plattenverlegung · Celar oder Heizungsbauer gibt Einweisung · 2–3 Tage',color:'#1d9e75'},
+      {id:'t24',title:'Patrick: Vorwände schließen (Gipskarton)',sub:'Erst NACH Sanitär hinter Wänden · für Anfänger 3–4 Tage',color:'#1d9e75'},
+      {id:'t25',title:'Randdämmstreifen kleben (Pflicht vor Estrich!)',sub:'Rund um jeden Raum · einfach, 1 Tag',color:'#e74c3c'},
     ]},
-    {id:'w11',label:'KW 44',dates:'27.–31. Okt',tasks:[
-      {id:'t26',title:'Sanitärbetrieb: Unterputzarmaturen',sub:'',color:'#0f3460'},
-      {id:'t27',title:'Druckprüfung Wasserleitungen',sub:'Vor Einputzen — Pflicht!',color:'#e74c3c'},
-      {id:'t28',title:'Elektro abschließen · für Estrich vorbereiten',sub:'',color:'#1d9e75'},
+    {id:'w11',label:'KW 45–46',dates:'3.–14. Nov',tasks:[
+      {id:'t26',title:'Sanitärbetrieb: Unterputzarmaturen einbauen',sub:'Erst wenn Vorwände geschlossen',color:'#0f3460'},
+      {id:'t27',title:'Druckprüfung Wasserleitungen',sub:'⚠️ Vor Einputzen — Pflicht! Kein Estrich ohne Druckprüfung!',color:'#e74c3c'},
+      {id:'t28',title:'Patrick: Rohrdämmung Keller',sub:'Einfach · 1–2 Tage',color:'#1d9e75'},
+      {id:'t28b',title:'Patrick: Elektro fertigstellen · Leerrohre Boden prüfen',sub:'Alles muss vor Estrich fertig sein',color:'#1d9e75'},
+      {id:'t28c',title:'Kühne: Fenster + Haustür einbauen',sub:'Hülle wird dicht — parallel möglich',color:'#0f3460'},
     ]},
   ]},
   {id:'m4',label:'November 2026 — Hülle dicht machen',weeks:[
