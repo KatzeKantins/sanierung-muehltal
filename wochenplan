@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="theme-color" content="#1a1a2e">
+<title>📅 Wochenplan Mühltal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--primary:#1a1a2e;--blue:#0f3460;--teal:#1d9e75;--amber:#e8a838;--red:#e74c3c;--purple:#534ab7;--bg:#f5f6fa;--card:#fff;--border:#e0e4ec;--text:#1a1a2e;--muted:#6b7280;--small:#9ca3af;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px}
+.header{background:var(--primary);color:#fff;padding:52px 16px 16px;position:relative}
+.header h1{font-size:18px;font-weight:700}
+.header p{font-size:12px;opacity:.7;margin-top:3px}
+.back-btn{position:absolute;top:14px;left:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block}
+.sync-btn{position:absolute;top:14px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer}
+.content{padding:16px;max-width:700px;margin:0 auto;padding-bottom:100px}
+.month{margin-bottom:20px}
+.month-header{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 0 6px;display:flex;align-items:center;justify-content:space-between}
+.week{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden}
+.week-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f9fafb;border-bottom:1px solid var(--border);cursor:pointer}
+.week-label{font-size:12px;font-weight:700;color:var(--muted)}
+.week-dates{font-size:11px;color:var(--small)}
+.week-body{padding:8px 14px}
+.task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.task:last-child{border-bottom:none}
+.task-color{width:4px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:20px}
+.task-content{flex:1;min-width:0}
+.task-title{font-size:13px;font-weight:500;line-height:1.4}
+.task-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.task-actions{display:flex;gap:4px;flex-shrink:0}
+.task-btn{font-size:14px;background:none;border:none;cursor:pointer;color:var(--small);padding:2px 4px}
+.add-task-btn{width:100%;padding:8px;font-size:12px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:8px;margin-top:6px}
+.add-month-btn{width:100%;padding:10px;font-size:13px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:10px;margin-bottom:16px}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.form-field{margin-bottom:14px}
+.form-field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-family:inherit;color:var(--text)}
+.form-field textarea{resize:vertical;min-height:60px}
+.modal-btns{display:flex;gap:10px;margin-top:6px}
+.modal-btns button{flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-cancel{background:#f3f4f6;color:var(--text)}
+.btn-save{background:var(--teal);color:#fff}
+.btn-delete{background:#fee2e2;color:#991b1b}
+.color-picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.color-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s}
+.color-opt.selected{border-color:var(--text)}
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-btn" href="index.html">← App</a>
+  <h1>📅 Wochenplan</h1>
+  <p>Kernsanierung Schleifmühlenweg 7a</p>
+  <button class="sync-btn" id="sync-btn" onclick="syncCloud()">↻ Sync</button>
+</div>
+<div class="content">
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#1d9e75"></div>Eigenleistung</div>
+    <div class="leg"><div class="leg-dot" style="background:#0f3460"></div>Fachfirma</div>
+    <div class="leg"><div class="leg-dot" style="background:#e8a838"></div>Klären / offen</div>
+    <div class="leg"><div class="leg-dot" style="background:#e74c3c"></div>Blockiert</div>
+    <div class="leg"><div class="leg-dot" style="background:#534ab7"></div>Meilenstein</div>
+  </div>
+  <div id="plan-container"></div>
+  <button class="add-month-btn" onclick="openMonthModal()">+ Monat / Phase hinzufügen</button>
+</div>
+
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <h3 id="task-modal-title">Aufgabe</h3>
+    <div class="form-field"><label>Titel</label><input type="text" id="tm-title"/></div>
+    <div class="form-field"><label>Details (optional)</label><textarea id="tm-sub"></textarea></div>
+    <div class="form-field">
+      <label>Kategorie / Farbe</label>
+      <div class="color-picker" id="color-picker">
+        <div class="color-opt selected" style="background:#1d9e75" data-color="#1d9e75" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#0f3460" data-color="#0f3460" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#e8a838" data-color="#e8a838" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#e74c3c" data-color="#e74c3c" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#534ab7" data-color="#534ab7" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#6b7280" data-color="#6b7280" onclick="selectColor(this)"></div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="tm-del" onclick="deleteTask()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveTask()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="week-modal">
+  <div class="modal">
+    <h3 id="week-modal-title">Woche</h3>
+    <div class="form-field"><label>Bezeichnung (z.B. KW 36)</label><input type="text" id="wm-label"/></div>
+    <div class="form-field"><label>Zeitraum (z.B. 1.–5. Sep)</label><input type="text" id="wm-dates"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="wm-del" onclick="deleteWeek()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveWeek()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="month-modal">
+  <div class="modal">
+    <h3>Phase / Monat hinzufügen</h3>
+    <div class="form-field"><label>Bezeichnung</label><input type="text" id="mm-label" placeholder="z.B. November 2026 — Hülle dicht"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-save" onclick="saveMonth()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://ygjjhtfeavnkujetgvbh.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnampodGZlYXZua3VqZXRndmJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MzQ0MjYsImV4cCI6MjA5NTQxMDQyNn0.p_gDikzeTCKjsGEWvbS4r1gT3OaMzm7h5Sq-H96IfGA';
+const SUPA_ROW='wochenplan-muehltal-v1';
+let supaClient=null,saveTimer=null;
+
+function initSupa(){try{if(window.supabase)supaClient=window.supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){}}
+
+const DEFAULT_PLAN=[
+  {id:'m1',label:'Juli 2026 — Entkernung',weeks:[
+    {id:'w1',label:'KW 27–28',dates:'1.–12. Jul',tasks:[
+      {id:'t1',title:'Teppiche entfernen (Spachtelaufsatz)',sub:'Keller zuerst — Asbest-Firma braucht freien Boden',color:'#1d9e75'},
+      {id:'t2',title:'Tapeten abziehen (Sprühflasche)',sub:'Realistisch 4–5 Tage',color:'#1d9e75'},
+      {id:'t3',title:'Zählerstand ablesen · Strom anmelden',sub:'',color:'#1d9e75'},
+    ]},
+    {id:'w2',label:'KW 29–30',dates:'14.–28. Jul',tasks:[
+      {id:'t4',title:'Asbest-Firma (während Urlaub)',sub:'Küche + Keller · schriftliche Freigabe anfordern!',color:'#0f3460'},
+      {id:'t5',title:'Urlaub 17.–28. Juli — Baustelle gesperrt',sub:'',color:'#e74c3c'},
+    ]},
+    {id:'w3',label:'KW 31',dates:'28. Jul–8. Aug',tasks:[
+      {id:'t6',title:'Patrick Vollzeit: Fliesen, Schimmelputz, Wanddurchbruch',sub:'Nach schriftlicher Freigabe durch Asbest-Firma',color:'#1d9e75'},
+      {id:'t7',title:'Sa 02. Aug: Estrichabbruch EG (4–5 Helfer)',sub:'',color:'#534ab7'},
+      {id:'t8',title:'Sa 09. Aug: Estrichabbruch OG (4–5 Helfer)',sub:'',color:'#534ab7'},
+    ]},
+  ]},
+  {id:'m2',label:'September 2026 — Patrick Vollzeit (Woche 1–4)',weeks:[
+    {id:'w4',label:'KW 36',dates:'1.–5. Sep',tasks:[
+      {id:'t9',title:'Gasleitung trennen (konzessionierter Installateur)',sub:'Muss als erstes passieren',color:'#0f3460'},
+      {id:'t10',title:'Altes Rohrnetz raus (mit GWI-Freund)',sub:'Therme, Heizkörper, alte Leitungen → Schrotthändler',color:'#1d9e75'},
+    ]},
+    {id:'w5',label:'KW 37',dates:'8.–12. Sep',tasks:[
+      {id:'t11',title:'Elektro: Leerrohre im Boden verlegen',sub:'Vor Estrich — jetzt der richtige Zeitpunkt!',color:'#1d9e75'},
+      {id:'t12',title:'Elektroschlitze Wände stemmen EG',sub:'',color:'#1d9e75'},
+      {id:'t13',title:'Fundament Wärmepumpe vorbereiten',sub:'Erst nach WP-Angebot (Größe/Gewicht klären)',color:'#e8a838'},
+    ]},
+    {id:'w6',label:'KW 38',dates:'15.–19. Sep',tasks:[
+      {id:'t14',title:'Elektroschlitze OG + Kabel ziehen EG',sub:'',color:'#1d9e75'},
+      {id:'t15',title:'Trockenbau Vorwände aufstellen (Ständerwerk)',sub:'Noch NICHT schließen — Sanitär muss dahinter!',color:'#1d9e75'},
+    ]},
+    {id:'w7',label:'KW 39–40',dates:'22. Sep–3. Okt',tasks:[
+      {id:'t16',title:'Kabel ziehen OG · Dosen setzen',sub:'',color:'#1d9e75'},
+      {id:'t17',title:'Fundament WP gießen (4 Wochen aushärten)',sub:'',color:'#1d9e75'},
+      {id:'t18',title:'System klären: Bekotec-Noppen vs. Tackersystem',sub:'Celar + Heizungsbauer gemeinsam abstimmen!',color:'#e8a838'},
+    ]},
+  ]},
+  {id:'m3',label:'Oktober 2026 — Sanitär/Heizung + Patrick Vollzeit (Woche 5–8)',weeks:[
+    {id:'w8',label:'KW 41',dates:'6.–10. Okt',tasks:[
+      {id:'t19',title:'Sanitärbetrieb: Abwasserleitungen neu',sub:'Hauptstränge zuerst',color:'#0f3460'},
+      {id:'t20',title:'Sanitärbetrieb: Wasser-/Heizungsleitungen',sub:'',color:'#0f3460'},
+    ]},
+    {id:'w9',label:'KW 42',dates:'13.–17. Okt',tasks:[
+      {id:'t21',title:'Sanitärbetrieb: Heizungsverteiler + Hauptleitungen',sub:'',color:'#0f3460'},
+      {id:'t22',title:'FBH Dämmplatten + Rohre verlegen',sub:'Nach Systementscheidung Bekotec/Tackern',color:'#1d9e75'},
+    ]},
+    {id:'w10',label:'KW 43',dates:'20.–24. Okt',tasks:[
+      {id:'t23',title:'Vorwände schließen (Gipskarton)',sub:'Erst jetzt — Sanitär hinter Wänden fertig',color:'#1d9e75'},
+      {id:'t24',title:'Rohrdämmung Keller',sub:'',color:'#1d9e75'},
+      {id:'t25',title:'Randdämmstreifen kleben (vor Estrich — Pflicht!)',sub:'Rund um jeden Raum',color:'#e74c3c'},
+    ]},
+    {id:'w11',label:'KW 44',dates:'27.–31. Okt',tasks:[
+      {id:'t26',title:'Sanitärbetrieb: Unterputzarmaturen',sub:'',color:'#0f3460'},
+      {id:'t27',title:'Druckprüfung Wasserleitungen',sub:'Vor Einputzen — Pflicht!',color:'#e74c3c'},
+      {id:'t28',title:'Elektro abschließen · für Estrich vorbereiten',sub:'',color:'#1d9e75'},
+    ]},
+  ]},
+  {id:'m4',label:'November 2026 — Hülle dicht machen',weeks:[
+    {id:'w12',label:'KW 45–46',dates:'3.–14. Nov',tasks:[
+      {id:'t29',title:'Kühne: Fenster + Haustür einbauen',sub:'Hülle wird dicht',color:'#0f3460'},
+      {id:'t30',title:'Laibungsanschlüsse klären (Kühne vs. Gärtner)',sub:'⚠️ Wer macht Außenputz + Fensterbank?',color:'#e8a838'},
+    ]},
+    {id:'w13',label:'KW 47–49',dates:'17. Nov–5. Dez',tasks:[
+      {id:'t31',title:'Dachdecker (Option A: ohne Fassade)',sub:'Falls nicht mit Fassade kombiniert im März',color:'#e8a838'},
+    ]},
+  ]},
+  {id:'m5',label:'Februar 2027 — Estrich + Trocknung',weeks:[
+    {id:'w14',label:'KW 6–8',dates:'Feb 27',tasks:[
+      {id:'t32',title:'Celar: Estrich RapidoWitt einbauen',sub:'FBH Rohre müssen komplett fertig sein!',color:'#0f3460'},
+      {id:'t33',title:'Bauheizer aufstellen · 10–14 Tage trocknen',sub:'Regelmäßig lüften!',color:'#1d9e75'},
+    ]},
+  ]},
+  {id:'m6',label:'März–Mai 2027 — Innenausbau + Fassade',weeks:[
+    {id:'w15',label:'Mär 27',dates:'',tasks:[
+      {id:'t34',title:'Gärtner: WDVS + Außenputz',sub:'Option: gemeinsam mit Dach',color:'#0f3460'},
+      {id:'t35',title:'Schimmelstellen verputzen',sub:'',color:'#0f3460'},
+      {id:'t36',title:'Wände spachteln + grundieren (Caparol)',sub:'Eigenleistung',color:'#1d9e75'},
+    ]},
+    {id:'w16',label:'Apr 27',dates:'',tasks:[
+      {id:'t37',title:'Fliesen Bad + WC (Fliesenleger)',sub:'',color:'#0f3460'},
+      {id:'t38',title:'Sanitär Endmontage',sub:'',color:'#0f3460'},
+      {id:'t39',title:'Streichen (Caparol, Eigenleistung)',sub:'',color:'#1d9e75'},
+    ]},
+    {id:'w17',label:'Mai 27',dates:'',tasks:[
+      {id:'t40',title:'Bodenleger: Parkett/Vinyl verlegen',sub:'',color:'#0f3460'},
+      {id:'t41',title:'WP Inbetriebnahme + hydraulischer Abgleich',sub:'Pflicht KfW/BAFA',color:'#0f3460'},
+      {id:'t42',title:'E-Check (Elektriker nimmt ab)',sub:'',color:'#0f3460'},
+    ]},
+  ]},
+  {id:'m7',label:'Juni–August 2027 — Endspurt',weeks:[
+    {id:'w18',label:'Jun–Jul 27',dates:'',tasks:[
+      {id:'t43',title:'Küche liefern + montieren',sub:'Spätestens März 27 bestellen!',color:'#534ab7'},
+      {id:'t44',title:'Feinschliff + Restarbeiten',sub:'',color:'#1d9e75'},
+    ]},
+    {id:'w19',label:'Aug 27',dates:'',tasks:[
+      {id:'t45',title:'Umzug',sub:'',color:'#534ab7'},
+    ]},
+  ]},
+];
+
+let P={plan:null};
+let eMonthI=null,eWeekI=null,eTaskI=null,eWeekMI=null;
+let selColor='#1d9e75';
+
+function getPlan(){return P.plan||JSON.parse(JSON.stringify(DEFAULT_PLAN));}
+
+function uid(){return 'id'+Date.now()+Math.random().toString(36).slice(2,6);}
+
+function render(){
+  const plan=getPlan();
+  let h='';
+  plan.forEach((month,mi)=>{
+    h+=`<div class="month">
+      <div class="month-header">
+        <span>${month.label}</span>
+        <button style="font-size:12px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;color:var(--muted)" onclick="openWeekModal(${mi},null)">+ Woche</button>
+      </div>`;
+    month.weeks.forEach((week,wi)=>{
+      h+=`<div class="week">
+        <div class="week-header" onclick="openWeekModal(${mi},${wi})">
+          <div>
+            <div class="week-label">${week.label}</div>
+            ${week.dates?`<div class="week-dates">${week.dates}</div>`:''}
+          </div>
+          <span style="font-size:12px;color:var(--small)">${week.tasks.length} Aufgaben ✏️</span>
+        </div>
+        <div class="week-body">`;
+      week.tasks.forEach((task,ti)=>{
+        h+=`<div class="task">
+          <div class="task-color" style="background:${task.color}"></div>
+          <div class="task-content">
+            <div class="task-title">${task.title}</div>
+            ${task.sub?`<div class="task-sub">${task.sub}</div>`:''}
+          </div>
+          <button class="task-btn" onclick="openTaskModal(${mi},${wi},${ti})">✏️</button>
+        </div>`;
+      });
+      h+=`<button class="add-task-btn" onclick="openTaskModal(${mi},${wi},null)">+ Aufgabe hinzufügen</button>
+        </div></div>`;
+    });
+    h+=`</div>`;
+  });
+  document.getElementById('plan-container').innerHTML=h;
+}
+
+function openTaskModal(mi,wi,ti){
+  eMonthI=mi;eWeekI=wi;eTaskI=ti;
+  const isNew=ti===null;
+  document.getElementById('task-modal-title').textContent=isNew?'Neue Aufgabe':'Aufgabe bearbeiten';
+  document.getElementById('tm-del').style.display=isNew?'none':'block';
+  if(isNew){
+    document.getElementById('tm-title').value='';
+    document.getElementById('tm-sub').value='';
+    selColor='#1d9e75';
+  } else {
+    const t=getPlan()[mi].weeks[wi].tasks[ti];
+    document.getElementById('tm-title').value=t.title;
+    document.getElementById('tm-sub').value=t.sub||'';
+    selColor=t.color||'#1d9e75';
+  }
+  document.querySelectorAll('.color-opt').forEach(el=>{
+    el.classList.toggle('selected',el.dataset.color===selColor);
+  });
+  document.getElementById('task-modal').classList.add('open');
+}
+
+function selectColor(el){
+  selColor=el.dataset.color;
+  document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveTask(){
+  const title=document.getElementById('tm-title').value.trim();
+  if(!title){alert('Titel eingeben');return;}
+  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  const task={id:uid(),title,sub:document.getElementById('tm-sub').value.trim(),color:selColor};
+  if(eTaskI===null)P.plan[eMonthI].weeks[eWeekI].tasks.push(task);
+  else P.plan[eMonthI].weeks[eWeekI].tasks[eTaskI]=task;
+  saveS();closeModals();render();
+}
+
+function deleteTask(){
+  if(!confirm('Aufgabe löschen?'))return;
+  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  P.plan[eMonthI].weeks[eWeekI].tasks.splice(eTaskI,1);
+  saveS();closeModals();render();
+}
+
+function openWeekModal(mi,wi){
+  eWeekMI=mi;eWeekI=wi;
+  const isNew=wi===null;
+  document.getElementById('week-modal-title').textContent=isNew?'Neue Woche':'Woche bearbeiten';
+  document.getElementById('wm-del').style.display=isNew?'none':'block';
+  if(isNew){document.getElementById('wm-label').value='';document.getElementById('wm-dates').value='';}
+  else{const w=getPlan()[mi].weeks[wi];document.getElementById('wm-label').value=w.label;document.getElementById('wm-dates').value=w.dates||'';}
+  document.getElementById('week-modal').classList.add('open');
+}
+
+function saveWeek(){
+  const label=document.getElementById('wm-label').value.trim();
+  if(!label){alert('Bezeichnung eingeben');return;}
+  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  const week={id:uid(),label,dates:document.getElementById('wm-dates').value.trim(),tasks:[]};
+  if(eWeekI===null)P.plan[eWeekMI].weeks.push(week);
+  else{P.plan[eWeekMI].weeks[eWeekI].label=week.label;P.plan[eWeekMI].weeks[eWeekI].dates=week.dates;}
+  saveS();closeModals();render();
+}
+
+function deleteWeek(){
+  if(!confirm('Woche + alle Aufgaben löschen?'))return;
+  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  P.plan[eWeekMI].weeks.splice(eWeekI,1);
+  saveS();closeModals();render();
+}
+
+function openMonthModal(){document.getElementById('month-modal').classList.add('open');}
+
+function saveMonth(){
+  const label=document.getElementById('mm-label').value.trim();
+  if(!label){alert('Bezeichnung eingeben');return;}
+  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  P.plan.push({id:uid(),label,weeks:[]});
+  saveS();closeModals();render();
+}
+
+function closeModals(){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModals();}));
+
+function saveS(){
+  try{localStorage.setItem('wochenplan',JSON.stringify(P));}catch(e){}
+  if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>saveToCloud(),800);
+}
+
+async function saveToCloud(){
+  if(!supaClient)return;
+  try{await supaClient.from('bau_state').upsert({id:SUPA_ROW,state:JSON.stringify(P),updated_at:new Date().toISOString()});}
+  catch(e){}
+}
+
+async function loadFromCloud(){
+  if(!supaClient)return false;
+  try{
+    const{data,error}=await supaClient.from('bau_state').select('state').eq('id',SUPA_ROW).single();
+    if(error||!data)return false;
+    const d=JSON.parse(data.state);
+    if(d.plan)P.plan=d.plan;
+    return true;
+  }catch(e){return false;}
+}
+
+async function syncCloud(){
+  const btn=document.getElementById('sync-btn');
+  btn.textContent='↻ ...';
+  const ok=await loadFromCloud();
+  if(ok){render();btn.textContent='✓ Sync';}
+  else btn.textContent='✗ Fehler';
+  setTimeout(()=>btn.textContent='↻ Sync',2000);
+}
+
+// Init
+try{const s=localStorage.getItem('wochenplan');if(s){const d=JSON.parse(s);if(d.plan)P.plan=d.plan;}}catch(e){}
+render();
+if(window.supabase){
+  initSupa();
+  loadFromCloud().then(ok=>{if(ok)render();});
+} else {
+  const sdk=document.createElement('script');
+  sdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  sdk.onload=function(){initSupa();loadFromCloud().then(ok=>{if(ok)render();});};
+  document.head.appendChild(sdk);
+}
+</script>
+</body>
+</html>
