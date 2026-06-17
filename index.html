@@ -219,9 +219,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="content">
 
   <div class="page active" id="page-uebersicht">
-    <div class="alert red"><strong>⚠️ Celar Estrichbau</strong>Angebot läuft am 23.06.2026 ab – jetzt entscheiden!</div>
-    <div class="alert red"><strong>☣️ Asbest-Firma beauftragen</strong>Vorlaufzeit 4–6 Wochen – muss während Urlaub (17.–28. Jul) arbeiten!</div>
-    <div class="alert amber"><strong>🏛️ BAFA/KfW</strong>Uwe Wäckerle ab 20.5. beauftragen – iSFP zuerst, dann Antrag, DANN erst Aufträge!</div>
     <div class="metrics">
       <div class="metric"><div class="label">Baustart</div><div class="value" style="font-size:16px">Jul 2026</div><div class="sub">Einzug Aug 2027</div></div>
       <div class="metric green"><div class="label">Förderung</div><div class="value">43k €</div><div class="sub">BAFA + KfW</div></div>
@@ -745,7 +742,7 @@ kosten: [
 ],
 
 gewerke: [
-  {id:'asbest',    n:'Asbest-Entsorgung',          budget:6000,   icon:'☣️',  prio:1},
+  {id:'asbest',    n:'Asbest-Entsorgung',          budget:3883,   icon:'☣️',  prio:1},
   {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:9163,   icon:'🪨',  prio:1},
   {id:'container', n:'Container Klöppinger',       budget:5000,   icon:'📦',  prio:1},
   {id:'heizung',   n:'Heizung / Wärmepumpe',       budget:47500,  icon:'🔥',  prio:1},
@@ -799,7 +796,7 @@ const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls
 
 // State (user actions only - not content)
 let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
-  estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'beauftragt',notiz:'Bekotec+RapidoWitt · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'}],
+  estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'offen',notiz:'Bekotec+RapidoWitt · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'}],
   container:[
     {firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'},
     {firma:'Windeck Containerdienst (Nieder-Ramstadt)',betrag:2490,datum:'2026-06-15',status:'offen',notiz:'80€ stellen+abfahren netto · Bauschutt 70€/m³ · Deponieschutt (Estrich/Fliesen/Putz >30%) 150€/m³ · max. 5m³ Container · ⚠️ Zufahrt prüfen: LKW braucht 2,5m Breite, sonst nur 2,5m³ Container möglich · 14 Tage mietfrei, dann 15€/Woche · Vorlaufzeit 1-2 Tage · Schuttrutschen 1€/m/Tag · Rechnungen zeitnah bezahlen sonst kein Tausch! · Kontakt: Katerina Bachmann-Fotiadis · 0160-98731731'},
@@ -822,7 +819,7 @@ let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
     {firma:'Gärtner Bensheim',betrag:0,datum:'2026-06-30',status:'offen',notiz:'Vor-Ort-Termin 30.06. 18:00 Uhr · Empfehlung von Philip · auch Innenputz Schimmelstellen anfragen!'},
   ],
   asbest:[
-    {firma:'Asbestsanierung-RheinMain (Marcus Hiermes)',betrag:3883,datum:'2026-05-01',status:'offen',notiz:'Angebot AN20260109 · 3.263€ netto / 3.883€ brutto · Floor-Flex 29m² + Kleber · Hiermes-Verfahren BT17 · Start 20.07. 7:30 Uhr · 3 Tage · ⚠️ Anruf ausstehend: Schlüsselübergabe-Infos + Stromverteiler Keller + Luftmessung am Ende klären!'},
+    {firma:'Asbestsanierung-RheinMain (Marcus Hiermes)',betrag:3883,datum:'2026-05-01',status:'beauftragt',notiz:'Angebot AN20260109 · 3.263€ netto / 3.883€ brutto · Floor-Flex 29m² + Kleber · Hiermes-Verfahren BT17 · ✍️ BEAUFTRAGT · Start 20.07. 7:30 Uhr · 3 Tage · 📱 19.07. WhatsApp mit Foto schicken wo Schlüssel liegt'},
   ],
 },gewerkStatus:{
   estrich:'beauftragt',
@@ -1243,7 +1240,7 @@ const BUDGET_DEFAULT = [
   {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     note:'Eigenleistung'},
   {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
   {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     note:''},
-  {id:'asbest',    n:'Asbest-Entsorgung',        betrag:6000,    foerd:0,     note:''},
+  {id:'asbest',    n:'Asbest-Entsorgung',        betrag:3883,    foerd:0,     note:'Asbestsanierung-RheinMain · beauftragt'},
   {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     note:''},
   {id:'kueche',    n:'Küche',                    betrag:3000,    foerd:0,     note:'Gesamtkosten ~15.000 € · davon 12.000 € Zuschuss Eltern'},
   {id:'energie',   n:'Energieberatung',          betrag:4500,    foerd:2000,  note:'Eigenanteil 2.500€'},
