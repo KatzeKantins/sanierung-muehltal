@@ -1323,6 +1323,20 @@ function getBudget(){
     S.budgetPlan.splice(legacyKauf,1);
     healed = true;
   }
+  // Positionen, die schon VOR der Finanzierungs-Umstrukturierung existierten
+  // (z.B. Dach, Heizung, Makler …), haben noch kein `fin`-Tag. Die Anzeige
+  // sortiert Positionen aber strikt nach `fin` in ihre Sektion ein — ohne
+  // dieses Tag verschwindet die Position komplett aus der Ansicht, obwohl
+  // ihr Betrag weiterhin gespeichert ist. Deshalb hier nachträglich ergänzen,
+  // per ID aus BUDGET_DEFAULT nachgeschlagen (Beträge bleiben unangetastet).
+  const defaultMap = {};
+  BUDGET_DEFAULT.forEach(b=>{ defaultMap[b.id]=b; });
+  S.budgetPlan.forEach(p=>{
+    if(!p.fin && defaultMap[p.id]){
+      p.fin = defaultMap[p.id].fin;
+      healed = true;
+    }
+  });
   const existingIds = S.budgetPlan.map(p=>p.id);
   const missing = BUDGET_DEFAULT.filter(b=>!existingIds.includes(b.id));
   if(missing.length){
