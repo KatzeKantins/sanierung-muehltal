@@ -172,7 +172,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .budget-input:focus{outline:none;border-color:var(--teal)}
 .budget-foerd{font-size:11px;color:var(--teal);text-align:right;margin-top:2px}
 .budget-del{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:0 2px;flex-shrink:0}
-.budget-section{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:12px 0 4px}
+.budget-section{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:12px 0 4px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.budget-section-cap{font-weight:500;text-transform:none;letter-spacing:0;font-size:10px}
+.budget-subtotal{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 12px;margin-top:-4px;font-size:12px;font-weight:700;border-bottom:1px dashed var(--border)}
+.budget-subtotal.ok{color:var(--teal)}
+.budget-subtotal.over{color:var(--red)}
+.budget-subtotal.info{color:var(--muted);font-weight:600}
+.fin-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;margin-left:6px;text-transform:none;letter-spacing:0;vertical-align:1px}
+.fin-badge.ek{background:#dbeafe;color:#1e40af}
+.fin-badge.bank{background:#ede9fe;color:#4c1d95}
+.fin-badge.kredit{background:#d1fae5;color:#065f46}
+.fin-badge.nicht{background:#fee2e2;color:#991b1b}
+.fin-badge.sonder{background:#fef3c7;color:#92400e}
 
 /* AUSGABEN */
 .ausg-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
@@ -419,7 +430,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="ktab-ist-content">
       <div class="ausg-summary" id="ausg-summary"></div>
       <div class="ausg-bar-wrap"><div class="ausg-bar" id="ausg-bar"></div></div>
-      <div class="foerder-hinweis" id="foerder-hinweis-ist">💡 <strong>Gesamtbudget: 622.379 €</strong> (Kredit + Eigenkapital)<br>Kauf + Nebenkosten: 389.379 € · Sanierung: 233.000 €<br>Förderung wird nach Fertigstellung erstattet (BAFA + KfW) → aktuell geplant: <span id="foerder-ist-sum">43.300 €</span></div>
+      <div class="foerder-hinweis" id="foerder-hinweis-ist">💡 <strong>Gesamtbudget: 622.379,30 €</strong><br>🏦 Eigenkapital 170.379,30 € (Kaufpreis-Anteil + Makler + Notar + Grunderwerbsteuer) · 🏦 Restkaufpreis 219.000 € (separates Bankdarlehen) · 🔨 Sanierungskredit 233.000 €<br>💶 Asbest, Werkzeuge, Entsorgung & Küche sind <strong>nicht</strong> über den Sanierungskredit finanzierbar – separat einplanen!<br>Förderung wird nach Fertigstellung erstattet (BAFA + KfW) → aktuell geplant: <span id="foerder-ist-sum">43.300 €</span></div>
+      <div class="card" style="margin-bottom:14px"><div class="card-body" style="padding:6px 16px" id="ausg-fin-summary"></div></div>
       <div id="ausg-list"></div>
     </div>
 
@@ -769,27 +781,31 @@ gewerke: [
   {id:'kueche',    n:'Küche',                        budget:15000,  icon:'🍳',  prio:3},
 ],
 
+// fin = Finanzierungsquelle: 'ek' Eigenkapital · 'bank' separates Bankdarlehen (Restkaufpreis)
+// 'kredit' Sanierungskredit-fähig (233.000 €-Topf) · 'nicht' nicht kreditfähig, separat zu finanzieren · 'sonder' Sonderfall
 ausgabenKategorien: [
-  {id:'kaufpreis',   name:'Kaufpreis',                  budget:349000,   icon:'🏠'},
-  {id:'makler',      name:'Makler',                     budget:12459.30, icon:'🤝'},
-  {id:'notar',       name:'Notar & Grundbuch',          budget:6980,     icon:'📜'},
-  {id:'grunderwerb', name:'Grunderwerbsteuer',          budget:20940,    icon:'🏛️'},
-  {id:'dach',        name:'Dachsanierung',              budget:40000,    icon:'🏗️'},
-  {id:'heizung',     name:'Heizung / Wärmepumpe',       budget:47500,    icon:'🔥'},
-  {id:'fenster',     name:'Fenster + Haustür',           budget:40000,    icon:'🪟'},
-  {id:'lueftung',    name:'Lüftungsanlage',              budget:8000,     icon:'💨'},
-  {id:'fassade',     name:'Fassadendämmung',             budget:35000,    icon:'🧱'},
-  {id:'estrich',     name:'Estrich (Celar)',              budget:9163,     icon:'🪨'},
-  {id:'sanitaer',    name:'Sanitär & Wasser/Abwasser',   budget:18000,    icon:'🚿'},
-  {id:'elektro',     name:'Elektro',                     budget:8000,     icon:'⚡'},
-  {id:'verputzen',   name:'Verputzen',                   budget:11000,    icon:'🖌️'},
-  {id:'boden',       name:'Boden verlegen',              budget:11500,    icon:'🟫'},
-  {id:'asbest',      name:'Asbest-Entsorgung',           budget:6000,     icon:'☣️'},
-  {id:'container',   name:'Container & Entsorgung',      budget:5000,     icon:'📦'},
-  {id:'kueche',      name:'Küche',                       budget:15000,    icon:'🍳'},
-  {id:'material',    name:'Material & Eigenleistung',    budget:10000,    icon:'🔧'},
-  {id:'energieberatung', name:'Energieberatung',         budget:4500,     icon:'💡'},
-  {id:'sonstiges',   name:'Sonstiges / Puffer',          budget:5000,     icon:'📋'},
+  {id:'kauf_ek',     name:'Kaufpreis (Eigenanteil)',       budget:130000,   icon:'🏠', fin:'ek'},
+  {id:'makler',      name:'Makler',                        budget:12459.30, icon:'🤝', fin:'ek'},
+  {id:'notar',       name:'Notar & Grundbuch',             budget:6980,     icon:'📜', fin:'ek'},
+  {id:'grunderw',    name:'Grunderwerbsteuer',             budget:20940,    icon:'🏛️', fin:'ek'},
+  {id:'kauf_bank',   name:'Kaufpreis (Restkaufpreis)',     budget:219000,   icon:'🏦', fin:'bank'},
+  {id:'dach',        name:'Dachsanierung',                 budget:50000,    icon:'🏗️', fin:'kredit'},
+  {id:'heizung',     name:'Heizung / Wärmepumpe',          budget:35000,    icon:'🔥', fin:'kredit'},
+  {id:'fenster',     name:'Fenster + Haustür',              budget:40000,    icon:'🪟', fin:'kredit'},
+  {id:'lueftung',    name:'Lüftungsanlage',                 budget:2500,     icon:'💨', fin:'kredit'},
+  {id:'fassade',     name:'Fassadendämmung',                budget:35000,    icon:'🧱', fin:'kredit'},
+  {id:'estrich',     name:'Estrich (Celar)',                 budget:9163,     icon:'🪨', fin:'kredit'},
+  {id:'sanitaer',    name:'Sanitär & Abwasser',             budget:45000,    icon:'🚿', fin:'kredit'},
+  {id:'elektro',     name:'Elektro',                        budget:8000,     icon:'⚡', fin:'kredit'},
+  {id:'verputzen',   name:'Verputzen',                      budget:5000,     icon:'🖌️', fin:'kredit'},
+  {id:'boden',       name:'Boden verlegen',                 budget:11500,    icon:'🟫', fin:'kredit'},
+  {id:'material',    name:'Material für Eigenleistung',     budget:7000,     icon:'🧰', fin:'kredit'},
+  {id:'sonstiges',   name:'Sonstiges / Puffer',             budget:20000,    icon:'📋', fin:'kredit'},
+  {id:'asbest',      name:'Asbest-Entsorgung',              budget:3883,     icon:'☣️', fin:'nicht'},
+  {id:'container',   name:'Container & Entsorgung',         budget:5000,     icon:'📦', fin:'nicht'},
+  {id:'kueche',      name:'Küche',                          budget:3000,     icon:'🍳', fin:'nicht'},
+  {id:'werkzeuge',   name:'Werkzeuge & Schutzausrüstung',   budget:3000,     icon:'🔧', fin:'nicht'},
+  {id:'energie',     name:'Energieberatung',                budget:4500,     icon:'💡', fin:'sonder'},
 ],
 
 }; // Ende BAU_DATA
@@ -850,7 +866,12 @@ let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
 },notizen:[]};
 let eTodoPI=null,eTodoII=null,eKostenI=null,eAngGw=null;
 
-function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);S.checks=p.checks||{};S.todosEdited=p.todosEdited||null;S.kostenEdited=p.kostenEdited||null;if(p.angebote)S.angebote=p.angebote;if(p.notizen)S.notizen=p.notizen;}}catch(e){}}
+// Übernimmt ALLE gespeicherten Felder (nicht mehr einzeln aufgezählt) —
+// sonst geht jedes Feld verloren, das hier vergessen wird (betraf zuletzt
+// budgetPlan, ausgaben und gewerkStatus: wurde brav gespeichert, aber beim
+// Laden nie zurückgeschrieben, sodass Änderungen nach einem Reload/Sync
+// wieder auf den alten Stand zurückfielen).
+function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);Object.assign(S,p);}}catch(e){}}
 var _cloudLoaded = false;
 var saveTimer = null;
 function saveS(){
@@ -875,6 +896,10 @@ function initSupabase(){
   }catch(e){}
 }
 
+// Übernimmt ebenfalls ALLE Felder aus der Cloud (statt einzeln aufgezählter
+// Felder) — das war die eigentliche Ursache dafür, dass Budgetplan-Änderungen
+// (z.B. Estrich-Betrag) zwar in der Cloud gespeichert, aber nie wieder
+// heruntergeladen/angezeigt wurden: budgetPlan fehlte hier komplett in der Liste.
 async function loadFromCloud(){
   if(!supaClient) return false;
   try{
@@ -882,12 +907,7 @@ async function loadFromCloud(){
       .from('bau_state').select('state').eq('id','bau-muehltal-v1').single();
     if(error||!data) return false;
     const p=JSON.parse(data.state);
-    S.checks=p.checks||{};
-    S.todosEdited=p.todosEdited||null;
-    S.kostenEdited=p.kostenEdited||null;
-    if(p.angebote)S.angebote=p.angebote;
-    if(p.ausgaben)S.ausgaben=p.ausgaben;
-    if(p.notizen)S.notizen=p.notizen;
+    Object.assign(S,p);
     return true;
   }catch(e){ return false; }
 }
@@ -1121,10 +1141,11 @@ function renderAusgaben(){
     const planBetrag = planMap[k.id];
     return planBetrag !== undefined ? {...k, budget: planBetrag} : k;
   });
-  // Totals – Gesamtbudget fest: 622.379,30 €
+  // Totals – Gesamtbudget fest: 622.379,30 € (Eigenkapital + Bankdarlehen + Sanierungskredit)
   const TOTAL_BUDGET = 622379.30;
   let totalIst=0;
-  kats.forEach(k=>getAusgaben(k.id).forEach(a=>totalIst+=a.betrag));
+  const istByFin={ek:0,bank:0,kredit:0,nicht:0,sonder:0};
+  kats.forEach(k=>getAusgaben(k.id).forEach(a=>{totalIst+=a.betrag; if(istByFin[k.fin]!==undefined)istByFin[k.fin]+=a.betrag;}));
   const pct = Math.min(100,Math.round(totalIst/TOTAL_BUDGET*100));
   const diff = TOTAL_BUDGET - totalIst;
   const cls = pct<80?'ok':pct<100?'warn':'over';
@@ -1136,6 +1157,15 @@ function renderAusgaben(){
     <div class="ausg-card"><div class="label">${diff>=0?'Noch verfügbar':'Über Budget!'}</div><div class="value ${diff>=0?(pct<80?'ok':'warn'):'over'}">${diff.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div><div class="sub">Gesamt: 622.379 €</div></div>`;
   const ab=document.getElementById('ausg-bar'); if(ab) ab.style.cssText=`width:${pct}%;background:${barColor}`;
 
+  const finSumEl=document.getElementById('ausg-fin-summary');
+  if(finSumEl){
+    finSumEl.innerHTML=`
+      <div class="budget-row"><div class="budget-name">🏦 davon Eigenkapital<span class="fin-badge ek">EK</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700">${istByFin.ek.toLocaleString('de')} €</span></div></div>
+      <div class="budget-row"><div class="budget-name">🏦 davon Restkaufpreis (Bank)<span class="fin-badge bank">Bank</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700">${istByFin.bank.toLocaleString('de')} €</span></div></div>
+      <div class="budget-row"><div class="budget-name">🔨 davon Sanierungskredit<span class="fin-badge kredit">Kredit</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700;color:${istByFin.kredit>233000?'#dc2626':'inherit'}">${istByFin.kredit.toLocaleString('de')} € / 233.000 €</span></div></div>
+      <div class="budget-row" style="border-bottom:none"><div class="budget-name">💶 davon nicht kreditfähig<span class="fin-badge nicht">separat</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700">${istByFin.nicht.toLocaleString('de')} €</span></div></div>`;
+  }
+
   let h='';
   kats.forEach(k=>{
     const belege=getAusgaben(k.id);
@@ -1144,12 +1174,13 @@ function renderAusgaben(){
     const diffK=k.budget-ist;
     const clsK=k.budget===0?'':pctK<80?'ok':pctK<100?'warn':'over';
     const diffTxt=k.budget===0?(ist>0?`${ist.toLocaleString('de')} € ausgegeben`:'Kein Budget geplant'):(diffK>=0?`${diffK.toLocaleString('de')} € verfügbar`:`${Math.abs(diffK).toLocaleString('de')} € über Budget`);
+    const fin=FIN_LABELS[k.fin];
 
     h+=`<div class="ausg-kat">
       <div class="ausg-kat-head" onclick="togAusgKat('${k.id}')">
         <div class="ausg-kat-icon">${k.icon}</div>
         <div class="ausg-kat-info">
-          <div class="ausg-kat-name">${k.name}</div>
+          <div class="ausg-kat-name">${k.name}${fin?`<span class="fin-badge ${fin.cls}">${fin.label}</span>`:''}</div>
           <div class="ausg-kat-nums">${k.budget>0?`Budget: ${k.budget.toLocaleString('de')} €`:'Kein Budget'} · ${belege.length} Beleg${belege.length!==1?'e':''}</div>
         </div>
         <div class="ausg-kat-right">
@@ -1238,50 +1269,77 @@ function deleteAusg(){
 
 
 // ── BUDGETPLAN ───────────────────────────────────────
+// fin = Finanzierungsquelle: 'ek' Eigenkapital · 'bank' separates Bankdarlehen (Restkaufpreis)
+// 'kredit' Sanierungskredit-fähig (233.000 €-Topf) · 'nicht' nicht kreditfähig, separat zu finanzieren · 'sonder' Sonderfall
 const BUDGET_DEFAULT = [
-  {id:'kauf',      n:'Kaufpreis',              betrag:349000,  foerd:0,     note:''},
-  {id:'makler',    n:'Makler',                 betrag:12459,   foerd:0,     note:''},
-  {id:'notar',     n:'Notar & Grundbuch',      betrag:6980,    foerd:0,     note:''},
-  {id:'grunderw',  n:'Grunderwerbsteuer',       betrag:20940,   foerd:0,     note:''},
-  {id:'dach',      n:'Dachsanierung',           betrag:50000,   foerd:6000,  note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
-  {id:'heizung',   n:'Heizung / Wärmepumpe',   betrag:35000,   foerd:16500, note:'KfW BEG EM · Angebot Külah 30.702€ brutto'},
-  {id:'fenster',   n:'Fenster + Haustür',       betrag:40000,   foerd:8200,  note:'BAFA BEG EM'},
-  {id:'lueftung',  n:'Lüftung',                 betrag:2500,    foerd:500,   note:'BAFA BEG EM · 20% von 2.500€'},
-  {id:'fassade',   n:'Fassadendämmung',         betrag:35000,   foerd:6000,  note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
-  {id:'estrich',   n:'Estrich (Celar)',          betrag:9163,    foerd:0,     note:'Angebot vorliegend'},
-  {id:'sanitaer',  n:'Sanitär & Wasser',        betrag:45000,   foerd:0,     note:'inkl. Bäder · 2 Bäder + alle Leitungen'},
-  {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     note:'Eigenleistung'},
-  {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
-  {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     note:''},
-  {id:'asbest',    n:'Asbest-Entsorgung',        betrag:3883,    foerd:0,     note:'Asbestsanierung-RheinMain · beauftragt'},
-  {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     note:''},
-  {id:'kueche',    n:'Küche',                    betrag:3000,    foerd:0,     note:'Gesamtkosten ~15.000 € · davon 12.000 € Zuschuss Eltern'},
-  {id:'energie',   n:'Energieberatung',          betrag:4500,    foerd:2000,  note:'Eigenanteil 2.500€'},
-  {id:'sonstiges', n:'Sonstiges / Puffer',       betrag:20000,   foerd:0,     note:''},
+  {id:'kauf_ek',   n:'Kaufpreis (Eigenanteil)', betrag:130000,  foerd:0,     fin:'ek',     note:'Aus Eigenkapital erbracht'},
+  {id:'makler',    n:'Makler',                 betrag:12459.30,foerd:0,     fin:'ek',     note:''},
+  {id:'notar',     n:'Notar & Grundbuch',      betrag:6980,    foerd:0,     fin:'ek',     note:''},
+  {id:'grunderw',  n:'Grunderwerbsteuer',       betrag:20940,   foerd:0,     fin:'ek',     note:''},
+  {id:'kauf_bank', n:'Kaufpreis (Restkaufpreis)',betrag:219000, foerd:0,     fin:'bank',   note:'Direkt von der Bank beglichen · separates Darlehen, nicht Teil des Sanierungskredits'},
+  {id:'dach',      n:'Dachsanierung',           betrag:50000,   foerd:6000,  fin:'kredit', note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
+  {id:'heizung',   n:'Heizung / Wärmepumpe',   betrag:35000,   foerd:16500, fin:'kredit', note:'KfW BEG EM · Angebot Külah 30.702€ brutto'},
+  {id:'fenster',   n:'Fenster + Haustür',       betrag:40000,   foerd:8200,  fin:'kredit', note:'BAFA BEG EM'},
+  {id:'lueftung',  n:'Lüftung',                 betrag:2500,    foerd:500,   fin:'kredit', note:'BAFA BEG EM · 20% von 2.500€'},
+  {id:'fassade',   n:'Fassadendämmung',         betrag:35000,   foerd:6000,  fin:'kredit', note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
+  {id:'estrich',   n:'Estrich (Celar)',          betrag:9163,    foerd:0,     fin:'kredit', note:'Angebot vorliegend'},
+  {id:'sanitaer',  n:'Sanitär & Abwasser',      betrag:45000,   foerd:0,     fin:'kredit', note:'inkl. Bäder · 2 Bäder + alle Leitungen'},
+  {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     fin:'kredit', note:'Eigenleistung'},
+  {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     fin:'kredit', note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
+  {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     fin:'kredit', note:''},
+  {id:'material',  n:'Material für Eigenleistung',betrag:7000,   foerd:0,     fin:'kredit', note:'Material für alle Eigenleistungs-Gewerke (ohne Werkzeuge) · Betrag prüfen/anpassen!'},
+  {id:'sonstiges', n:'Sonstiges / Puffer',       betrag:20000,   foerd:0,     fin:'kredit', note:''},
+  {id:'asbest',    n:'Asbest-Entsorgung',        betrag:3883,    foerd:0,     fin:'nicht',  note:'Asbestsanierung-RheinMain · beauftragt'},
+  {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     fin:'nicht',  note:''},
+  {id:'kueche',    n:'Küche',                    betrag:3000,    foerd:0,     fin:'nicht',  note:'Gesamtkosten ~15.000 € · davon 12.000 € Zuschuss Eltern'},
+  {id:'werkzeuge', n:'Werkzeuge & Schutzausrüstung',betrag:3000, foerd:0,     fin:'nicht',  note:'Miete + Kauf Werkzeug/Schutzausrüstung · Betrag prüfen/anpassen!'},
+  {id:'energie',   n:'Energieberatung',          betrag:4500,    foerd:2000,  fin:'sonder', note:'Uwe Wäckerle (heat consult) · iSFP läuft i.d.R. über eigenen BAFA-Zuschuss (nicht über den Sanierungskredit) · Baubegleitung ggf. bis 5.000€ in KfW-261-Kredit einrechenbar – bitte konkret mit ihm klären'},
 ];
+
+const FIN_LABELS = {
+  ek:     {label:'Eigenkapital',           cls:'ek'},
+  bank:   {label:'Bankdarlehen (Kauf)',    cls:'bank'},
+  kredit: {label:'Sanierungskredit',       cls:'kredit'},
+  nicht:  {label:'nicht kreditfähig',      cls:'nicht'},
+  sonder: {label:'Sonderfall',             cls:'sonder'},
+};
 
 function getBudget(){return S.budgetPlan||JSON.parse(JSON.stringify(BUDGET_DEFAULT));}
 
 function renderBudget(){
-  const TOTAL = 622379.30;
   const plan = getBudget();
-  let sumBetrag = 0, sumFoerd = 0;
+  const knownIds = BUDGET_DEFAULT.map(b=>b.id);
 
+  // Gruppierung nach Finanzierungsquelle statt nach Gewerk-Kategorie —
+  // so lässt sich direkt ablesen, was aus dem 233.000€-Sanierungskredit,
+  // was aus dem Eigenkapital und was gar nicht kreditfähig ist.
   const sections = [
-    {label:'🏠 Kauf & Nebenkosten', ids:['kauf','makler','notar','grunderw']},
-    {label:'🏗️ Sanierung – Gewerke', ids:['dach','heizung','fenster','lueftung','fassade','estrich','sanitaer','elektro','verputzen','boden','asbest','container','kueche']},
-    {label:'📋 Sonstiges', ids:['energie','sonstiges']},
+    {label:'🏦 Eigenkapital · Kauf & Nebenkosten', fin:'ek', cap:170379.30},
+    {label:'🏦 Restkaufpreis · separates Bankdarlehen', fin:'bank', cap:null},
+    {label:'🔨 Sanierungskredit · kreditfähig', fin:'kredit', cap:233000},
+    {label:'💶 Nicht kreditfähig · separat zu finanzieren', fin:'nicht', cap:null},
+    {label:'💡 Energieberatung · Sonderfall', fin:'sonder', cap:null},
+    {label:'❓ Weitere Positionen (Finanzierung noch offen)', fin:null, cap:null},
   ];
 
   let h = '';
+  let sumBetrag = 0, sumFoerd = 0;
+  let sumEk = 0, sumBank = 0, sumKredit = 0, sumNicht = 0, sumSonder = 0;
+
   sections.forEach(sec => {
-    const items = plan.filter(p => sec.ids.includes(p.id));
+    const items = sec.fin ? plan.filter(p => p.fin===sec.fin) : plan.filter(p => !knownIds.includes(p.id));
     if(!items.length) return;
-    h += `<div class="budget-section">${sec.label}</div>`;
-    items.forEach((item, i) => {
+    const secSum = items.reduce((s,p)=>s+(p.betrag||0),0);
+    h += `<div class="budget-section"><span>${sec.label}</span>${sec.cap?`<span class="budget-section-cap">Budget: ${sec.cap.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`:''}</div>`;
+    items.forEach(item => {
       const pi = plan.indexOf(item);
       sumBetrag += item.betrag||0;
       sumFoerd += item.foerd||0;
+      if(item.fin==='ek')sumEk+=item.betrag||0;
+      else if(item.fin==='bank')sumBank+=item.betrag||0;
+      else if(item.fin==='kredit')sumKredit+=item.betrag||0;
+      else if(item.fin==='nicht')sumNicht+=item.betrag||0;
+      else if(item.fin==='sonder')sumSonder+=item.betrag||0;
       h += `<div class="budget-row">
         <div style="flex:1;min-width:0">
           <div class="budget-name">${item.n}</div>
@@ -1294,6 +1352,12 @@ function renderBudget(){
         <button class="budget-del" onclick="deleteBudgetPos(${pi})">✕</button>
       </div>`;
     });
+    if(sec.cap){
+      const over = secSum > sec.cap;
+      h += `<div class="budget-subtotal ${over?'over':'ok'}"><span>Zwischensumme</span><span>${secSum.toLocaleString('de')} € ${over?'⚠️ +':'✅ −'}${Math.abs(sec.cap-secSum).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} € ${over?'über':'unter'} Budget</span></div>`;
+    } else {
+      h += `<div class="budget-subtotal info"><span>Zwischensumme</span><span>${secSum.toLocaleString('de')} €</span></div>`;
+    }
   });
 
   const bl=document.getElementById('budget-list'); if(!bl) return;
@@ -1312,20 +1376,19 @@ function renderBudget(){
   const foerdIstSum = document.getElementById('foerder-ist-sum');
   if(foerdIstSum) foerdIstSum.textContent = sumFoerd.toLocaleString('de') + ' €';
 
-  const diff = sumBetrag - TOTAL;
-  const isOver = diff > 0;
+  const GESAMT = 622379.30; // Eigenkapital 170.379,30 + Bankdarlehen 219.000 + Sanierungskredit 233.000
   const nachFoerd = sumBetrag - sumFoerd;
-  const diffNachFoerd = nachFoerd - TOTAL;
-  const isOverNachFoerd = diffNachFoerd > 0;
   const bt = document.getElementById('budget-total'); if(!bt) return;
   bt.innerHTML = `
-    <div class="row"><span>Geplant gesamt</span><span>${sumBetrag.toLocaleString('de')} €</span></div>
-    <div class="row"><span>Gesamtbudget (Kredit + EK)</span><span>622.379 €</span></div>
-    <div class="row main"><span>${isOver?'⚠️ Über Budget':'✅ Unter Budget'}</span><span style="color:${isOver?'#f87171':'#6ee7b7'}">${isOver?'+':'−'}${Math.abs(diff).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>
-    <div style="border-top:1px dashed var(--border);margin:10px 0"></div>
+    <div class="row"><span>🏦 Eigenkapital (Kauf & Nebenkosten)</span><span>${sumEk.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} € / 170.379,30 €</span></div>
+    <div class="row"><span>🏦 Restkaufpreis (Bankdarlehen)</span><span>${sumBank.toLocaleString('de')} €</span></div>
+    <div class="row"><span>🔨 Sanierungskredit (kreditfähig)</span><span style="color:${sumKredit>233000?'#f87171':'#6ee7b7'}">${sumKredit.toLocaleString('de')} € / 233.000 €</span></div>
+    <div class="row"><span>💶 Nicht kreditfähig (separat)</span><span>${sumNicht.toLocaleString('de')} €</span></div>
+    <div class="row"><span>💡 Energieberatung (Sonderfall)</span><span>${sumSonder.toLocaleString('de')} €</span></div>
+    <div style="border-top:1px dashed rgba(255,255,255,.2);margin:10px 0"></div>
+    <div class="row"><span>Geplant gesamt (alle Positionen)</span><span>${sumBetrag.toLocaleString('de')} €</span></div>
     <div class="row"><span style="color:var(--teal)">− Förderung BAFA+KfW</span><span style="color:var(--teal)">−${sumFoerd.toLocaleString('de')} €</span></div>
-    <div class="row"><span>Eigenanteil nach Förderung</span><span>${nachFoerd.toLocaleString('de')} €</span></div>
-    <div class="row main"><span>${isOverNachFoerd?'⚠️ Über Budget (nach Förderung)':'✅ Unter Budget (nach Förderung)'}</span><span style="color:${isOverNachFoerd?'#f87171':'#6ee7b7'}">${isOverNachFoerd?'+':'−'}${Math.abs(diffNachFoerd).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span></div>`;
+    <div class="row main"><span>Eigenanteil nach Förderung</span><span>${nachFoerd.toLocaleString('de')} €</span></div>`;
 }
 
 function editBudget(idx, el){
@@ -1393,8 +1456,11 @@ function deleteBudgetPos(idx){
 function addBudgetPos(){
   const n = prompt('Bezeichnung der neuen Position:');
   if(!n) return;
+  const finChoice = (prompt('Finanzierung – eine Zahl eingeben:\n1 = Sanierungskredit (233.000€-Topf)\n2 = Eigenkapital (Kauf & Nebenkosten)\n3 = nicht kreditfähig (separat zu finanzieren)\n4 = Sonderfall / weiß ich noch nicht', '1')||'').trim();
+  const finMap = {1:'kredit',2:'ek',3:'nicht',4:'sonder'};
+  const fin = finMap[finChoice] || 'sonder';
   if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
-  S.budgetPlan.push({id:'custom_'+Date.now(), n, betrag:0, foerd:0, note:''});
+  S.budgetPlan.push({id:'custom_'+Date.now(), n, betrag:0, foerd:0, fin, note:''});
   saveS(); renderBudget();
 }
 
