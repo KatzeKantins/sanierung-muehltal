@@ -1304,7 +1304,34 @@ const FIN_LABELS = {
   sonder: {label:'Sonderfall',             cls:'sonder'},
 };
 
-function getBudget(){return S.budgetPlan||JSON.parse(JSON.stringify(BUDGET_DEFAULT));}
+// Füllt einen vorhandenen (ggf. alten/unvollständigen) S.budgetPlan um alle
+// Positionen aus BUDGET_DEFAULT auf, die dort noch fehlen — ohne bereits
+// eingetragene eigene Werte anzufassen. Sonst würde ein früher gespeicherter,
+// schlanker Budgetplan für immer verhindern, dass neu hinzugefügte
+// Kategorien (z.B. Material/Werkzeuge oder die Finanzierungs-Umstrukturierung)
+// überhaupt sichtbar werden — genau das Problem, wenn "Budgetplan ist leer".
+// Die veraltete Kaufpreis-Sammelposition ('kauf') wird dabei durch die neue
+// Aufteilung Eigenanteil/Restkaufpreis ersetzt, damit nichts doppelt zählt.
+function getBudget(){
+  if(!S.budgetPlan){
+    S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+    return S.budgetPlan;
+  }
+  let healed = false;
+  const legacyKauf = S.budgetPlan.findIndex(p=>p.id==='kauf');
+  if(legacyKauf!==-1 && !S.budgetPlan.some(p=>p.id==='kauf_ek')){
+    S.budgetPlan.splice(legacyKauf,1);
+    healed = true;
+  }
+  const existingIds = S.budgetPlan.map(p=>p.id);
+  const missing = BUDGET_DEFAULT.filter(b=>!existingIds.includes(b.id));
+  if(missing.length){
+    S.budgetPlan = S.budgetPlan.concat(JSON.parse(JSON.stringify(missing)));
+    healed = true;
+  }
+  if(healed) saveS();
+  return S.budgetPlan;
+}
 
 function renderBudget(){
   const plan = getBudget();
