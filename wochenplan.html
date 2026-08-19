@@ -188,7 +188,7 @@ const DEFAULT_PLAN=[
     ]},
   ]},
   {id:'m5',label:'Dezember 2026 — Fenster + Fliesen/Trockenbau',weeks:[
-    {id:'w10',label:'Dez 26',dates:'',tasks:[
+    {id:'w10',label:'Dez 26',dates:'Dezember 2026',tasks:[
       {id:'t29',title:'Kühne: Fenster einbauen (ohne Haustür)',sub:'Haustür kommt erst Apr/Mai 27 · Hülle wird dicht',color:'#0f3460'},
       {id:'t30',title:'Laibungsanschlüsse klären (Kühne vs. Gärtner)',sub:'Wer macht Außenputz + Fensterbank?',color:'#e8a838'},
       {id:'t31',title:'Marcos Kollege: Trockenbau Vorwände schließen',sub:'Nach Marco fertig mit Rohren',color:'#0f3460'},
@@ -196,23 +196,23 @@ const DEFAULT_PLAN=[
     ]},
   ]},
   {id:'m6',label:'Januar 2027 — WP Installation + Verputzen + Estrich',weeks:[
-    {id:'w11',label:'Jan 27 (früh)',dates:'',tasks:[
+    {id:'w11',label:'Jan 27 (früh)',dates:'Anfang Jan 2027',tasks:[
       {id:'t33',title:'Marco Erdmann: Wärmepumpe installieren',sub:'Außen- + Inneneinheit + Anschlüsse · Fundament muss ausgehärtet sein',color:'#0f3460'},
       {id:'t34',title:'Innenputz Schimmelstellen + Schlitze',sub:'VOR Estrich · Gärtner oder Fachmann · Bad + Schimmel + Elektroschlitze',color:'#0f3460'},
       {id:'t35',title:'Wände spachteln + grundieren (Caparol)',sub:'Patrick · vor Estrich',color:'#1d9e75'},
     ]},
-    {id:'w12',label:'Jan 27 (spät)',dates:'',tasks:[
+    {id:'w12',label:'Jan 27 (spät)',dates:'Ende Jan 2027',tasks:[
       {id:'t36',title:'Celar: Estrich Schlüter-System einbauen',sub:'FBH Rohre + Druckprüfung müssen fertig sein!',color:'#0f3460'},
       {id:'t37',title:'Estrich trocknen: 10 Tage (Schlüter)',sub:'Bauheizer · regelmäßig lüften · nach 10 Tagen belegereif',color:'#1d9e75'},
     ]},
   ]},
   {id:'m7',label:'Februar/März 2027 — Sanitär Endmontage + Innenausbau',weeks:[
-    {id:'w13',label:'Feb 27',dates:'',tasks:[
+    {id:'w13',label:'Feb 27',dates:'Februar 2027',tasks:[
       {id:'t38',title:'Marco: Sanitär Endmontage',sub:'Armaturen, WC, Dusche, Badewanne · erst nach Fliesen fertig',color:'#0f3460'},
       {id:'t39',title:'Streichen Eigenleistung (Caparol)',sub:'Patrick + Julika',color:'#1d9e75'},
       {id:'t40',title:'Bodenleger: Parkett/Vinyl verlegen',sub:'Erst nach Estrich belegereif (10 Tage)',color:'#0f3460'},
     ]},
-    {id:'w14',label:'Mär 27',dates:'',tasks:[
+    {id:'w14',label:'Mär 27',dates:'März 2027',tasks:[
       {id:'t41',title:'Marco: Hydraulischer Abgleich + WP Inbetriebnahme',sub:'Pflicht KfW/BAFA',color:'#0f3460'},
       {id:'t42',title:'E-Check (Elektriker nimmt Anlage ab)',sub:'',color:'#0f3460'},
     ]},
@@ -228,17 +228,24 @@ const DEFAULT_PLAN=[
     ]},
   ]},
   {id:'m9',label:'Juni–August 2027 — Endspurt + Umzug',weeks:[
-    {id:'w17',label:'Jun–Jul 27',dates:'',tasks:[
+    {id:'w17',label:'Jun–Jul 27',dates:'Juni–Juli 2027',tasks:[
       {id:'t47',title:'Küche liefern + montieren',sub:'Spätestens März 27 bestellen (10–16 Wochen Lieferzeit!)',color:'#534ab7'},
       {id:'t48',title:'Feinschliff + Restarbeiten',sub:'',color:'#1d9e75'},
       {id:'t49',title:'Verwendungsnachweis BAFA + KfW einreichen',sub:'Nach Fertigstellung · ~39.000 € Förderung',color:'#534ab7'},
     ]},
-    {id:'w18',label:'Aug 27',dates:'',tasks:[
+    {id:'w18',label:'Aug 27',dates:'August 2027',tasks:[
       {id:'t50',title:'Umzug',sub:'Einzug Schleifmühlenweg 7a',color:'#534ab7'},
     ]},
   ]},
 ];
-document.getElementById('wm-label').value=w.label;document.getElementById('wm-dates').value=w.dates||'';}
+
+function openWeekModal(mi,wi){
+  eWeekMI=mi;eWeekI=wi;
+  const isNew=wi===null;
+  document.getElementById('week-modal-title').textContent=isNew?'Neue Woche':'Woche bearbeiten';
+  document.getElementById('wm-del').style.display=isNew?'none':'block';
+  if(isNew){document.getElementById('wm-label').value='';document.getElementById('wm-dates').value='';}
+  else{const w=getPlan()[mi].weeks[wi];document.getElementById('wm-label').value=w.label;document.getElementById('wm-dates').value=w.dates||'';}
   document.getElementById('week-modal').classList.add('open');
 }
 
