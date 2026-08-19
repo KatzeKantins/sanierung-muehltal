@@ -113,10 +113,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="modal-overlay" id="month-modal">
   <div class="modal">
-    <h3>Phase / Monat hinzufügen</h3>
+    <h3 id="month-modal-title">Phase / Monat hinzufügen</h3>
     <div class="form-field"><label>Bezeichnung</label><input type="text" id="mm-label" placeholder="z.B. November 2026 — Hülle dicht"/></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="mm-del" onclick="deleteMonth()" style="display:none">Löschen</button>
       <button class="btn-save" onclick="saveMonth()">Hinzufügen</button>
     </div>
   </div>
@@ -127,6 +128,16 @@ const SUPA_URL='https://ygjjhtfeavnkujetgvbh.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnampodGZlYXZua3VqZXRndmJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MzQ0MjYsImV4cCI6MjA5NTQxMDQyNn0.p_gDikzeTCKjsGEWvbS4r1gT3OaMzm7h5Sq-H96IfGA';
 const SUPA_ROW='wochenplan-muehltal-v1';
 let supaClient=null,saveTimer=null;
+
+// Zentrales State-Objekt – hält den (ggf. vom Nutzer bearbeiteten) Plan.
+// War in der Vorversion nirgends deklariert, deshalb schlug jeder Zugriff (P.plan…) fehl.
+let P={};
+
+// Bearbeitungs-Status für die Modals
+let eWeekMI=null,eWeekI=null;
+let eTaskMI=null,eTaskWI=null,eTaskI=null;
+let eMonthI=null;
+let selectedTaskColor='#1d9e75';
 
 function initSupa(){try{if(window.supabase)supaClient=window.supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){}}
 
@@ -239,6 +250,153 @@ const DEFAULT_PLAN=[
   ]},
 ];
 
+// ── Hilfsfunktionen (fehlten komplett in der Vorversion) ─────────────
+
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+
+function getPlan(){
+  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  return P.plan;
+}
+
+function escapeHtml(s){
+  const d=document.createElement('div');
+  d.textContent=s==null?'':String(s);
+  return d.innerHTML;
+}
+
+// ── Rendering (fehlte komplett — deshalb blieb die Seite leer und
+//    der Cloud-Sync-Code danach im Skript wurde nie erreicht) ────────
+
+function render(){
+  const plan=getPlan();
+  const container=document.getElementById('plan-container');
+  container.innerHTML='';
+
+  plan.forEach((month,mi)=>{
+    const monthEl=document.createElement('div');
+    monthEl.className='month';
+
+    const header=document.createElement('div');
+    header.className='month-header';
+    const labelSpan=document.createElement('span');
+    labelSpan.textContent=month.label;
+    header.appendChild(labelSpan);
+    const hActions=document.createElement('div');
+    hActions.style.display='flex';
+    hActions.style.gap='4px';
+    const editBtn=document.createElement('button');
+    editBtn.className='task-btn';
+    editBtn.textContent='✏️';
+    editBtn.onclick=()=>openMonthModal(mi);
+    hActions.appendChild(editBtn);
+    header.appendChild(hActions);
+    monthEl.appendChild(header);
+
+    month.weeks.forEach((week,wi)=>{
+      const weekEl=document.createElement('div');
+      weekEl.className='week';
+
+      const wHeader=document.createElement('div');
+      wHeader.className='week-header';
+      wHeader.onclick=()=>openWeekModal(mi,wi);
+      wHeader.innerHTML=`<div><div class="week-label">${escapeHtml(week.label)}</div><div class="week-dates">${escapeHtml(week.dates||'')}</div></div>`;
+      weekEl.appendChild(wHeader);
+
+      const wBody=document.createElement('div');
+      wBody.className='week-body';
+
+      (week.tasks||[]).forEach((task,ti)=>{
+        const taskEl=document.createElement('div');
+        taskEl.className='task';
+        taskEl.innerHTML=`
+          <div class="task-color" style="background:${escapeHtml(task.color||'#1d9e75')}"></div>
+          <div class="task-content">
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            ${task.sub?`<div class="task-sub">${escapeHtml(task.sub)}</div>`:''}
+          </div>
+          <div class="task-actions">
+            <button class="task-btn" data-role="edit-task">✏️</button>
+          </div>`;
+        taskEl.querySelector('[data-role="edit-task"]').addEventListener('click',(e)=>{
+          e.stopPropagation();
+          openTaskModal(mi,wi,ti);
+        });
+        wBody.appendChild(taskEl);
+      });
+
+      const addTaskBtn=document.createElement('button');
+      addTaskBtn.className='add-task-btn';
+      addTaskBtn.textContent='+ Aufgabe hinzufügen';
+      addTaskBtn.onclick=(e)=>{e.stopPropagation();openTaskModal(mi,wi,null);};
+      wBody.appendChild(addTaskBtn);
+
+      weekEl.appendChild(wBody);
+      monthEl.appendChild(weekEl);
+    });
+
+    const addWeekBtn=document.createElement('button');
+    addWeekBtn.className='add-task-btn';
+    addWeekBtn.textContent='+ Woche hinzufügen';
+    addWeekBtn.onclick=()=>openWeekModal(mi,null);
+    monthEl.appendChild(addWeekBtn);
+
+    container.appendChild(monthEl);
+  });
+}
+
+// ── Aufgaben-Modal ─────────────────────────────────────────────────
+
+function selectColor(el){
+  document.querySelectorAll('#color-picker .color-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTaskColor=el.getAttribute('data-color');
+}
+
+function openTaskModal(mi,wi,ti){
+  eTaskMI=mi;eTaskWI=wi;eTaskI=ti;
+  const isNew=ti===null;
+  document.getElementById('task-modal-title').textContent=isNew?'Neue Aufgabe':'Aufgabe bearbeiten';
+  document.getElementById('tm-del').style.display=isNew?'none':'block';
+
+  let title='',sub='',color='#1d9e75';
+  if(!isNew){
+    const t=getPlan()[mi].weeks[wi].tasks[ti];
+    title=t.title;sub=t.sub||'';color=t.color||'#1d9e75';
+  }
+  document.getElementById('tm-title').value=title;
+  document.getElementById('tm-sub').value=sub;
+  selectedTaskColor=color;
+  document.querySelectorAll('#color-picker .color-opt').forEach(o=>{
+    o.classList.toggle('selected',o.getAttribute('data-color')===color);
+  });
+  document.getElementById('task-modal').classList.add('open');
+}
+
+function saveTask(){
+  const title=document.getElementById('tm-title').value.trim();
+  if(!title){alert('Titel eingeben');return;}
+  const sub=document.getElementById('tm-sub').value.trim();
+  const plan=getPlan();
+  const tasks=plan[eTaskMI].weeks[eTaskWI].tasks;
+  if(eTaskI===null){
+    tasks.push({id:uid(),title,sub,color:selectedTaskColor});
+  }else{
+    tasks[eTaskI].title=title;
+    tasks[eTaskI].sub=sub;
+    tasks[eTaskI].color=selectedTaskColor;
+  }
+  saveS();closeModals();render();
+}
+
+function deleteTask(){
+  if(!confirm('Aufgabe löschen?'))return;
+  getPlan()[eTaskMI].weeks[eTaskWI].tasks.splice(eTaskI,1);
+  saveS();closeModals();render();
+}
+
+// ── Wochen-Modal ───────────────────────────────────────────────────
+
 function openWeekModal(mi,wi){
   eWeekMI=mi;eWeekI=wi;
   const isNew=wi===null;
@@ -252,27 +410,43 @@ function openWeekModal(mi,wi){
 function saveWeek(){
   const label=document.getElementById('wm-label').value.trim();
   if(!label){alert('Bezeichnung eingeben');return;}
-  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  const plan=getPlan();
   const week={id:uid(),label,dates:document.getElementById('wm-dates').value.trim(),tasks:[]};
-  if(eWeekI===null)P.plan[eWeekMI].weeks.push(week);
-  else{P.plan[eWeekMI].weeks[eWeekI].label=week.label;P.plan[eWeekMI].weeks[eWeekI].dates=week.dates;}
+  if(eWeekI===null)plan[eWeekMI].weeks.push(week);
+  else{plan[eWeekMI].weeks[eWeekI].label=week.label;plan[eWeekMI].weeks[eWeekI].dates=week.dates;}
   saveS();closeModals();render();
 }
 
 function deleteWeek(){
   if(!confirm('Woche + alle Aufgaben löschen?'))return;
-  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
-  P.plan[eWeekMI].weeks.splice(eWeekI,1);
+  getPlan()[eWeekMI].weeks.splice(eWeekI,1);
   saveS();closeModals();render();
 }
 
-function openMonthModal(){document.getElementById('month-modal').classList.add('open');}
+// ── Monats-/Phasen-Modal ──────────────────────────────────────────
+
+function openMonthModal(mi){
+  eMonthI=(mi===undefined)?null:mi;
+  const isNew=eMonthI===null;
+  document.getElementById('month-modal-title').textContent=isNew?'Phase / Monat hinzufügen':'Phase / Monat bearbeiten';
+  document.getElementById('mm-del').style.display=isNew?'none':'block';
+  document.getElementById('mm-label').value=isNew?'':getPlan()[eMonthI].label;
+  document.getElementById('month-modal').classList.add('open');
+}
 
 function saveMonth(){
   const label=document.getElementById('mm-label').value.trim();
   if(!label){alert('Bezeichnung eingeben');return;}
-  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
-  P.plan.push({id:uid(),label,weeks:[]});
+  const plan=getPlan();
+  if(eMonthI===null)plan.push({id:uid(),label,weeks:[]});
+  else plan[eMonthI].label=label;
+  saveS();closeModals();render();
+}
+
+function deleteMonth(){
+  if(eMonthI===null)return;
+  if(!confirm('Phase/Monat inkl. aller Wochen & Aufgaben löschen?'))return;
+  getPlan().splice(eMonthI,1);
   saveS();closeModals();render();
 }
 
