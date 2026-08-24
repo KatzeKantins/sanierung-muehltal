@@ -590,8 +590,8 @@ gantt: [
   {l:'Marco: Neue Wasser-/Abwasserrohre',        s:4, e:4, c:'#0f3460'},
   {l:'Marco: Heizungsverteiler + Leitungen',     s:4, e:4, c:'#0f3460'},
   {l:'Marco: Druckprüfung',                      s:4, e:4, c:'#0f3460'},
-  {l:'FBH Platten (Eigenleistung)',              s:4, e:4, c:'#1d9e75'},
-  {l:'FBH Rohre einklipsen (Marco)',             s:4, e:4, c:'#0f3460'},
+  {l:'Celar: Dämm-Rollbahn + Randstreifen',      s:4, e:4, c:'#6b7280'},
+  {l:'Heizungsbauer: Heizrohre tackern',          s:4, e:4, c:'#0f3460'},
   {section:'Phase 4 – Hülle + Vorbereitung Estrich (Dez 2026)'},
   {l:'Fenster einbauen (Kühne)',                 s:5, e:5, c:'#378ADD'},
   {l:'Trockenbau Vorwände Bad (Marcos Kollege)', s:5, e:5, c:'#534ab7'},
@@ -599,7 +599,7 @@ gantt: [
   {l:'Randdämmstreifen kleben (Eigenleistung)',  s:5, e:5, c:'#1d9e75'},
   {section:'Phase 5 – WP + Estrich (Jan 2027)'},
   {l:'Wärmepumpe Installation (Marco)',          s:6, e:6, c:'#0f3460'},
-  {l:'Estrich Schlüter (Celar)',                 s:6, e:6, c:'#6b7280'},
+  {l:'Estrich RapidoWitt (Celar)',                s:6, e:6, c:'#6b7280'},
   {l:'Estrich trocknet (10 Tage)',               s:6, e:6, c:'#6b7280'},
   {section:'Phase 6 – Fliesen + Innenausbau (Feb/Mär 2027)'},
   {l:'Fliesen Bad (Marcos Kollege)',             s:7, e:7, c:'#534ab7'},
@@ -633,7 +633,7 @@ todos: [
     {t:'Statiker beauftragen',                      s:'Balkon-Blumenkasten + Wanddurchbruch Küche/Esszimmer',       p:'h'},
     {t:'❓ Balkon teilweise abstemmen – Baugenehmigung?', s:'Klären ob Rückbau genehmigungspflichtig · Gemeinde Mühltal oder Statiker fragen', p:'h'},
     {t:'Stammumfang Baum vor Hauswand messen',          s:'Bei nächstem Besuch · ab 80cm Umfang (ca. 25cm Durchmesser) Fällgenehmigung Gemeinde Mühltal nötig!', p:'h'},
-    {t:'Heizkreisplanung mit Heizungsbauer klären',     s:'Wer berechnet Rohrlänge/Heizkreise pro Raum für FBH-Verlegung? Heizungsbauer braucht diese Info bevor er Rohre einklipst', p:'h'},
+    {t:'Heizkreisplanung mit Heizungsbauer klären',     s:'Wer berechnet Rohrlänge/Heizkreise pro Raum für FBH-Verlegung? Heizungsbauer braucht diese Info bevor er Rohre auf Celars Dämm-Rollbahn tackert', p:'h'},
     {t:'Uwe Wäckerle: Efficiency Smart Home in iSFP aufnehmen', s:'Shelly Rollläden + FBH-Steuerung + Lüftungssteuerung → 20% BAFA Förderung (BEG EM Anlagentechnik) · VOR Beauftragung Elektriker!', p:'h'},
     {t:'Uwe Wäckerle beauftragen (iSFP)',           s:'heat consult · +49 151 54073185',                            p:'h'},
     {t:'Celar Estrichbau beauftragen',              s:'Angebot läuft 23.06.2026 ab!',                               p:'h'},
@@ -768,7 +768,7 @@ kosten: [
 
 gewerke: [
   {id:'asbest',    n:'Asbest-Entsorgung',          budget:3883,   icon:'☣️',  prio:1},
-  {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:9163,   icon:'🪨',  prio:1},
+  {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:6433.43,icon:'🪨',  prio:1},
   {id:'container', n:'Container Klöppinger',       budget:5000,   icon:'📦',  prio:1},
   {id:'heizung',   n:'Heizung / Wärmepumpe',       budget:35000,  icon:'🔥',  prio:1},
   {id:'sanitaer',  n:'Sanitär & Wasser/Abwasser',  budget:18000,  icon:'🚿',  prio:1},
@@ -794,7 +794,7 @@ ausgabenKategorien: [
   {id:'fenster',     name:'Fenster + Haustür',              budget:40000,    icon:'🪟', fin:'kredit'},
   {id:'lueftung',    name:'Lüftungsanlage',                 budget:2500,     icon:'💨', fin:'kredit'},
   {id:'fassade',     name:'Fassadendämmung',                budget:35000,    icon:'🧱', fin:'kredit'},
-  {id:'estrich',     name:'Estrich (Celar)',                 budget:9163,     icon:'🪨', fin:'kredit'},
+  {id:'estrich',     name:'Estrich (Celar)',                 budget:6433.43,  icon:'🪨', fin:'kredit'},
   {id:'sanitaer',    name:'Sanitär & Abwasser',             budget:45000,    icon:'🚿', fin:'kredit'},
   {id:'elektro',     name:'Elektro',                        budget:8000,     icon:'⚡', fin:'kredit'},
   {id:'verputzen',   name:'Verputzen',                      budget:5000,     icon:'🖌️', fin:'kredit'},
@@ -825,7 +825,10 @@ const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls
 
 // State (user actions only - not content)
 let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
-  estrich:[{firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'offen',notiz:'Bekotec+RapidoWitt · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'}],
+  estrich:[
+    {firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'abgelehnt',notiz:'⚠️ Überholt: Bekotec+RapidoWitt · ersetzt durch neues Angebot vom 18.08.2026 (Tackersystem statt Bekotec)'},
+    {firma:'Celar Estrichbau GmbH',betrag:6433.43,datum:'2026-08-18',status:'offen',notiz:'Angebot P5654.6 · RapidoWitt CT-C30-F5, 50mm, 121,93m² EG/OG (39,50€/m²: 24€ Estrich + 1,50€ PE-Randstreifen + 14€ Dämm-Rollbahn EPS-DES mit Tacker-Rasterung) + 4 Messpunktstellen FBH + Baustelleneinrichtung · netto 5.406,24€ + 19% USt = 6.433,43€ brutto · gültig bis 29.09.2026 · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'},
+  ],
   container:[
     {firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'},
     {firma:'Windeck Containerdienst (Nieder-Ramstadt)',betrag:2490,datum:'2026-06-15',status:'offen',notiz:'80€ stellen+abfahren netto · Bauschutt 70€/m³ · Deponieschutt (Estrich/Fliesen/Putz >30%) 150€/m³ · max. 5m³ Container · ⚠️ Zufahrt prüfen: LKW braucht 2,5m Breite, sonst nur 2,5m³ Container möglich · 14 Tage mietfrei, dann 15€/Woche · Vorlaufzeit 1-2 Tage · Schuttrutschen 1€/m/Tag · Rechnungen zeitnah bezahlen sonst kein Tausch! · Kontakt: Katerina Bachmann-Fotiadis · 0160-98731731'},
@@ -841,7 +844,7 @@ let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
   ],
   sanitaer:[
     {firma:'Marco Erdmann (GWI)',betrag:0,datum:'2026-06-03',status:'offen',notiz:'Vor-Ort-Termin 03.06. 15:00 Uhr · Patricks Bekannter · Sa 22.06. Elements Badausstellung gemeinsam besuchen'},
-    {firma:'Külah Sanitär (Ali Külah)',betrag:30702,datum:'2026-06-17',status:'offen',notiz:'Angebot AG26/0068 · 25.800€ netto / 30.702€ brutto · Bosch Monoblock AW 7 OR-S + 6800i AW · Pufferspeicher 200L + Warmwasserspeicher STORA 290L (KEINE separate Brauchwasser-WP, All-in-One) · Heizkreisverteiler HKV 2/25/25 enthalten · Demontage Altanlage + Gasrückbau + Fundament + Hydr. Abgleich enthalten · ⚠️ FBH-Rohre einklipsen macht Külah, Platten verlegt Patrick selbst · Gültig bis 01.07.2026!'},
+    {firma:'Külah Sanitär (Ali Külah)',betrag:30702,datum:'2026-06-17',status:'offen',notiz:'Angebot AG26/0068 · 25.800€ netto / 30.702€ brutto · Bosch Monoblock AW 7 OR-S + 6800i AW · Pufferspeicher 200L + Warmwasserspeicher STORA 290L (KEINE separate Brauchwasser-WP, All-in-One) · Heizkreisverteiler HKV 2/25/25 enthalten · Demontage Altanlage + Gasrückbau + Fundament + Hydr. Abgleich enthalten · ⚠️ FBH-Rohre tackert Külah/Heizungsbauer auf die von Celar verlegte Dämm-Rollbahn (Tackersystem statt Bekotec) · keine Eigenleistung mehr für die Platten, das übernimmt jetzt Celar als Teil des Estrich-Angebots · Gültig bis 01.07.2026!'},
     {firma:'Richter Reinheim',betrag:0,datum:'2026-06-01',status:'offen',notiz:'Angefragt · Wartet auf Rückruf'},
   ],
   verputzen:[
@@ -1282,7 +1285,7 @@ const BUDGET_DEFAULT = [
   {id:'fenster',   n:'Fenster + Haustür',       betrag:40000,   foerd:8200,  fin:'kredit', note:'BAFA BEG EM'},
   {id:'lueftung',  n:'Lüftung',                 betrag:2500,    foerd:500,   fin:'kredit', note:'BAFA BEG EM · 20% von 2.500€'},
   {id:'fassade',   n:'Fassadendämmung',         betrag:35000,   foerd:6000,  fin:'kredit', note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
-  {id:'estrich',   n:'Estrich (Celar)',          betrag:9163,    foerd:0,     fin:'kredit', note:'Angebot vorliegend'},
+  {id:'estrich',   n:'Estrich (Celar)',          betrag:6433.43, foerd:0,     fin:'kredit', note:'Angebot P5654.6 vom 18.08.2026 · RapidoWitt 50mm inkl. Dämm-Rollbahn (Tackersystem) + PE-Randstreifen · 121,93m² EG/OG · gültig bis 29.09.2026 · ersetzt vorheriges Bekotec-Angebot (9.163€)'},
   {id:'sanitaer',  n:'Sanitär & Abwasser',      betrag:45000,   foerd:0,     fin:'kredit', note:'inkl. Bäder · 2 Bäder + alle Leitungen'},
   {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     fin:'kredit', note:'Eigenleistung'},
   {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     fin:'kredit', note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
