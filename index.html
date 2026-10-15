@@ -938,36 +938,60 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 // haben, würde das normale Zusammenführen (nach id) das nicht erkennen.
 // Deshalb hier zuerst anhand des Inhalts bereinigen, bevor jeder
 // verbleibende Eintrag seine eigene, eindeutige id bekommt.
-function dedupeNoIdByContent(arr, sigFields){
+// Dedupliziert IMMER nach Inhalt — unabhängig davon, ob schon eine id
+// gesetzt ist. Nötig, weil ein früherer (unvollständiger) Reparaturversuch
+// zwei Kopien desselben alten Eintrags bereits mit je einer ZUFÄLLIGEN,
+// unterschiedlichen id versehen haben könnte (auf zwei Geräten unabhängig
+// voneinander nachgerüstet, bevor sie sich kannten) — dann würde ein reiner
+// id-Abgleich die beiden nie wieder zusammenführen. Inhalt gewinnt, die id
+// des zuerst gefundenen Eintrags bleibt erhalten.
+function dedupeByContent(arr, sigFields){
   const seen=new Set();
   return (arr||[]).filter(it=>{
     if(!it) return false;
-    if(it.id) return true; // hat schon eine id, hier nicht anfassen
     const sig = JSON.stringify(sigFields.map(f=>it[f]));
     if(seen.has(sig)) return false;
     seen.add(sig);
     return true;
   });
 }
+// Deterministische id aus dem Inhalt statt einer zufälligen — wichtig beim
+// Nachrüsten alter Einträge ohne id: Gerät A und Gerät B sahen bisher beide
+// z.B. "Kaufpreis Ute" ohne id und haben beim Nachrüsten JEWEILS eine eigene
+// zufällige id vergeben. Da das Zusammenführen danach nach id vergleicht,
+// galten die zwei zufälligen ids als zwei verschiedene Einträge — die
+// Dopplung blieb trotz Bereinigung auf jeder Seite einzeln bestehen, sobald
+// beide Seiten zusammengeführt wurden. Mit dem gleichen Inhalt kommt jetzt
+// auf jedem Gerät dieselbe id raus, wodurch sie beim Zusammenführen korrekt
+// als ein und derselbe Eintrag erkannt werden. Neue, über die App angelegte
+// Einträge bekommen weiterhin eine zufällige id direkt bei der Erstellung
+// (siehe saveAusg/addNotiz/saveTodo) — das betrifft nur das einmalige
+// Nachrüsten alter, id-loser Bestandsdaten.
+function contentHashId(parts){
+  const s=JSON.stringify(parts);
+  let h=0;
+  for(let i=0;i<s.length;i++){ h=((h<<5)-h+s.charCodeAt(i))|0; }
+  return 'bf'+Math.abs(h).toString(36);
+}
 function backfillIds(state){
   if(state.ausgaben){
     Object.keys(state.ausgaben).forEach(k=>{
-      state.ausgaben[k] = dedupeNoIdByContent(state.ausgaben[k], ['titel','betrag','datum','notiz']);
-      state.ausgaben[k].forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+      state.ausgaben[k] = dedupeByContent(state.ausgaben[k], ['titel','betrag','datum','notiz']);
+      state.ausgaben[k].forEach(it=>{ if(it&&!it.id){it.id=contentHashId([it.titel,it.betrag,it.datum,it.notiz]);it._t=it._t||Date.now();} });
     });
   }
   if(Array.isArray(state.notizen)){
-    state.notizen = dedupeNoIdByContent(state.notizen, ['text','ts']);
-    state.notizen.forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+    state.notizen = dedupeByContent(state.notizen, ['text','ts']);
+    state.notizen.forEach(it=>{ if(it&&!it.id){it.id=contentHashId([it.text,it.ts]);it._t=it._t||Date.now();} });
   }
   if(Array.isArray(state.todosEdited)){
     state.todosEdited.forEach(ph=>{
-      ph.items = dedupeNoIdByContent(ph.items, ['t','s','p']);
-      ph.items.forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+      ph.items = dedupeByContent(ph.items, ['t','s','p']);
+      ph.items.forEach(it=>{ if(it&&!it.id){it.id=contentHashId([ph.phase,it.t,it.s,it.p]);it._t=it._t||Date.now();} });
     });
   }
 }
-function mergeArraysById(localArr, cloudArr){
+function mergeArraysById(localArr, cloudArr, sigFields){
   localArr=localArr||[]; cloudArr=cloudArr||[];
   const byId={};
   localArr.forEach(it=>{ if(it&&it.id) byId[it.id]=it; });
@@ -976,13 +1000,28 @@ function mergeArraysById(localArr, cloudArr){
     const ex=byId[it.id];
     if(!ex||(it._t||0)>(ex._t||0)) byId[it.id]=it;
   });
-  return Object.values(byId);
+  let result = Object.values(byId);
+  if(sigFields){
+    // Zwei Geräte können denselben alten (einst id-losen) Eintrag schon
+    // JEWEILS für sich mit einer eigenen id versehen haben, bevor sie sich
+    // kannten — dann bleiben hier zwei verschiedene ids mit identischem
+    // Inhalt übrig, die der reine id-Abgleich oben nicht erkennt. Deshalb
+    // zusätzlich nach Inhalt zusammenführen (die neuere Version gewinnt).
+    const bySig={};
+    result.forEach(it=>{
+      const sig=JSON.stringify(sigFields.map(f=>it[f]));
+      const ex=bySig[sig];
+      if(!ex||(it._t||0)>(ex._t||0)) bySig[sig]=it;
+    });
+    result = Object.values(bySig);
+  }
+  return result;
 }
 function mergeAusgaben(localA, cloudA){
   localA=localA||{}; cloudA=cloudA||{};
   const kats=new Set([...Object.keys(localA),...Object.keys(cloudA)]);
   const merged={};
-  kats.forEach(k=>{ merged[k]=mergeArraysById(localA[k],cloudA[k]); });
+  kats.forEach(k=>{ merged[k]=mergeArraysById(localA[k],cloudA[k],['titel','betrag','datum','notiz']); });
   return merged;
 }
 function mergeTodos(localT, cloudT){
@@ -992,7 +1031,7 @@ function mergeTodos(localT, cloudT){
   localT.forEach(ph=>{ byPhase[ph.phase]=JSON.parse(JSON.stringify(ph)); order.push(ph.phase); });
   cloudT.forEach(ph=>{
     if(!byPhase[ph.phase]){ byPhase[ph.phase]=JSON.parse(JSON.stringify(ph)); order.push(ph.phase); }
-    else{ byPhase[ph.phase].items=mergeArraysById(byPhase[ph.phase].items,ph.items); }
+    else{ byPhase[ph.phase].items=mergeArraysById(byPhase[ph.phase].items,ph.items,['t','s','p']); }
   });
   return order.map(p=>byPhase[p]);
 }
@@ -1012,7 +1051,7 @@ async function loadFromCloud(){
     const p=JSON.parse(data.state);
     backfillIds(S); backfillIds(p);
     p.ausgaben = mergeAusgaben(S.ausgaben, p.ausgaben);
-    p.notizen = mergeArraysById(S.notizen, p.notizen);
+    p.notizen = mergeArraysById(S.notizen, p.notizen, ['text','ts']);
     p.todosEdited = mergeTodos(S.todosEdited, p.todosEdited);
     Object.assign(S,p);
     return true;
