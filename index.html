@@ -932,17 +932,39 @@ function initSupabase(){
 // eine durch die andere zu ersetzen. backfillIds() rüstet alte Einträge
 // ohne id einmalig nach, damit der Abgleich für sie ebenfalls funktioniert.
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+// Einträge ohne id können aus einer früheren Sync-Kollision mehrfach
+// identisch vorhanden sein (genau das Muster, das beim Budgetplan schon
+// aufgetreten ist — z.B. "Kaufpreis Ute" dreifach). Da sie noch keine id
+// haben, würde das normale Zusammenführen (nach id) das nicht erkennen.
+// Deshalb hier zuerst anhand des Inhalts bereinigen, bevor jeder
+// verbleibende Eintrag seine eigene, eindeutige id bekommt.
+function dedupeNoIdByContent(arr, sigFields){
+  const seen=new Set();
+  return (arr||[]).filter(it=>{
+    if(!it) return false;
+    if(it.id) return true; // hat schon eine id, hier nicht anfassen
+    const sig = JSON.stringify(sigFields.map(f=>it[f]));
+    if(seen.has(sig)) return false;
+    seen.add(sig);
+    return true;
+  });
+}
 function backfillIds(state){
   if(state.ausgaben){
     Object.keys(state.ausgaben).forEach(k=>{
-      (state.ausgaben[k]||[]).forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+      state.ausgaben[k] = dedupeNoIdByContent(state.ausgaben[k], ['titel','betrag','datum','notiz']);
+      state.ausgaben[k].forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
     });
   }
   if(Array.isArray(state.notizen)){
+    state.notizen = dedupeNoIdByContent(state.notizen, ['text','ts']);
     state.notizen.forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
   }
   if(Array.isArray(state.todosEdited)){
-    state.todosEdited.forEach(ph=>{ (ph.items||[]).forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} }); });
+    state.todosEdited.forEach(ph=>{
+      ph.items = dedupeNoIdByContent(ph.items, ['t','s','p']);
+      ph.items.forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+    });
   }
 }
 function mergeArraysById(localArr, cloudArr){
