@@ -3,40 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a1a2e">
-<title>📅 Wochenplan Mühltal</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>🏗️ Kernsanierung Mühltal</title>
+<link rel="manifest" href="data:application/json,{"name": "Kernsanierung M\u00fchltal", "short_name": "Bau M\u00fchltal", "description": "Planungs-App Kernsanierung Schleifm\u00fchlenweg 7a", "start_url": "/sanierung-muehltal/", "display": "standalone", "background_color": "#f5f6fa", "theme_color": "#1a1a2e", "orientation": "portrait", "icons": [{"src": "icon.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon.png", "sizes": "512x512", "type": "image/png"}]}">
 <style>
 :root{--primary:#1a1a2e;--blue:#0f3460;--teal:#1d9e75;--amber:#e8a838;--red:#e74c3c;--purple:#534ab7;--bg:#f5f6fa;--card:#fff;--border:#e0e4ec;--text:#1a1a2e;--muted:#6b7280;--small:#9ca3af;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px}
-.header{background:var(--primary);color:#fff;padding:52px 16px 16px;position:relative}
-.header h1{font-size:18px;font-weight:700}
-.header p{font-size:12px;opacity:.7;margin-top:3px}
-.back-btn{position:absolute;top:14px;left:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block}
-.sync-btn{position:absolute;top:14px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer}
-.content{padding:16px;max-width:700px;margin:0 auto;padding-bottom:100px}
-.month{margin-bottom:20px}
-.month-header{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 0 6px;display:flex;align-items:center;justify-content:space-between}
-.week{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden}
-.week-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f9fafb;border-bottom:1px solid var(--border);cursor:pointer}
-.week-label{font-size:12px;font-weight:700;color:var(--muted)}
-.week-dates{font-size:11px;color:var(--small)}
-.week-body{padding:8px 14px}
-.task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
-.task:last-child{border-bottom:none}
-.task-color{width:4px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:20px}
-.task-content{flex:1;min-width:0}
-.task-title{font-size:13px;font-weight:500;line-height:1.4}
-.task-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
-.task-actions{display:flex;gap:4px;flex-shrink:0}
-.task-btn{font-size:14px;background:none;border:none;cursor:pointer;color:var(--small);padding:2px 4px}
-.add-task-btn{width:100%;padding:8px;font-size:12px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:8px;margin-top:6px}
-.add-month-btn{width:100%;padding:10px;font-size:13px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:10px;margin-bottom:16px}
-.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
-.leg-dot{width:10px;height:10px;border-radius:50%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;overscroll-behavior:none}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;font-size:10px;color:var(--muted);border:none;background:none;cursor:pointer;gap:3px}
+.nav-btn.active{color:var(--teal)}
+.nav-btn svg{width:22px;height:22px}
+.page-header{background:var(--primary);color:#fff;padding:52px 16px 16px;position:relative}
+.page-header h1{font-size:20px;font-weight:700}
+.page-header p{font-size:13px;opacity:.7;margin-top:3px}
+.content{padding:16px;padding-bottom:90px;max-width:600px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.card-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h2{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.card-body{padding:14px 16px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.metric{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.metric .label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.metric .value{font-size:22px;font-weight:700}
+.metric .sub{font-size:11px;color:var(--small);margin-top:2px}
+.metric.green .value{color:var(--teal)}
+.metric.amber .value{color:var(--amber)}
+.alert{border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.5}
+.alert.red{background:#fef2f2;border-left:4px solid var(--red);color:#7f1d1d}
+.alert.amber{background:#fffbeb;border-left:4px solid var(--amber);color:#78350f}
+.alert.green{background:#f0fdf4;border-left:4px solid var(--teal);color:#14532d}
+.alert.blue{background:#eff6ff;border-left:4px solid #3b82f6;color:#1e3a8a}
+.alert strong{font-weight:600;display:block;margin-bottom:2px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-purple{background:#ede9fe;color:#4c1d95}
+.badge-grey{background:#f3f4f6;color:#374151}
+/* GANTT */
+.gantt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gantt-table{border-collapse:collapse;font-size:11px;min-width:560px}
+.gantt-table th{background:var(--primary);color:#fff;padding:7px 5px;font-weight:600;font-size:10px;white-space:nowrap;text-align:center}
+.gantt-table th:first-child{text-align:left;padding-left:10px;min-width:130px}
+.gantt-table td{padding:4px 3px;border-bottom:1px solid var(--border);vertical-align:middle}
+.gantt-table td:first-child{font-size:11px;font-weight:500;padding-left:10px;white-space:nowrap}
+.gantt-section td{background:#f0f4ff;font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;padding:7px 10px}
+.gantt-cell{width:26px;height:24px}
+.gantt-bar{border-radius:3px;height:18px;margin:3px 1px}
+/* TODO */
+.todo-phase-header{display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px}
+.todo-phase-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.todo-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.todo-item:last-child{border-bottom:none}
+.todo-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;cursor:pointer}
+.todo-check.done{background:var(--teal);border-color:var(--teal)}
+.todo-check.done::after{content:'';width:11px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);display:block}
+.todo-content{flex:1;cursor:pointer}
+.todo-title{font-size:14px;font-weight:500;line-height:1.4}
+.todo-title.done{text-decoration:line-through;color:var(--small)}
+.todo-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+.todo-prio{flex-shrink:0;margin-top:2px}
+.todo-edit-btn{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:2px 4px;flex-shrink:0;margin-top:1px}
+.progress-wrap{margin-bottom:16px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .5s}
+/* KOSTEN */
+.kosten-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:8px}
+.kosten-row:last-child{border-bottom:none}
+.kosten-left{flex:1;min-width:0}
+.kosten-name{font-size:13px;font-weight:500}
+.kosten-note{font-size:11px;color:var(--muted);margin-top:2px}
+.kosten-right{text-align:right;flex-shrink:0;display:flex;align-items:center;gap:8px}
+.kosten-amount{text-align:right}
+.kosten-von-bis{font-size:13px;font-weight:600}
+.kosten-foerd{font-size:11px;color:var(--teal)}
+.kosten-edit-btn{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:2px 4px}
+.kosten-total{background:var(--primary);border-radius:10px;padding:14px 16px;color:#fff;margin-top:14px}
+.kosten-total .row{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.kosten-total .row.main{font-size:17px;font-weight:700;border-top:1px solid rgba(255,255,255,.2);padding-top:10px;margin-top:6px}
+.kosten-total .green{color:#6ee7b7}
+.foerder-box{background:linear-gradient(135deg,#065f46,#047857);border-radius:var(--radius);padding:16px;color:#fff;margin-bottom:14px}
+.foerder-box h3{font-size:14px;font-weight:700;margin-bottom:12px;opacity:.9}
+.foerder-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.15);font-size:13px}
+.foerder-row:last-child{border-bottom:none;font-weight:700;font-size:15px;padding-top:10px;margin-top:4px;border-top:1px solid rgba(255,255,255,.3)}
+/* ANGEBOTE */
+.angebot-block{margin-bottom:14px}
+.angebot-gewerk{font-size:13px;font-weight:700;color:var(--blue);padding:10px 0 6px;border-bottom:2px solid var(--blue);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.angebot-card{background:#f9fafb;border-radius:8px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px}
+.angebot-card.best{background:#f0fdf4;border:1.5px solid var(--teal)}
+.angebot-info{flex:1}
+.angebot-firma{font-size:13px;font-weight:600}
+.angebot-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.angebot-right{text-align:right;flex-shrink:0}
+.angebot-price{font-size:15px;font-weight:700}
+.angebot-actions{display:flex;gap:5px;margin-top:5px;justify-content:flex-end}
+.btn-small{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:500}
+.add-btn{width:100%;padding:10px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;margin-top:4px}
+/* TIMELINE */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-22px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--teal);border:2px solid #fff;box-shadow:0 0 0 2px var(--teal)}
+.tl-item.urlaub::before{background:var(--amber);box-shadow:0 0 0 2px var(--amber)}
+.tl-item.helfer::before{background:var(--purple);box-shadow:0 0 0 2px var(--purple)}
+.tl-item.asbest::before{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+.tl-item.marco::before{background:#0f3460;box-shadow:0 0 0 2px #0f3460}
+.tl-item.celar::before{background:#6b7280;box-shadow:0 0 0 2px #6b7280}
+.tl-item.kuehne::before{background:#378ADD;box-shadow:0 0 0 2px #378ADD}
+.tl-date{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.tl-card{background:#fff;border-radius:10px;padding:12px 14px;box-shadow:var(--shadow);border-left:3px solid var(--teal)}
+.tl-card.urlaub{border-left-color:var(--amber)}
+.tl-card.helfer{border-left-color:var(--purple)}
+.tl-card.asbest{border-left-color:var(--red)}
+.tl-card.marco{border-left-color:#0f3460}
+.tl-card.celar{border-left-color:#6b7280}
+.tl-card.kuehne{border-left-color:#378ADD}
+.gewerk-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;color:#fff;margin-left:6px;vertical-align:middle}
+.tl-card h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.tl-task{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-top:1px solid #f5f5f5;font-size:13px}
+.tl-task:first-of-type{border-top:none}
+.tl-task-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.tl-task-text{flex:1;line-height:1.4}
+.tl-task-text small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.helfer-block{background:#f5f3ff;border-radius:10px;padding:11px 13px;margin-top:8px}
+.helfer-block h5{font-size:12px;font-weight:700;color:#4c1d95;margin-bottom:6px}
+.helfer-row{display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:12px;color:#4c1d95}
+.helfer-row::before{content:'→';flex-shrink:0;font-weight:700}
+.maschinen-block{background:#f0fdf4;border-radius:10px;padding:11px 13px;margin-top:8px}
+.maschinen-block h5{font-size:12px;font-weight:700;color:#065f46;margin-bottom:6px}
+.maschinen-row{display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:12px;color:#065f46}
+.maschinen-row::before{content:'🔧';flex-shrink:0}
+.container-badge{display:inline-flex;align-items:center;gap:5px;background:#fff3e0;border:1px solid #f59e0b;border-radius:8px;padding:5px 10px;font-size:12px;color:#92400e;font-weight:500;margin-top:6px;margin-right:5px}
+.flex-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.flex-item:last-child{border-bottom:none}
+.flex-item-icon{font-size:16px;flex-shrink:0}
+.flex-item-text{flex:1;line-height:1.4}
+.flex-item-text small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.flex-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:12px 0 6px}
+.steckbrief-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px}
+.steckbrief-row:last-child{border-bottom:none}
+.steckbrief-row .key{color:var(--muted);font-weight:500}
+.steckbrief-row .val{font-weight:600;text-align:right}
+/* NOTIZEN */
+.notiz-input{width:100%;padding:12px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;background:#fff;resize:vertical;min-height:80px;font-family:inherit;margin-bottom:10px}
+.notiz-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--teal);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.notiz-card{background:#fff;border-radius:10px;padding:12px 14px;margin-top:10px;box-shadow:var(--shadow);position:relative}
+.notiz-ts{font-size:11px;color:var(--small);margin-bottom:6px}
+.notiz-text{font-size:13px;line-height:1.6;white-space:pre-wrap}
+.notiz-del{position:absolute;top:10px;right:12px;font-size:20px;color:var(--small);background:none;border:none;cursor:pointer}
+/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
@@ -50,442 +170,782 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-cancel{background:#f3f4f6;color:var(--text)}
 .btn-save{background:var(--teal);color:#fff}
 .btn-delete{background:#fee2e2;color:#991b1b}
-.color-picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-.color-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s}
-.color-opt.selected{border-color:var(--text)}
+/* BUDGET */
+.budget-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.budget-row:last-child{border-bottom:none}
+.budget-name{flex:1;font-size:13px;font-weight:500}
+.budget-note{font-size:11px;color:var(--muted);margin-top:2px}
+.budget-input{width:110px;padding:7px 10px;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:8px;text-align:right;background:#fff;font-family:inherit}
+.budget-input:focus{outline:none;border-color:var(--teal)}
+.budget-foerd{font-size:11px;color:var(--teal);text-align:right;margin-top:2px}
+.budget-del{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:0 2px;flex-shrink:0}
+.budget-section{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:12px 0 4px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.budget-section-cap{font-weight:500;text-transform:none;letter-spacing:0;font-size:10px}
+.budget-subtotal{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 12px;margin-top:-4px;font-size:12px;font-weight:700;border-bottom:1px dashed var(--border)}
+.budget-subtotal.ok{color:var(--teal)}
+.budget-subtotal.over{color:var(--red)}
+.budget-subtotal.info{color:var(--muted);font-weight:600}
+.fin-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;margin-left:6px;text-transform:none;letter-spacing:0;vertical-align:1px}
+.fin-badge.ek{background:#dbeafe;color:#1e40af}
+.fin-badge.bank{background:#ede9fe;color:#4c1d95}
+.fin-badge.kredit{background:#d1fae5;color:#065f46}
+.fin-badge.nicht{background:#fee2e2;color:#991b1b}
+.fin-badge.sonder{background:#fef3c7;color:#92400e}
+
+/* AUSGABEN */
+.ausg-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.ausg-card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.ausg-card .label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.ausg-card .value{font-size:20px;font-weight:700}
+.ausg-card .sub{font-size:11px;margin-top:2px}
+.ausg-card.ok .value{color:var(--teal)}
+.ausg-card.warn .value{color:var(--amber)}
+.ausg-card.over .value{color:var(--red)}
+.ausg-bar-wrap{background:var(--border);border-radius:3px;height:6px;margin:8px 0 14px;overflow:hidden}
+.ausg-bar{height:100%;border-radius:3px;transition:width .5s}
+.ausg-kat{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+.ausg-kat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.ausg-kat-icon{font-size:18px;flex-shrink:0}
+.ausg-kat-info{flex:1;min-width:0}
+.ausg-kat-name{font-size:13px;font-weight:600}
+.ausg-kat-nums{font-size:11px;color:var(--muted);margin-top:2px}
+.ausg-kat-right{text-align:right;flex-shrink:0}
+.ausg-kat-ist{font-size:15px;font-weight:700}
+.ausg-kat-diff{font-size:11px;margin-top:2px}
+.ausg-kat-diff.ok{color:var(--teal)}
+.ausg-kat-diff.warn{color:var(--amber)}
+.ausg-kat-diff.over{color:var(--red)}
+.ausg-kat-body{border-top:1px solid var(--border);display:none}
+.ausg-beleg{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.ausg-beleg:last-child{border-bottom:none}
+.ausg-beleg-info{flex:1}
+.ausg-beleg-titel{font-weight:500}
+.ausg-beleg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.ausg-beleg-betrag{font-size:14px;font-weight:600;flex-shrink:0}
+.ausg-beleg-del{font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:0 4px;flex-shrink:0}
+.ausg-add-btn{width:100%;padding:10px 14px;font-size:12px;border:none;background:#f9fafb;color:var(--muted);cursor:pointer;text-align:left;display:flex;align-items:center;gap:6px}
+.ausg-add-btn:hover{background:#f0f0f0}
+.foerder-hinweis{background:#f0fdf4;border-radius:10px;padding:12px 14px;font-size:12px;color:#065f46;margin-bottom:14px;line-height:1.6}
+
 </style>
 </head>
 <body>
-<div class="header">
-  <a class="back-btn" href="index.html">← App</a>
-  <h1>📅 Wochenplan</h1>
-  <p>Kernsanierung Schleifmühlenweg 7a</p>
-  <button class="sync-btn" id="sync-btn" onclick="syncCloud()">↻ Sync</button>
+<div class="page-header">
+  <h1 id="page-title">🏗️ Kernsanierung Mühltal</h1>
+  <p id="page-sub">Schleifmühlenweg 7a · Jul 2026 – Aug 2027</p>
 </div>
 <div class="content">
-  <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:#1d9e75"></div>Eigenleistung</div>
-    <div class="leg"><div class="leg-dot" style="background:#0f3460"></div>Fachfirma</div>
-    <div class="leg"><div class="leg-dot" style="background:#e8a838"></div>Klären / offen</div>
-    <div class="leg"><div class="leg-dot" style="background:#e74c3c"></div>Blockiert</div>
-    <div class="leg"><div class="leg-dot" style="background:#534ab7"></div>Meilenstein</div>
-  </div>
-  <div id="plan-container"></div>
-  <button class="add-month-btn" onclick="openMonthModal()">+ Monat / Phase hinzufügen</button>
-</div>
 
-<div class="modal-overlay" id="task-modal">
-  <div class="modal">
-    <h3 id="task-modal-title">Aufgabe</h3>
-    <div class="form-field"><label>Titel</label><input type="text" id="tm-title"/></div>
-    <div class="form-field"><label>Details (optional)</label><textarea id="tm-sub"></textarea></div>
-    <div class="form-field">
-      <label>Kategorie / Farbe</label>
-      <div class="color-picker" id="color-picker">
-        <div class="color-opt selected" style="background:#1d9e75" data-color="#1d9e75" onclick="selectColor(this)"></div>
-        <div class="color-opt" style="background:#0f3460" data-color="#0f3460" onclick="selectColor(this)"></div>
-        <div class="color-opt" style="background:#e8a838" data-color="#e8a838" onclick="selectColor(this)"></div>
-        <div class="color-opt" style="background:#e74c3c" data-color="#e74c3c" onclick="selectColor(this)"></div>
-        <div class="color-opt" style="background:#534ab7" data-color="#534ab7" onclick="selectColor(this)"></div>
-        <div class="color-opt" style="background:#6b7280" data-color="#6b7280" onclick="selectColor(this)"></div>
+  <div class="page active" id="page-uebersicht">
+    <div class="metrics">
+      <div class="metric"><div class="label">Baustart</div><div class="value" style="font-size:16px">Jul 2026</div><div class="sub">Einzug Aug 2027</div></div>
+      <div class="metric green"><div class="label">Förderung</div><div class="value">43k €</div><div class="sub">BAFA + KfW</div></div>
+      <div class="metric"><div class="label">Kosten (real.)</div><div class="value" style="font-size:16px">~230k €</div><div class="sub">vor Förderung</div></div>
+      <div class="metric amber"><div class="label">Eigenanteil</div><div class="value" style="font-size:16px">~187k €</div><div class="sub">nach Förderung</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Projektsteckbrief</h2></div>
+      <div class="card-body" style="padding:0 16px">
+        <div class="steckbrief-row"><span class="key">Objekt</span><span class="val">DHH, Baujahr 1972</span></div>
+        <div class="steckbrief-row"><span class="key">Wohnfläche</span><span class="val">135m² + 66m² Nutzfl.</span></div>
+        <div class="steckbrief-row"><span class="key">Schlüssel</span><span class="val">01.–08. Juli 2026</span></div>
+        <div class="steckbrief-row"><span class="key">Urlaub</span><span class="val">17.–28. Juli 2026</span></div>
+        <div class="steckbrief-row"><span class="key">Frei bis</span><span class="val">09. August 2026</span></div>
+        <div class="steckbrief-row"><span class="key">Einzug geplant</span><span class="val">August 2027</span></div>
+        <div class="steckbrief-row"><span class="key">Energieberater</span><span class="val">Uwe Wäckerle</span></div>
+        <div class="steckbrief-row"><span class="key">heat consult</span><span class="val">+49 151 54073185</span></div>
+        <div class="steckbrief-row"><span class="key">Container</span><span class="val">Klöppinger · 06258-9057485</span></div>
+        <div class="steckbrief-row"><span class="key">Estrich</span><span class="val">Celar · 0170-8205385</span></div>
       </div>
     </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
-      <button class="btn-delete" id="tm-del" onclick="deleteTask()" style="display:none">Löschen</button>
-      <button class="btn-save" onclick="saveTask()">Speichern</button>
+
+    <!-- EXPORT / IMPORT -->
+    <div style="display:flex;gap:8px;margin-bottom:4px">
+      <button onclick="exportDaten()" style="flex:1;padding:11px;border-radius:10px;border:0.5px solid var(--teal);background:#f0fdf4;color:#065f46;font-size:13px;font-weight:600;cursor:pointer">⬇ Daten exportieren</button>
+      <button onclick="document.getElementById('import-file').click()" style="flex:1;padding:11px;border-radius:10px;border:0.5px solid var(--border);background:#f9fafb;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer">⬆ Daten importieren</button>
     </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="week-modal">
-  <div class="modal">
-    <h3 id="week-modal-title">Woche</h3>
-    <div class="form-field"><label>Bezeichnung (z.B. KW 36)</label><input type="text" id="wm-label"/></div>
-    <div class="form-field"><label>Zeitraum (z.B. 1.–5. Sep)</label><input type="text" id="wm-dates"/></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
-      <button class="btn-delete" id="wm-del" onclick="deleteWeek()" style="display:none">Löschen</button>
-      <button class="btn-save" onclick="saveWeek()">Speichern</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importDaten(event)"/>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <a href="wochenplan.html" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--purple);background:#ede9fe;color:#4c1d95;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;display:block">📅 Detaillierter Wochenplan</a>
     </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="month-modal">
-  <div class="modal">
-    <h3 id="month-modal-title">Phase / Monat hinzufügen</h3>
-    <div class="form-field"><label>Bezeichnung</label><input type="text" id="mm-label" placeholder="z.B. November 2026 — Hülle dicht"/></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
-      <button class="btn-delete" id="mm-del" onclick="deleteMonth()" style="display:none">Löschen</button>
-      <button class="btn-save" onclick="saveMonth()">Hinzufügen</button>
+    <div style="display:flex;gap:8px;margin-bottom:4px">
+      <button id="sync-btn" onclick="syncCloud()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--blue);background:#eff6ff;color:#1e3a8a;font-size:13px;font-weight:600;cursor:pointer">↻ Cloud synchronisieren</button>
     </div>
+    <p style="font-size:11px;color:var(--small);text-align:center;margin-bottom:14px">Exportiere vor jedem App-Update · alle Daten bleiben lokal bei dir</p>
+
   </div>
-</div>
 
-<script>
-const SUPA_URL='https://ygjjhtfeavnkujetgvbh.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnampodGZlYXZua3VqZXRndmJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MzQ0MjYsImV4cCI6MjA5NTQxMDQyNn0.p_gDikzeTCKjsGEWvbS4r1gT3OaMzm7h5Sq-H96IfGA';
-const SUPA_ROW='wochenplan-muehltal-v1';
-let supaClient=null,saveTimer=null;
-// Gleicher Schutz wie in index.html: verhindert, dass ein zeitgleicher
-// Cloud-Ladevorgang eine gerade erst lokal eingetragene, noch nicht
-// hochgeladene Änderung überschreibt (Ursache für "auf dem einen Gerät
-// eingetragen, auf dem anderen nicht zu sehen").
-let _pendingSave=false;
+  <div class="page" id="page-ablauf">
+    <div class="card">
+      <div class="card-header"><h2>Ablaufplan Rohbau · KW45/26–KW10/27</h2></div>
+      <div class="card-body" style="padding:10px 16px">
+        <div class="alert red" style="margin-bottom:14px"><strong>⚠️ Zwei kritische Gates</strong>Druckprüfung Wasser-/Heizungsrohre (Nov) muss bestehen, bevor verputzt/geschlossen wird. Dichtheitsprüfung Heizkreise (Feb) muss bestehen, bevor Celar den Estrich einbaut.</div>
+        <div class="timeline">
 
-// Zentrales State-Objekt – hält den (ggf. vom Nutzer bearbeiteten) Plan.
-// War in der Vorversion nirgends deklariert, deshalb schlug jeder Zugriff (P.plan…) fehl.
-let P={};
-
-// Bearbeitungs-Status für die Modals
-let eWeekMI=null,eWeekI=null;
-let eTaskMI=null,eTaskWI=null,eTaskI=null;
-let eMonthI=null;
-let selectedTaskColor='#1d9e75';
-
-function initSupa(){try{if(window.supabase)supaClient=window.supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){}}
-
-const DEFAULT_PLAN=[
-  {id:'m1',label:'Juli 2026 — Entkernung',weeks:[
-    {id:'w1',label:'KW 27–28',dates:'1.–12. Jul',tasks:[
-      {id:'t1',title:'Teppiche entfernen (Spachtelaufsatz)',sub:'Keller zuerst — Asbest-Firma braucht freien Boden',color:'#1d9e75'},
-      {id:'t2',title:'Tapeten abziehen (Sprühflasche)',sub:'Realistisch 4–5 Tage',color:'#1d9e75'},
-      {id:'t3',title:'Zählerstand ablesen · Strom anmelden',sub:'',color:'#1d9e75'},
-    ]},
-    {id:'w2',label:'KW 29–30',dates:'14.–28. Jul',tasks:[
-      {id:'t4',title:'Asbest-Firma (während Urlaub)',sub:'Küche + Keller · schriftliche Freigabe anfordern!',color:'#0f3460'},
-      {id:'t5',title:'Urlaub 17.–28. Juli — Baustelle gesperrt',sub:'',color:'#e74c3c'},
-    ]},
-    {id:'w3',label:'KW 31',dates:'28. Jul–8. Aug',tasks:[
-      {id:'t6',title:'Patrick Vollzeit: Fliesen, Schimmelputz, Wanddurchbruch',sub:'Nach schriftlicher Freigabe durch Asbest-Firma',color:'#1d9e75'},
-      {id:'t7',title:'Sa 02. Aug: Estrichabbruch EG (4–5 Helfer)',sub:'',color:'#534ab7'},
-      {id:'t8',title:'Sa 09. Aug: Estrichabbruch OG (4–5 Helfer)',sub:'',color:'#534ab7'},
-    ]},
-  ]},
-  {id:'m2',label:'August 2026 — Entkernung + Rohrnetz',weeks:[
-    {id:'w4',label:'KW 32–33',dates:'3.–14. Aug',tasks:[
-      {id:'t8b',title:'Baum fällen vor Hauswand',sub:'Genehmigung prüfen · Stammumfang messen!',color:'#e74c3c'},
-      {id:'t9',title:'Gasleitung trennen (konzessionierter Installateur)',sub:'Muss als allererstes passieren',color:'#e74c3c'},
-      {id:'t10',title:'Alte Heizkörper abhängen + Therme entfernen',sub:'Nach Gastrennung · Helfer nötig',color:'#1d9e75'},
-    ]},
-    {id:'w5',label:'KW 34–35',dates:'17.–28. Aug',tasks:[
-      {id:'t11',title:'Altes Rohrnetz raus (Heizkörperleitungen + Wasserleitungen)',sub:'Mit GWI-Freund · Kupfer/Stahl zum Schrotthändler',color:'#1d9e75'},
-      {id:'t11c',title:'Haus außen freigraben (50cm rundum)',sub:'Für WDVS · Eigenleistung',color:'#1d9e75'},
-      {id:'t11d',title:'Hausanschluss Abwasser freigraben (2m tief)',sub:'Für Dachentwässerung · mit Marco abstimmen',color:'#e8a838'},
-    ]},
-  ]},
-  {id:'m3',label:'September 2026 — Patrick Vollzeit · Fokus: Elektro',weeks:[
-    {id:'w6',label:'KW 36–37',dates:'1.–12. Sep',tasks:[
-      {id:'t12',title:'Materialien bestellen: Elektro',sub:'Kabel, Leerrohre, Dosen — VOR dem Stemmen bestellen!',color:'#e8a838'},
-      {id:'t13',title:'Elektroschlitze stemmen EG',sub:'Schaltplan mit Elektriker abstimmen · für Anfänger 4–5 Tage',color:'#1d9e75'},
-      {id:'t13b',title:'Leerrohre im Boden verlegen EG',sub:'Vor Estrich · 1–2 Tage',color:'#1d9e75'},
-      {id:'t14',title:'Fundament Wärmepumpe vorbereiten + gießen',sub:'Erst nach WP-Angebot · 4 Wochen aushärten',color:'#e8a838'},
-    ]},
-    {id:'w7',label:'KW 38–40',dates:'15. Sep–3. Okt',tasks:[
-      {id:'t15',title:'Elektroschlitze stemmen OG',sub:'Puffer einplanen',color:'#1d9e75'},
-      {id:'t15b',title:'Kabel ziehen EG + OG · Dosen setzen',sub:'',color:'#1d9e75'},
-    ]},
-  ]},
-  {id:'m4',label:'November 2026 — Marco: Wasser-/Heizungs-Rohinstallation + Fenster-Vorbereitung',weeks:[
-    {id:'w8',label:'KW45–48',dates:'2.–29. Nov',tasks:[
-      {id:'t19',title:'Marco: Wasser-/Abwasserrohre + Heizkreisläufe/Verteiler verlegen',sub:'Ein Rohbau-Termin für Sanitär UND Heizung · ca. 3 Wochen (eure Angabe) · Keller muss zugänglich sein',color:'#0f3460'},
-      {id:'t19b',title:'Kernbohrung Küche (Dunstabzugshaube)',sub:'Wanddurchführung für Abluft, ca. 100–150mm · idealerweise gebündelt mit Marcos Rohbau · wer genau macht das noch klären (Kernbohr-Spezialist oder Küchen-/Lüftungsbauer)',color:'#0f3460'},
-      {id:'t25',title:'Druckprüfung Wasser- + Heizungsrohre (Wände)',sub:'Pflicht vor Einputzen & vor Schließen der Vorwände! · ⚠️ Frostschutz der Heizkreise über den Winter klären (Bauheizer durchgängig, Luft statt Wasser, oder zwischenzeitlich entleeren)',color:'#e74c3c'},
-    ]},
-    {id:'w9',label:'KW48–49',dates:'23. Nov–6. Dez',tasks:[
-      {id:'t26',title:'Glattstrich an den Fensterlaibungen',sub:'Eigenleistung oder extern · nötig für sauberen Fensteranschluss · Dauer offen',color:'#1d9e75'},
-      {id:'t29',title:'Kühne: Fenster einbauen (ohne Haustür)',sub:'Haustür kommt erst Apr/Mai 27 · Hülle wird dicht · muss vor Verputzen (Jan) fertig sein',color:'#0f3460'},
-      {id:'t30',title:'Laibungsanschlüsse klären (Kühne vs. Gärtner)',sub:'Wer macht Außenputz + Fensterbank?',color:'#e8a838'},
-    ]},
-  ]},
-  {id:'m5',label:'Januar 2027 — Verputzen + Trockenbau Bad + Wärmepumpe',weeks:[
-    {id:'w10',label:'KW01',dates:'4.–10. Jan',tasks:[
-      {id:'t35',title:'Patrick: Spachteln + grundieren (Vorbereitung)',sub:'Unebenheiten ausgleichen, damit Gregor direkt drüber verputzen kann · vor Punkt unten',color:'#1d9e75'},
-    ]},
-    {id:'w11',label:'KW02 — bestätigt',dates:'11.–17. Jan',tasks:[
-      {id:'t34',title:'Gregor: Verputzen Rest des Hauses (Schimmelstellen + Schlitze)',sub:'✅ Start bestätigt: 15. Januar · OHNE Bad (das macht komplett Albrecht/Trockenbau) · muss fertig+trocken sein, bevor Celar den Boden aufbaut',color:'#e8a838'},
-      {id:'t31a',title:'Albrecht: Ständerwerk Vorwand Bad aufstellen',sub:'✅ Termin bestätigt: 2. Januarwoche, parallel zu Gregor (andere Baustelle/Raum, kein Konflikt) · komplett neu, es stand noch nichts',color:'#534ab7'},
-      {id:'t33',title:'Marco: Wärmepumpe installieren',sub:'Außen- + Inneneinheit + Anschlüsse · unabhängig, Fundament seit September ausgehärtet',color:'#0f3460'},
-    ]},
-    {id:'w12',label:'KW03',dates:'18.–24. Jan',tasks:[
-      {id:'t31aa',title:'Marco: WC-/Bad-Anschlüsse an Albrechts Vorwand anschließen',sub:'Erst möglich sobald Albrechts Ständerwerk steht · separater Kurztermin, zusätzlich zur Rohinstallation im November',color:'#0f3460'},
-      {id:'t31b2',title:'Albrecht: Vorwände schließen/beplanken',sub:'Erst nach Marcos WC-Anschluss + bestandener Druckprüfung',color:'#534ab7'},
-    ]},
-  ]},
-  {id:'m6',label:'Februar 2027 — Bodenaufbau + Estrich',weeks:[
-    {id:'w13',label:'KW04',dates:'25.–31. Jan',tasks:[
-      {id:'t22a',title:'Celar: Randdämmstreifen verlegen',sub:'PE-Randstreifen 8/120mm umlaufend · NEU: erst jetzt, nachdem Gregors Verputzen fertig+trocken ist (nicht vorher — sonst beschädigt der Verputzer die Dämmung) · Teil des Estrich-Angebots P5654.6',color:'#6b7280'},
-      {id:'t22',title:'Celar: Dämm-Rollbahn (Tackersystem) verlegen',sub:'EPS-DES Rollbahn mit Tacker-Rasterung · 121,93m² EG/OG · Albrechts Vorwand steht schon, Celar baut drumherum',color:'#6b7280'},
-    ]},
-    {id:'w14',label:'KW05',dates:'1.–7. Feb',tasks:[
-      {id:'t23',title:'Marco: Heizrohre auf Celars Rollbahn tackern + an Verteiler anschließen',sub:'Erst nach Celars Dämm-Rollbahn möglich',color:'#0f3460'},
-      {id:'t24',title:'Dichtheitsprüfung Heizkreise',sub:'Muss fertig + dicht sein vor Celars Estrich-Einbau',color:'#e74c3c'},
-    ]},
-    {id:'w15',label:'KW06',dates:'8.–14. Feb',tasks:[
-      {id:'t36',title:'Celar: RapidoWitt-Estrich einbauen',sub:'50mm, 121,93m² EG/OG · nach 12h begehbar',color:'#6b7280'},
-      {id:'t37',title:'Estrich trocknen: 10 Tage (RapidoWitt)',sub:'Bauheizer · regelmäßig lüften · danach belegereif · Objektvlies/Streichen kann schon in dieser Phase starten (begehbar, nur noch nicht belegereif)',color:'#1d9e75'},
-    ]},
-  ]},
-  {id:'m7',label:'Februar/März 2027 — Fliesen + Innenausbau',weeks:[
-    {id:'w16',label:'KW08',dates:'22.–28. Feb',tasks:[
-      {id:'t31b',title:'Albrecht: Bad abdichten (Verbundabdichtung)',sub:'Boden + Wände vollflächig, nach Estrich belegereif · Marcos Angebot (26-585-AN) deckt nur das Wannenabdichtband an der Anschlussfuge ab (DIN 18534), NICHT die vollflächige Abdichtung',color:'#534ab7'},
-      {id:'t32',title:'Albrecht: Fliesen Bad OG + Gäste-WC',sub:'Erst nach Abdichtung ausgehärtet',color:'#534ab7'},
-      {id:'t39',title:'Objektvlies/Streichen (Eigenleistung)',sub:'Patrick + Julika · nach Estrich, vor Parkett (Kleister/Farbe nicht auf neuem Boden!)',color:'#1d9e75'},
-    ]},
-    {id:'w17',label:'KW09',dates:'1.–7. Mär',tasks:[
-      {id:'t38',title:'Marco: Sanitär-Endmontage',sub:'Armaturen, WC, Dusche, Badewanne · erst nach Fliesen fertig',color:'#0f3460'},
-      {id:'t40',title:'Bodenleger: Parkett/Vinyl verlegen',sub:'Erst nach Estrich belegereif + Wände fertig (Objektvlies/Streichen)',color:'#0f3460'},
-    ]},
-    {id:'w18',label:'KW09–10',dates:'1.–14. Mär',tasks:[
-      {id:'t41',title:'Marco: Hydraulischer Abgleich + WP Inbetriebnahme',sub:'Pflicht KfW/BAFA',color:'#0f3460'},
-      {id:'t42',title:'E-Check (Elektriker nimmt Anlage ab)',sub:'',color:'#0f3460'},
-    ]},
-  ]},
-  {id:'m8',label:'März–Mai 2027 — Dach + Fassade',weeks:[
-    {id:'w15',label:'Mär–Apr 27',dates:'4–6 Wochen',tasks:[
-      {id:'t44',title:'Dachdecker: Flachdachsanierung',sub:'Erst nach BAFA-Bescheid · 4–6 Wochen',color:'#0f3460'},
-      {id:'t44b',title:'Kühne: Haustür einbauen',sub:'Apr/Mai 27 · parallel zum Dach',color:'#0f3460'},
-    ]},
-    {id:'w16',label:'Apr–Mai 27',dates:'4–6 Wochen',tasks:[
-      {id:'t45',title:'Gärtner: WDVS + Außenputz',sub:'Nach Dach fertig · 4–6 Wochen · Gerüst koordinieren',color:'#0f3460'},
-      {id:'t46',title:'Außenputz Laibungen nach Haustür',sub:'Koordination Gärtner + Kühne',color:'#e8a838'},
-    ]},
-  ]},
-  {id:'m9',label:'Juni–August 2027 — Endspurt + Umzug',weeks:[
-    {id:'w17',label:'Jun–Jul 27',dates:'Juni–Juli 2027',tasks:[
-      {id:'t47',title:'Küche liefern + montieren',sub:'Spätestens März 27 bestellen (10–16 Wochen Lieferzeit!)',color:'#534ab7'},
-      {id:'t48',title:'Feinschliff + Restarbeiten',sub:'',color:'#1d9e75'},
-      {id:'t49',title:'Verwendungsnachweis BAFA + KfW einreichen',sub:'Nach Fertigstellung · ~39.000 € Förderung',color:'#534ab7'},
-    ]},
-    {id:'w18',label:'Aug 27',dates:'August 2027',tasks:[
-      {id:'t50',title:'Umzug',sub:'Einzug Schleifmühlenweg 7a',color:'#534ab7'},
-    ]},
-  ]},
-];
-
-// ── Hilfsfunktionen (fehlten komplett in der Vorversion) ─────────────
-
-function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
-
-function getPlan(){
-  if(!P.plan)P.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
-  return P.plan;
-}
-
-function escapeHtml(s){
-  const d=document.createElement('div');
-  d.textContent=s==null?'':String(s);
-  return d.innerHTML;
-}
-
-// ── Rendering (fehlte komplett — deshalb blieb die Seite leer und
-//    der Cloud-Sync-Code danach im Skript wurde nie erreicht) ────────
-
-function render(){
-  const plan=getPlan();
-  const container=document.getElementById('plan-container');
-  container.innerHTML='';
-
-  plan.forEach((month,mi)=>{
-    const monthEl=document.createElement('div');
-    monthEl.className='month';
-
-    const header=document.createElement('div');
-    header.className='month-header';
-    const labelSpan=document.createElement('span');
-    labelSpan.textContent=month.label;
-    header.appendChild(labelSpan);
-    const hActions=document.createElement('div');
-    hActions.style.display='flex';
-    hActions.style.gap='4px';
-    const editBtn=document.createElement('button');
-    editBtn.className='task-btn';
-    editBtn.textContent='✏️';
-    editBtn.onclick=()=>openMonthModal(mi);
-    hActions.appendChild(editBtn);
-    header.appendChild(hActions);
-    monthEl.appendChild(header);
-
-    month.weeks.forEach((week,wi)=>{
-      const weekEl=document.createElement('div');
-      weekEl.className='week';
-
-      const wHeader=document.createElement('div');
-      wHeader.className='week-header';
-      wHeader.onclick=()=>openWeekModal(mi,wi);
-      wHeader.innerHTML=`<div><div class="week-label">${escapeHtml(week.label)}</div><div class="week-dates">${escapeHtml(week.dates||'')}</div></div>`;
-      weekEl.appendChild(wHeader);
-
-      const wBody=document.createElement('div');
-      wBody.className='week-body';
-
-      (week.tasks||[]).forEach((task,ti)=>{
-        const taskEl=document.createElement('div');
-        taskEl.className='task';
-        taskEl.innerHTML=`
-          <div class="task-color" style="background:${escapeHtml(task.color||'#1d9e75')}"></div>
-          <div class="task-content">
-            <div class="task-title">${escapeHtml(task.title)}</div>
-            ${task.sub?`<div class="task-sub">${escapeHtml(task.sub)}</div>`:''}
+          <div class="tl-item marco">
+            <div class="tl-date">KW45–48 · 2.–29. Nov 2026</div>
+            <div class="tl-card marco">
+              <h4>🔧 Marco: Wasser-/Heizungs-Rohinstallation</h4>
+              <div class="tl-task"><div class="tl-task-icon">💧</div><div class="tl-task-text">Wasser-/Abwasserrohre + Heizkreisläufe/Verteiler verlegen<small>Ein Rohbau-Termin für Sanitär UND Heizung · ca. 3 Wochen (eure Angabe) · Keller muss zugänglich sein</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🕳️</div><div class="tl-task-text">Kernbohrung Küche (Dunstabzugshaube)<small>Wanddurchführung für Abluft, ca. 100–150mm · idealerweise gebündelt mit Marcos Rohbau · wer genau macht das noch klären (Kernbohr-Spezialist oder Küchen-/Lüftungsbauer)</small><span class="gewerk-tag" style="background:#0f3460">Marco?</span></div></div>
+            </div>
           </div>
-          <div class="task-actions">
-            <button class="task-btn" data-role="edit-task">✏️</button>
-          </div>`;
-        taskEl.querySelector('[data-role="edit-task"]').addEventListener('click',(e)=>{
-          e.stopPropagation();
-          openTaskModal(mi,wi,ti);
-        });
-        wBody.appendChild(taskEl);
-      });
 
-      const addTaskBtn=document.createElement('button');
-      addTaskBtn.className='add-task-btn';
-      addTaskBtn.textContent='+ Aufgabe hinzufügen';
-      addTaskBtn.onclick=(e)=>{e.stopPropagation();openTaskModal(mi,wi,null);};
-      wBody.appendChild(addTaskBtn);
+          <div class="tl-item asbest">
+            <div class="tl-date">Ende KW48 · ~29. Nov 2026 — GATE 1</div>
+            <div class="tl-card asbest">
+              <h4>🚨 Druckprüfung Wasser- + Heizungsrohre (Wände)</h4>
+              <div class="tl-task"><div class="tl-task-icon">✅</div><div class="tl-task-text">Pflicht vor Einputzen & vor Schließen der Vorwände!<small>⚠️ Frostschutz der Heizkreise über den Winter klären (Bauheizer durchgängig, Luft statt Wasser, oder zwischenzeitlich entleeren)</small></div></div>
+            </div>
+          </div>
 
-      weekEl.appendChild(wBody);
-      monthEl.appendChild(weekEl);
-    });
+          <div class="tl-item kuehne">
+            <div class="tl-date">KW48–49 · 23. Nov–6. Dez 2026</div>
+            <div class="tl-card kuehne">
+              <h4>🪟 Fenster-Vorbereitung + Einbau</h4>
+              <div class="tl-task"><div class="tl-task-icon">🧱</div><div class="tl-task-text">Glattstrich an den Fensterlaibungen<small>Eigenleistung oder extern · nötig für sauberen Fensteranschluss · Dauer offen</small><span class="gewerk-tag" style="background:#1d9e75">Eigenleistung</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪟</div><div class="tl-task-text">Fenster einbauen (ohne Haustür)<small>Haustür kommt erst Apr/Mai 27 · Hülle wird dicht · muss vor Verputzen (Jan) fertig sein</small><span class="gewerk-tag" style="background:#378ADD">Kühne</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">❓</div><div class="tl-task-text">Laibungsanschlüsse klären<small>Wer macht Außenputz + Fensterbank — Kühne oder Gärtner?</small></div></div>
+            </div>
+          </div>
 
-    const addWeekBtn=document.createElement('button');
-    addWeekBtn.className='add-task-btn';
-    addWeekBtn.textContent='+ Woche hinzufügen';
-    addWeekBtn.onclick=()=>openWeekModal(mi,null);
-    monthEl.appendChild(addWeekBtn);
+          <div class="tl-item">
+            <div class="tl-date">KW01/27 · 4.–10. Jan 2027</div>
+            <div class="tl-card">
+              <h4>🧱 Patrick: Spachteln + grundieren</h4>
+              <div class="tl-task"><div class="tl-task-icon">🪣</div><div class="tl-task-text">Unebenheiten ausgleichen, damit Gregor direkt drüber verputzen kann<small>Vorbereitung — läuft VOR Gregors Start, nicht parallel</small><span class="gewerk-tag" style="background:#1d9e75">Eigenleistung</span></div></div>
+            </div>
+          </div>
 
-    container.appendChild(monthEl);
-  });
-}
+          <div class="tl-item urlaub">
+            <div class="tl-date">KW02/27 · 11.–17. Jan 2027 — bestätigt</div>
+            <div class="tl-card urlaub">
+              <h4>🎨 Verputzen + Trockenbau Bad (parallel)</h4>
+              <div class="tl-task"><div class="tl-task-icon">🎨</div><div class="tl-task-text">Verputzen Rest des Hauses (Schimmelstellen + Schlitze)<small>✅ Start bestätigt: 15. Januar · OHNE Bad (das macht komplett Albrecht/Trockenbau) · muss fertig+trocken sein, bevor Celar den Boden aufbaut</small><span class="gewerk-tag" style="background:#e8a838">Gregor</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪵</div><div class="tl-task-text">Ständerwerk Vorwand Bad aufstellen<small>✅ Termin bestätigt: 2. Januarwoche, parallel zu Gregor (andere Baustelle/Raum, kein Konflikt) · komplett neu, es stand noch nichts</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">♨️</div><div class="tl-task-text">Wärmepumpe installieren<small>Außen- + Inneneinheit + Anschlüsse · unabhängig, Fundament seit September ausgehärtet</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+            </div>
+          </div>
 
-// ── Aufgaben-Modal ─────────────────────────────────────────────────
+          <div class="tl-item helfer">
+            <div class="tl-date">KW03/27 · 18.–24. Jan 2027</div>
+            <div class="tl-card helfer">
+              <h4>🚿 Bad-Anschlüsse + Vorwände schließen</h4>
+              <div class="tl-task"><div class="tl-task-icon">🔧</div><div class="tl-task-text">WC-/Bad-Anschlüsse an Albrechts Vorwand anschließen<small>Erst möglich sobald Albrechts Ständerwerk steht · separater Kurztermin, zusätzlich zur Rohinstallation im November</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪵</div><div class="tl-task-text">Vorwände schließen/beplanken<small>Erst nach Marcos WC-Anschluss + bestandener Druckprüfung</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+            </div>
+          </div>
 
-function selectColor(el){
-  document.querySelectorAll('#color-picker .color-opt').forEach(o=>o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTaskColor=el.getAttribute('data-color');
-}
+          <div class="tl-item celar">
+            <div class="tl-date">KW04/27 · 25.–31. Jan 2027</div>
+            <div class="tl-card celar">
+              <h4>🏗️ Celar: Bodenaufbau (jetzt erst — nach Verputzen!)</h4>
+              <div class="tl-task"><div class="tl-task-icon">📏</div><div class="tl-task-text">Randdämmstreifen verlegen<small>PE-Randstreifen 8/120mm umlaufend · NEU: erst jetzt, nachdem Gregors Verputzen fertig+trocken ist (nicht vorher — sonst beschädigt der Verputzer die Dämmung) · Teil des Estrich-Angebots P5654.6</small><span class="gewerk-tag" style="background:#6b7280">Celar</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">📏</div><div class="tl-task-text">Dämm-Rollbahn (Tackersystem) verlegen<small>EPS-DES Rollbahn mit Tacker-Rasterung · 121,93m² EG/OG · Albrechts Vorwand steht schon, Celar baut drumherum</small><span class="gewerk-tag" style="background:#6b7280">Celar</span></div></div>
+            </div>
+          </div>
 
-function openTaskModal(mi,wi,ti){
-  eTaskMI=mi;eTaskWI=wi;eTaskI=ti;
-  const isNew=ti===null;
-  document.getElementById('task-modal-title').textContent=isNew?'Neue Aufgabe':'Aufgabe bearbeiten';
-  document.getElementById('tm-del').style.display=isNew?'none':'block';
+          <div class="tl-item asbest">
+            <div class="tl-date">KW05/27 · 1.–7. Feb 2027 — GATE 2</div>
+            <div class="tl-card asbest">
+              <h4>🔥 Heizrohre + Dichtheitsprüfung</h4>
+              <div class="tl-task"><div class="tl-task-icon">🔥</div><div class="tl-task-text">Heizrohre auf Celars Rollbahn tackern + an Verteiler anschließen<small>Erst nach Celars Dämm-Rollbahn möglich</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🚨</div><div class="tl-task-text">Dichtheitsprüfung Heizkreise<small>Muss fertig + dicht sein vor Celars Estrich-Einbau</small></div></div>
+            </div>
+          </div>
 
-  let title='',sub='',color='#1d9e75';
-  if(!isNew){
-    const t=getPlan()[mi].weeks[wi].tasks[ti];
-    title=t.title;sub=t.sub||'';color=t.color||'#1d9e75';
-  }
-  document.getElementById('tm-title').value=title;
-  document.getElementById('tm-sub').value=sub;
-  selectedTaskColor=color;
-  document.querySelectorAll('#color-picker .color-opt').forEach(o=>{
-    o.classList.toggle('selected',o.getAttribute('data-color')===color);
-  });
-  document.getElementById('task-modal').classList.add('open');
-}
+          <div class="tl-item celar">
+            <div class="tl-date">KW06/27 · 8.–14. Feb 2027</div>
+            <div class="tl-card celar">
+              <h4>🏗️ Celar: Estrich einbauen + trocknen</h4>
+              <div class="tl-task"><div class="tl-task-icon">🏗️</div><div class="tl-task-text">RapidoWitt-Estrich einbauen<small>50mm, 121,93m² EG/OG · nach 12h begehbar</small><span class="gewerk-tag" style="background:#6b7280">Celar</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🌬️</div><div class="tl-task-text">Estrich trocknen: 10 Tage (RapidoWitt)<small>Bauheizer · regelmäßig lüften · danach belegereif · Objektvlies/Streichen kann schon in dieser Phase starten (begehbar, nur noch nicht belegereif)</small></div></div>
+            </div>
+          </div>
 
-function saveTask(){
-  const title=document.getElementById('tm-title').value.trim();
-  if(!title){alert('Titel eingeben');return;}
-  const sub=document.getElementById('tm-sub').value.trim();
-  const plan=getPlan();
-  const tasks=plan[eTaskMI].weeks[eTaskWI].tasks;
-  if(eTaskI===null){
-    tasks.push({id:uid(),_t:Date.now(),title,sub,color:selectedTaskColor});
-  }else{
-    tasks[eTaskI].title=title;
-    tasks[eTaskI].sub=sub;
-    tasks[eTaskI].color=selectedTaskColor;
-    tasks[eTaskI]._t=Date.now();
-  }
-  saveS();closeModals();render();
-}
+          <div class="tl-item helfer">
+            <div class="tl-date">KW08/27 · 22.–28. Feb 2027</div>
+            <div class="tl-card helfer">
+              <h4>🚿 Bad-Abdichtung + Fliesen + Streichen</h4>
+              <div class="tl-task"><div class="tl-task-icon">💦</div><div class="tl-task-text">Bad abdichten (Verbundabdichtung)<small>Boden + Wände vollflächig, nach Estrich belegereif · Marcos Angebot (26-585-AN) deckt nur das Wannenabdichtband an der Anschlussfuge ab (DIN 18534), NICHT die vollflächige Abdichtung</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🟦</div><div class="tl-task-text">Fliesen Bad OG + Gäste-WC<small>Erst nach Abdichtung ausgehärtet</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🖌️</div><div class="tl-task-text">Objektvlies/Streichen<small>Patrick + Julika · nach Estrich, vor Parkett (Kleister/Farbe nicht auf neuem Boden!)</small><span class="gewerk-tag" style="background:#1d9e75">Eigenleistung</span></div></div>
+            </div>
+          </div>
 
-function deleteTask(){
-  if(!confirm('Aufgabe löschen?'))return;
-  getPlan()[eTaskMI].weeks[eTaskWI].tasks.splice(eTaskI,1);
-  saveS();closeModals();render();
-}
+          <div class="tl-item marco">
+            <div class="tl-date">KW09/27 · 1.–7. Mär 2027</div>
+            <div class="tl-card marco">
+              <h4>🚽 Sanitär-Endmontage + Boden</h4>
+              <div class="tl-task"><div class="tl-task-icon">🚽</div><div class="tl-task-text">Sanitär-Endmontage<small>Armaturen, WC, Dusche, Badewanne · erst nach Fliesen fertig</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪵</div><div class="tl-task-text">Parkett/Vinyl verlegen<small>Erst nach Estrich belegereif + Wände fertig (Objektvlies/Streichen)</small><span class="gewerk-tag" style="background:#378ADD">Bodenleger</span></div></div>
+            </div>
+          </div>
 
-// ── Wochen-Modal ───────────────────────────────────────────────────
+          <div class="tl-item marco">
+            <div class="tl-date">KW09–10/27 · 1.–14. Mär 2027</div>
+            <div class="tl-card marco">
+              <h4>✅ Abnahme Heizung + Elektro</h4>
+              <div class="tl-task"><div class="tl-task-icon">⚖️</div><div class="tl-task-text">Hydraulischer Abgleich + WP-Inbetriebnahme<small>Pflicht KfW/BAFA</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">⚡</div><div class="tl-task-text">E-Check (Elektriker nimmt Anlage ab)</div></div>
+            </div>
+          </div>
 
-function openWeekModal(mi,wi){
-  eWeekMI=mi;eWeekI=wi;
-  const isNew=wi===null;
-  document.getElementById('week-modal-title').textContent=isNew?'Neue Woche':'Woche bearbeiten';
-  document.getElementById('wm-del').style.display=isNew?'none':'block';
-  if(isNew){document.getElementById('wm-label').value='';document.getElementById('wm-dates').value='';}
-  else{const w=getPlan()[mi].weeks[wi];document.getElementById('wm-label').value=w.label;document.getElementById('wm-dates').value=w.dates||'';}
-  document.getElementById('week-modal').classList.add('open');
-}
+        </div>
+        <div class="alert amber" style="margin-top:4px"><strong>💡 Alle Termine sind Planwerte</strong>Basis: Rohinstallation startet Mitte Okt 2026, dauert 2–3 Wochen (eure Angabe) + bestehende Gewerke-Abhängigkeiten. Verzögerung bei einem Gewerk verschiebt automatisch alle nachfolgenden Schritte — nach jeder Phase kurz gegenchecken, ob der nächste Termin noch passt. Mehr Details: <a href="wochenplan.html">Detaillierter Wochenplan</a>.</div>
+      </div>
+    </div>
+  </div>
 
-function saveWeek(){
-  const label=document.getElementById('wm-label').value.trim();
-  if(!label){alert('Bezeichnung eingeben');return;}
-  const plan=getPlan();
-  const week={id:uid(),_t:Date.now(),label,dates:document.getElementById('wm-dates').value.trim(),tasks:[]};
-  if(eWeekI===null)plan[eWeekMI].weeks.push(week);
-  else{plan[eWeekMI].weeks[eWeekI].label=week.label;plan[eWeekMI].weeks[eWeekI].dates=week.dates;plan[eWeekMI].weeks[eWeekI]._t=Date.now();}
-  saveS();closeModals();render();
-}
+  <div class="page" id="page-zeitplan">
+    <div class="card">
+      <div class="card-header"><h2>Gantt – Jul 2026 bis Aug 2027</h2></div>
+      <div class="card-body" style="padding:10px 0">
+        <div id="gantt-wrap-inner"></div>
+      </div>
+    </div>
+    <div class="alert green"><strong>✅ Estrich RapidoWitt</strong>10–14 Tage mit Bauheizer trocknen (Feb 27) → Verputzen ab Mär 27. Fassade läuft parallel draußen. Umzug August 2027 mit Puffer.</div>
+    <div class="alert blue"><strong>🗓️ Entkernungswoche</strong>Patrick 28. Jul – 01. Aug täglich vor Ort · Sa 02. Aug EG Estrich · Sa 09. Aug OG Estrich</div>
+    <div class="alert amber"><strong>❓ Altes Rohrnetz</strong>Datum noch offen – abhängig vom Heizungsbauer-Termin. Gasleitung NUR vom Fachmann trennen!</div>
+  </div>
 
-function deleteWeek(){
-  if(!confirm('Woche + alle Aufgaben löschen?'))return;
-  getPlan()[eWeekMI].weeks.splice(eWeekI,1);
-  saveS();closeModals();render();
-}
+  <div class="page" id="page-todos">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Fortschritt</span><span id="progress-text">0 / 0 erledigt</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div id="todos-container"></div>
+  </div>
 
-// ── Monats-/Phasen-Modal ──────────────────────────────────────────
+  <div class="page" id="page-kosten">
 
-function openMonthModal(mi){
-  eMonthI=(mi===undefined)?null:mi;
-  const isNew=eMonthI===null;
-  document.getElementById('month-modal-title').textContent=isNew?'Phase / Monat hinzufügen':'Phase / Monat bearbeiten';
-  document.getElementById('mm-del').style.display=isNew?'none':'block';
-  document.getElementById('mm-label').value=isNew?'':getPlan()[eMonthI].label;
-  document.getElementById('month-modal').classList.add('open');
-}
+    <!-- SUB-TABS -->
+    <div style="display:flex;gap:4px;margin-bottom:14px;background:#fff;border-radius:10px;padding:5px;box-shadow:var(--shadow)">
+      <button id="ktab-ist" onclick="showKTab('ist')" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:7px;border:none;background:#1a1a2e;color:#fff;cursor:pointer">💶 Ist-Kosten</button>
+      <button id="ktab-plan" onclick="showKTab('plan')" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer">📋 Budgetplan</button>
+    </div>
 
-function saveMonth(){
-  const label=document.getElementById('mm-label').value.trim();
-  if(!label){alert('Bezeichnung eingeben');return;}
-  const plan=getPlan();
-  if(eMonthI===null)plan.push({id:uid(),_t:Date.now(),label,weeks:[]});
-  else{plan[eMonthI].label=label;plan[eMonthI]._t=Date.now();}
-  saveS();closeModals();render();
-}
+    <!-- IST-KOSTEN -->
+    <div id="ktab-ist-content">
+      <div class="ausg-summary" id="ausg-summary"></div>
+      <div class="ausg-bar-wrap"><div class="ausg-bar" id="ausg-bar"></div></div>
+      <div class="foerder-hinweis" id="foerder-hinweis-ist">💡 <strong>Gesamtbudget: 622.379,30 €</strong><br>🏦 Eigenkapital 170.379,30 € (Kaufpreis-Anteil + Makler + Notar + Grunderwerbsteuer) · 🏦 Restkaufpreis 219.000 € (separates Bankdarlehen) · 🔨 Sanierungskredit 233.000 €<br>💶 Asbest, Werkzeuge, Entsorgung & Küche sind <strong>nicht</strong> über den Sanierungskredit finanzierbar – separat einplanen!<br>Förderung wird nach Fertigstellung erstattet (BAFA + KfW) → aktuell geplant: <span id="foerder-ist-sum">43.300 €</span></div>
+      <div class="card" style="margin-bottom:14px"><div class="card-body" style="padding:6px 16px" id="ausg-fin-summary"></div></div>
+      <div id="ausg-list"></div>
+    </div>
 
-function deleteMonth(){
-  if(eMonthI===null)return;
-  if(!confirm('Phase/Monat inkl. aller Wochen & Aufgaben löschen?'))return;
-  getPlan().splice(eMonthI,1);
-  saveS();closeModals();render();
-}
+    <!-- BUDGETPLAN -->
+    <div id="ktab-plan-content" style="display:none">
+      <div class="foerder-box" id="foerder-box-dynamic">
+        <!-- dynamisch befüllt via renderBudget() -->
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Budgetplan</h2>
+          <button style="padding:6px 12px;font-size:12px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer" onclick="addBudgetPos()">+ Position</button>
+        </div>
+        <div class="card-body" style="padding:0 16px"><div id="budget-list"></div></div>
+      </div>
+      <div class="kosten-total" id="budget-total"></div>
+    </div>
 
-function closeModals(){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModals();}));
+  </div>
 
+  <div class="page" id="page-angebote"><div id="angebote-container"></div></div>
+
+  <div class="page" id="page-notizen">
+    <textarea class="notiz-input" id="notiz-input" placeholder="Baustellennotiz…"></textarea>
+    <button class="notiz-btn" onclick="addNotiz()">Notiz speichern</button>
+    <div id="notiz-list"></div>
+  </div>
+
+</div>
+
+<nav class="nav-bar">
+  <button class="nav-btn active" onclick="showPage('uebersicht',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Übersicht</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('ablauf',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+    <span>Ablauf</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('zeitplan',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Zeitplan</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('todos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    <span>To-Dos</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('kosten',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    <span>Kosten</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('angebote',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Gewerke</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('notizen',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span>Notizen</span>
+  </button>
+</nav>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="todo-modal">
+  <div class="modal">
+    <h3 id="todo-modal-title">Aufgabe</h3>
+    <div class="form-field"><label>Aufgabe</label><input type="text" id="tm-title"/></div>
+    <div class="form-field"><label>Details</label><textarea id="tm-sub"></textarea></div>
+    <div class="form-field"><label>Priorität</label>
+      <select id="tm-prio">
+        <option value="h">🔴 Hoch</option><option value="m">🟡 Mittel</option>
+        <option value="i">🔵 Info</option><option value="e">🟢 Eigenleistung</option>
+        <option value="n">🟣 Nach Einzug</option><option value="nb">⚪ Nachbarn</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="tm-del" onclick="deleteTodo()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveTodo()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="kosten-modal">
+  <div class="modal">
+    <h3 id="kosten-modal-title">Kostenposition</h3>
+    <div class="form-field"><label>Name</label><input type="text" id="km-name"/></div>
+    <div class="form-field"><label>Von (€)</label><input type="number" id="km-von"/></div>
+    <div class="form-field"><label>Bis (€)</label><input type="number" id="km-bis"/></div>
+    <div class="form-field"><label>Förderung (€)</label><input type="number" id="km-foerd"/></div>
+    <div class="form-field"><label>Typ</label>
+      <select id="km-typ"><option value="g">Gewerk</option><option value="e">Eigenleistung</option><option value="s">Sonstiges</option></select>
+    </div>
+    <div class="form-field"><label>Hinweis</label><input type="text" id="km-note"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="km-del" onclick="deleteKosten()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveKosten()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="angebot-modal">
+  <div class="modal">
+    <h3 id="ang-title">Angebot</h3>
+    <div class="form-field"><label>Firma</label><input type="text" id="af-firma"/></div>
+    <div class="form-field"><label>Betrag brutto (€)</label><input type="number" id="af-betrag"/></div>
+    <div class="form-field"><label>Datum</label><input type="date" id="af-datum"/></div>
+    <div class="form-field"><label>Status</label>
+      <select id="af-status"><option value="offen">In Prüfung</option><option value="beauftragt">Beauftragt ✓</option><option value="abgelehnt">Abgelehnt</option></select>
+    </div>
+    <div class="form-field"><label>Notiz</label><textarea id="af-notiz"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-save" onclick="saveAngebot()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUSGABEN MODAL -->
+<div class="modal-overlay" id="ausg-modal">
+  <div class="modal">
+    <h3 id="ausg-modal-title">Ausgabe eintragen</h3>
+    <div class="form-field"><label>Bezeichnung</label><input type="text" id="am-titel" placeholder="z.B. Rechnung Celar Estrichbau"/></div>
+    <div class="form-field"><label>Betrag (€)</label><input type="number" id="am-betrag" placeholder="z.B. 9163"/></div>
+    <div class="form-field"><label>Datum</label><input type="date" id="am-datum"/></div>
+    <div class="form-field"><label>Kategorie</label><select id="am-kat"></select></div>
+    <div class="form-field"><label>Notiz (optional)</label><input type="text" id="am-notiz" placeholder="z.B. Abschlagsrechnung 1"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">Abbrechen</button>
+      <button class="btn-delete" id="am-del" onclick="deleteAusg()" style="display:none">Löschen</button>
+      <button class="btn-save" onclick="saveAusg()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATA + APP LOGIC -->
+<script>
+// ═══════════════════════════════════════════════════════
+// KERNSANIERUNG MÜHLTAL – ALLE DATEN HIER BEARBEITEN
+// ═══════════════════════════════════════════════════════
+
+window.BAU_DATA = {
+
+// ── GANTT ─────────────────────────────────────────────
+gantt: [
+  {section:'Phase 1 – Entkernung (Jul/Aug 2026)'},
+  {l:'Eigenleistung (Tapeten/Teppiche/Fliesen)', s:0, e:0, c:'#1d9e75'},
+  {l:'Asbest-Firma (im Urlaub)',                 s:0, e:0, c:'#378ADD'},
+  {l:'Sa 02. + 09. Aug: Estrichabbruch',         s:1, e:1, c:'#1d9e75'},
+  {l:'Rohrnetz raus + Freigraben',               s:1, e:1, c:'#1d9e75'},
+  {section:'Phase 2 – Elektro + Vorbereitung (Sep/Okt 2026)'},
+  {l:'Elektro Schlitze + Kabel',                 s:2, e:3, c:'#1d9e75'},
+  {l:'Fundament WP',                             s:2, e:3, c:'#1d9e75'},
+  {section:'Phase 3 – Sanitär/Heizung Rohbau + Fenster-Vorbereitung (Nov/Dez 2026)'},
+  {l:'Marco: Wasser-/Abwasserrohre + Heizkreisläufe verlegen', s:4, e:4, c:'#0f3460'},
+  {l:'Kernbohrung Küche (Dunstabzugshaube)',     s:4, e:4, c:'#0f3460'},
+  {l:'Marco: Druckprüfung Wasser-/Heizungsrohre', s:4, e:4, c:'#e74c3c'},
+  {l:'Glattstrich Fensterlaibungen (Eigenleistung)', s:4, e:5, c:'#1d9e75'},
+  {l:'Kühne: Fenster einbauen (ohne Haustür)',   s:5, e:5, c:'#378ADD'},
+  {section:'Phase 4 – Verputzen + Trockenbau Bad + Wärmepumpe (Jan 2027)'},
+  {l:'Patrick: Spachteln + grundieren (Vorbereitung)', s:6, e:6, c:'#1d9e75'},
+  {l:'Gregor: Verputzen Rest des Hauses (ohne Bad)', s:6, e:6, c:'#e8a838'},
+  {l:'Albrecht: Ständerwerk Vorwand Bad aufstellen', s:6, e:6, c:'#534ab7'},
+  {l:'Marco: Wärmepumpe installieren',           s:6, e:6, c:'#0f3460'},
+  {l:'Marco: WC-/Bad-Anschlüsse an Vorwand anschließen', s:6, e:6, c:'#0f3460'},
+  {l:'Albrecht: Vorwände schließen/beplanken',   s:6, e:6, c:'#534ab7'},
+  {section:'Phase 5 – Bodenaufbau + Estrich (Feb 2027)'},
+  {l:'Celar: Randdämmstreifen verlegen (nach Verputzen!)', s:7, e:7, c:'#6b7280'},
+  {l:'Celar: Dämm-Rollbahn (Tackersystem) verlegen', s:7, e:7, c:'#6b7280'},
+  {l:'Marco: Heizrohre tackern + Dichtheitsprüfung', s:7, e:7, c:'#e74c3c'},
+  {l:'Celar: RapidoWitt-Estrich einbauen',        s:7, e:7, c:'#6b7280'},
+  {l:'Estrich trocknet (10 Tage)',               s:7, e:7, c:'#6b7280'},
+  {section:'Phase 6 – Fliesen + Innenausbau (Feb/Mär 2027)'},
+  {l:'Albrecht: Bad abdichten (Verbundabdichtung)', s:7, e:8, c:'#534ab7'},
+  {l:'Albrecht: Fliesen Bad OG + Gäste-WC',       s:8, e:8, c:'#534ab7'},
+  {l:'Objektvlies/Streichen (Eigenleistung)',    s:7, e:8, c:'#1d9e75'},
+  {l:'Marco: Sanitär-Endmontage',                s:8, e:8, c:'#0f3460'},
+  {l:'Boden verlegen (Parkett/Vinyl)',           s:8, e:8, c:'#378ADD'},
+  {l:'Hydr. Abgleich + WP-Inbetriebnahme + E-Check (Marco)', s:8, e:8, c:'#0f3460'},
+  {section:'Phase 7 – Dach + Fassade (Mär–Mai 2027)'},
+  {l:'Flachdachsanierung (nach BAFA!)',          s:8, e:9, c:'#378ADD'},
+  {l:'Haustür (Kühne)',                          s:9, e:9, c:'#378ADD'},
+  {l:'WDVS + Außenputz (Gärtner)',              s:9, e:10, c:'#378ADD'},
+  {section:'Endspurt (Jun–Aug 2027)'},
+  {l:'Küche liefern + montieren',               s:11, e:12, c:'#378ADD'},
+  {l:'Feinschliff + Restarbeiten',              s:11, e:12, c:'#1d9e75'},
+  {l:'🎉 Umzug',                               s:13, e:13, c:'#1d9e75'},
+],
+
+legende: [
+  {c:'#1d9e75', l:'Eigenleistung'},
+  {c:'#0f3460', l:'Marco Erdmann (Heizung/Sanitär)'},
+  {c:'#534ab7', l:'Albrecht (Trockenbau/Fliesen)'},
+  {c:'#e8a838', l:'Gregor (Verputzer Innen)'},
+  {c:'#6b7280', l:'Celar (Estrich)'},
+  {c:'#378ADD', l:'Gewerk (Fachfirma)'},
+],
+
+todos: [
+  {phase:'Sofort (ab 20. Mai 2026)', items:[
+    {t:'Termin mit Nachbar Berthold',               s:'Baugleiches Haus ansehen',                                    p:'nb'},
+    {t:'Mit WEG-Nachbarn sprechen',                 s:'Umbauplanung, Gerüst/Lärm abstimmen',                        p:'nb'},
+    {t:'Statiker beauftragen',                      s:'Balkon-Blumenkasten + Wanddurchbruch Küche/Esszimmer',       p:'h'},
+    {t:'❓ Balkon teilweise abstemmen – Baugenehmigung?', s:'Klären ob Rückbau genehmigungspflichtig · Gemeinde Mühltal oder Statiker fragen', p:'h'},
+    {t:'Stammumfang Baum vor Hauswand messen',          s:'Bei nächstem Besuch · ab 80cm Umfang (ca. 25cm Durchmesser) Fällgenehmigung Gemeinde Mühltal nötig!', p:'h'},
+    {t:'Heizkreisplanung mit Heizungsbauer klären',     s:'Wer berechnet Rohrlänge/Heizkreise pro Raum für FBH-Verlegung? Heizungsbauer braucht diese Info bevor er Rohre auf Celars Dämm-Rollbahn tackert', p:'h'},
+    {t:'✅ Reihenfolge geklärt: Albrecht (Jan) vor Celars Bodenaufbau (Feb)',s:'Albrecht baut Ständerwerk in der 2. Januarwoche (parallel zu Gregors Verputzen) · Celars Randdämmstreifen/Rollbahn/Estrich kommt erst danach, im Februar, nachdem Gregors Verputzen fertig+trocken ist – kein Konflikt mehr',p:'nb'},
+    {t:'Marco: separaten Termin für WC-/Bad-Anschluss einplanen',s:'Erst möglich sobald Albrechts Vorwand-Montageelement steht (Januar) · zusätzlich zur Rohinstallation im November',p:'h'},
+    {t:'Uwe Wäckerle: Efficiency Smart Home in iSFP aufnehmen', s:'Shelly Rollläden + FBH-Steuerung + Lüftungssteuerung → 20% BAFA Förderung (BEG EM Anlagentechnik) · VOR Beauftragung Elektriker!', p:'h'},
+    {t:'Uwe Wäckerle beauftragen (iSFP)',           s:'heat consult · +49 151 54073185',                            p:'h'},
+    {t:'Celar Estrichbau beauftragen',              s:'Angebot läuft 23.06.2026 ab!',                               p:'h'},
+    {t:'Asbest-Firma beauftragen',                  s:'Vorlaufzeit 4–6 Wochen · muss 17.–28. Juli arbeiten',        p:'h'},
+    {t:'Sanitärbetrieb anfragen',                   s:'3 Angebote · Vorlaufzeit 4–6 Monate',                        p:'h'},
+    {t:'Dachdecker anfragen – NICHT beauftragen',   s:'Erst nach BAFA-Bescheid · Einsatz Sep/Okt 26',               p:'h'},
+    {t:'Fensterbauer anfragen',                     s:'Bodentiefes OG-Fenster · Einsatz Okt/Nov 26',                p:'h'},
+    {t:'Heizungsbauer anfragen – NICHT beauftragen',s:'Erst nach KfW-Bescheid',                                     p:'h'},
+    {t:'Sperrmüll anmelden',                        s:'Landkreis Darmstadt-Dieburg · Teppiche, Tapeten, Türen',     p:'m'},
+    {t:'Holzvertäfelung auf Ebay Kleinanzeigen',    s:'Selbst abschrauben + abholen',                               p:'m'},
+    {t:'Presslufthammer für 09. Aug reservieren',   s:'Mind. 2 Stück · Hilti TE 500/700 · FRÜH buchen!',           p:'m'},
+    {t:'Stromanbieter für Baustelle auswählen',     s:'Check24/Verivox · Vertrag mit Startdatum = Übergabetag',     p:'h'},
+  ]},
+  {phase:'Container (Klöppinger · 06258-9057485)', items:[
+    {t:'Container 2+3 bestellen: Do 31. Juli',      s:'6m³ Bauschutt + 7m³ Leichtbaustoffe',                        p:'h'},
+    {t:'Container 4+5+6 bestellen: Do 07. Aug',     s:'3× 6m³ Bauschutt für Estrich (15–16t = 3 Container!)',       p:'h'},
+    {t:'Container Beton (nach Statiker-Freigabe)',   s:'Bewehrter Beton Balkon · 35–42,50€/t',                       p:'m'},
+  ]},
+  {phase:'BAFA/KfW-Prozess', items:[
+    {t:'iSFP erstellen lassen',                     s:'~1–2 Wochen · Förderquote auf 20%',                          p:'h'},
+    {t:'BAFA + KfW Antrag stellen',                 s:'VOR Auftragserteilung!',                                     p:'h'},
+    {t:'Bewilligungsbescheid abwarten (~6 Wochen)', s:'Keine Aufträge unterschreiben bis Bescheid!',                p:'m'},
+    {t:'Aufträge erteilen: Dach, WP, Fenster, Fassade', s:'Erst nach Bescheid – ca. Aug 2026',                     p:'h'},
+    {t:'Rechnungen + Nachweise sammeln',            s:'Aug 26 – Jun 27',                                            p:'m'},
+    {t:'Verwendungsnachweis → ~43.300 €',           s:'Nach Fertigstellung Aug 2027',                               p:'h'},
+  ]},
+  {phase:'Schlüsselübergabe (01.–08. Juli) – sofort erledigen', items:[
+    {t:'Zählerstand Strom ablesen + fotografieren', s:'Rückwirkende Ummeldung ab Juni 2025 nicht mehr möglich',     p:'h'},
+    {t:'Strom anmelden beim neuen Anbieter',        s:'14 Werktage Voranmeldepflicht · Startdatum = Übergabetag',   p:'h'},
+    {t:'Heizkörper abhängen (Eigenleistung)',       s:'Absperrventile zudrehen · Wasser auffangen · kein Fachmann', p:'m'},
+    {t:'Asbest-Firma Schlüsselübergabe organisiert?',s:'Wer ist Ansprechpartner während Urlaub?',                   p:'h'},
+  ]},
+  {phase:'Vor Urlaub prüfen (16. Juli)', items:[
+    {t:'Schriftliche Freigabe nach Asbest anfordern',s:'Muss vor 02. Aug vorliegen!',                               p:'h'},
+  ]},
+  {phase:'Eigenleistungswoche (28. Jul – 01. Aug)', items:[
+    {t:'Teppich Keller zuerst – vor Asbest-Firma!',  s:'Spachtelaufsatz Bosch · Keller muss frei sein',                  p:'h'},
+    {t:'Tapeten abziehen (Sprühflasche)',              s:'Realistisch 4–5 Tage · abends gut machbar',                     p:'m'},
+    {t:'Fliesen Bad + Küche stemmen',                 s:'Bohrhammer mit Meißel · → Container 2',                         p:'m'},
+    {t:'Schimmelputz OG abschlagen',                  s:'FFP3 Pflicht! · trocken in Säcke · → Container 3',               p:'h'},
+    {t:'Wanddurchbruch Küche → Esszimmer',            s:'Erst nach Statiker-Freigabe · nicht tragend',                    p:'m'},
+  ]},
+  {phase:'Samstagsdienst 1 – Vorbereitung (vor 02. Aug)', items:[
+    {t:'4–5 Freunde für Sa 02. Aug einladen',       s:'Estrichabbruch EG · WhatsApp-Gruppe erstellt',               p:'h'},
+    {t:'2× Bohrhammer reservieren',                 s:'~35€/Tag je',                                                p:'h'},
+    {t:'FFP3-Masken kaufen (mind. 10 Stk.)',        s:'Pflicht beim Schimmelputz + Fliesen',                        p:'h'},
+    {t:'Staubschutzfolie + Klebeband',              s:'Schimmelbereich abdichten',                                  p:'m'},
+    {t:'Teppich zuerst! Keller vor Asbest-Firma',   s:'Spachtelaufsatz Bosch Bohrmaschine · Keller muss frei sein bevor Asbest-Firma kommt',p:'h'},
+  ]},
+  {phase:'Samstagsdienst 2 – Vorbereitung (vor 09. Aug)', items:[
+    {t:'4–5 Freunde für Sa 09. Aug einladen',       s:'Estrichabbruch OG · über WhatsApp-Gruppe koordinieren',      p:'h'},
+    {t:'2× Presslufthammer (Hilti TE 500/700) abholen',s:'Tag vorher abholen',                                     p:'h'},
+    {t:'Verpflegung planen',                        s:'Viel Essen + Trinken · lange schwere Arbeit',                p:'m'},
+    {t:'Erste-Hilfe-Kasten bereitstellen',          s:'',                                                           p:'m'},
+  ]},
+  {phase:'❓ Altes Rohrnetz entfernen (Datum offen)', items:[
+    {t:'Gasleitung trennen – NUR konzessionierter Gasinstallateur!',s:'Erster Schritt · Heizung läuft bis dahin normal weiter',p:'h'},
+    {t:'Alte Therme / Heizkessel entfernen',        s:'Erst nach Gastrennung · schwer, Helfer nötig',               p:'h'},
+    {t:'Alte Heizkörper-Zuleitungen raus',          s:'EL + GWI-Freund · Heizkörper selbst schon im Juli abgehängt',p:'h'},
+    {t:'Alte Wasserleitungen raus',                 s:'EL + GWI-Freund · Kupfer/Stahl → Schrotthändler',            p:'h'},
+    {t:'Abwasserrohre prüfen',                      s:'Hauptstränge bleiben oft · nur Abzweigungen neu',            p:'m'},
+    {t:'Termin mit Heizungsbauer abstimmen',        s:'❓ Noch offen – beeinflusst Phase-2-Start',                  p:'h'},
+  ]},
+  {phase:'Gewerke anfragen (Jul–Sep 2026)', items:[
+    {t:'Elektriker für Planung einladen',           s:'Schaltplan + Schlitze anzeichnen',                           p:'h'},
+    {t:'Verputzer anfragen (3 Angebote)',           s:'Vorlaufzeit 6–9 Monate · Einsatz Mär 27',                   p:'h'},
+    {t:'Bodenleger anfragen (2–3 Angebote)',        s:'Vorlaufzeit 4–6 Monate · Einsatz Mai 27',                   p:'m'},
+  ]},
+  {phase:'Phase 2–4 (Okt 26 – Aug 27)', items:[
+    {t:'Fensteröffnungen + Lüftungsfalz festlegen', s:'Bodentiefes OG-Fenster abstimmen',                           p:'h'},
+    {t:'Rollladen-Kabel verlegen (vor Estrich)',    s:'Leerrohre zu allen Fenstern',                                p:'h'},
+    {t:'Druckprüfung neue Wasserleitungen',         s:'Vor Einputzen!',                                             p:'h'},
+    {t:'Fliesen + Armaturen bestellen',             s:'Lieferzeiten beachten',                                      p:'h'},
+    {t:'Bauheizer mieten für Estrichtrocknung',     s:'~50–80€/Tag · 10–14 Tage · nach Celar-Einbau',              p:'h'},
+    {t:'Baustrom: Würfel an Zähler anschließen',   s:'Kein separater Baustrom nötig · Elektriker klemmt Würfel direkt an Zähler an',p:'h'},
+    {t:'14 Werktage vor Elektrikerstart: Strom abmelden',s:'Außerordentliche Kündigung möglich (Baustelle)',        p:'h'},
+    {t:'Nach Fertigstellung Elektro: neuen Vertrag',s:'Wärmepumpen-Tarif wählen! Günstigere kWh-Preise',           p:'m'},
+    {t:'CM-Messung Estrich-Belegreife prüfen',      s:'RapidoWitt: nach Trocknung + Belegreifheizen',               p:'h'},
+    {t:'Hydraulischen Abgleich durchführen',        s:'Pflicht KfW/BAFA',                                           p:'h'},
+    {t:'E-Check vor Einzug',                        s:'Elektriker nimmt Anlage ab',                                 p:'h'},
+    {t:'Küche liefern/montieren',                   s:'Jul/Aug 2027',                                               p:'m'},
+  ]},
+  {phase:'🛒 Einkaufsliste Entkernung', items:[
+    {t:'Baueimer 20L · 8–10 Stück',                 s:'~3–5€/Stück · Bauhaus/OBI · NICHT Malereimer!',                 p:'m'},
+    {t:'Schubkarre · 2 Stück',                       s:'Eine fürs EG, eine fürs OG · leihen oder kaufen',               p:'m'},
+    {t:'Arbeitshandschuhe · für alle Helfer',        s:'Mind. 8–10 Paar · Estrich ist scharf',                          p:'m'},
+    {t:'Knieschoner · 2–3 Paar',                     s:'Für Person die stemmt',                                         p:'m'},
+    {t:'FFP3-Masken · mind. 10 Stück',               s:'Pflicht bei Estrich + Schimmelputz',                            p:'h'},
+    {t:'Schutzbrillen · mind. 5 Stück',              s:'Splittergefahr beim Stemmen',                                   p:'h'},
+    {t:'Flex zum Estrich vorab ritzen',               s:'Raster 30×30cm einschneiden → spart 25% Presslufthammer-Zeit', p:'h'},
+    {t:'Muldencontainer mit Rampe anfragen',          s:'Klöppinger fragen · direkt reinfahren mit Schubkarre · Sondernutzung Straße beantragen',p:'h'},
+    {t:'Sprühflaschen · 3–4 Stück',                  s:'Für Tapeten abziehen · kein Leihen nötig',                      p:'m'},
+    {t:'Staubschutzfolie + Klebeband',               s:'Türen abdichten während Schimmelputz + Estrich',                p:'m'},
+    {t:'Erste-Hilfe-Kasten',                          s:'Pflicht auf der Baustelle',                                     p:'h'},
+  ]},
+  {phase:'❓ Lüftung (Entscheidung offen)', items:[
+    {t:'Entscheidung Lüftungskonzept treffen',      s:'Option a) Lunos ego Bad OG · Option b) 6x Bosch V2000D alle Räume OG + Shelly',p:'h'},
+    {t:'Kernbohrung(en) planen',                    s:'VOR dem Verputzen! Rohrdurchmesser 162mm · Wandstärke mind. 280mm',p:'h'},
+    {t:'Elektrokabel verlegen',                     s:'Vor Verputzen · 12V Anschluss je Gerät · euer Mann macht Verlegung',p:'h'},
+    {t:'Lüftungsregler / Shelly einbauen',          s:'Shelly im Sicherungskasten für Smart-Home-Steuerung',p:'m'},
+  ]},
+  {phase:'Nach Einzug – Keller', items:[
+    {t:'Vorratsraum Putz abschlagen',               s:'Nur betroffene Stelle',                                      p:'n'},
+    {t:'Injektage Feuchtigkeit (EL)',               s:'Remmers oder Sievert',                                       p:'e'},
+    {t:'Neu verputzen',                             s:'Kalkzementputz · 2 Lagen',                                   p:'e'},
+  ]},
+],
+
+kosten: [
+  {id:'dach',          n:'Dachsanierung',               von:40000, bis:40000, foerd:8000,  t:'g', note:'Sep/Okt 26'},
+  {id:'heizung',       n:'Heizung: WP + Brauchwasser-WP',von:45000,bis:50000, foerd:16500, t:'g', note:'KfW BEG EM bis 55% · ❓ Termin offen'},
+  {id:'fenster',       n:'Fenster + Haustür (4-fach)',   von:39000, bis:41000, foerd:8200,  t:'g', note:'Okt/Nov 26 · OG bodentief'},
+  {id:'lueftung',      n:'Lüftung',                      von:2000,  bis:2500,  foerd:1600,  t:'g', note:'❓ Entscheidung offen: a) Lunos ego Bad OG (2 Geräte, ~2.000€) b) 6x Bosch V2000D alle Räume OG + Shelly (~2.500€)'},
+  {id:'fassade',       n:'Fassadendämmung',              von:35000, bis:35000, foerd:7000,  t:'g', note:'EPS 140–160mm WDVS'},
+  {id:'estrich',       n:'Estrich – Celar Estrichbau',   von:6300,  bis:9163,  foerd:0,     t:'g', note:'Angebot 9.163€ brutto · 💡 Option EL Platten: Bekotec+Ethafoam selbst verlegen → Celar ca. 6.300€ brutto · Ersparnis ~2.900€ · Celar fragen!'},
+  {id:'fbh_rohre',     n:'FBH Rohre verlegen',           von:5000,  bis:6000,  foerd:0,     t:'g', note:'GWI-Freund'},
+  {id:'wasser_abwasser',n:'Wasser-/Abwasserleitungen',   von:6000,  bis:10000, foerd:0,     t:'g', note:'Gewerk + GWI-Freund'},
+  {id:'verputzen',     n:'Verputzen Innen',              von:8000,  bis:14000, foerd:0,     t:'g', note:'~135m²'},
+  {id:'boden',         n:'Boden verlegen',               von:8000,  bis:15000, foerd:0,     t:'g', note:'~100m²'},
+  {id:'trockenbau_bad',n:'Trockenbau & Fliesen Bad',     von:14000, bis:14000, foerd:0,     t:'g', note:'Albrecht · Vorwand/Ständerwerk + Abdichtung + Fliesen Bad OG + Gäste-WC'},
+  {id:'stahltraeger_wz',n:'Stahlträger Wohnzimmer',      von:2500,  bis:2500,  foerd:0,     t:'g', note:''},
+  {id:'fliesen_eingang',n:'Fliesen Eingang und Treppe',  von:3000,  bis:3000,  foerd:0,     t:'g', note:''},
+  {id:'elektro_material',n:'Elektro (Material)',         von:5000,  bis:8000,  foerd:0,     t:'e', note:'Eigenleistung'},
+  {id:'sanitaer_baeder',n:'Sanitär & Bäder',              von:12000, bis:18000, foerd:0,     t:'e', note:'2 Bäder + Leitungen'},
+  {id:'asbest',        n:'Asbest-Entsorgung',            von:3000,  bis:6000,  foerd:0,     t:'s', note:'Fachfirma Küche + Keller'},
+  {id:'container',     n:'Container Klöppinger',         von:3500,  bis:5000,  foerd:0,     t:'e', note:'~6 Container'},
+  {id:'sperrmuell',    n:'Sperrmüll / Wertstoffstation', von:0,     bis:300,   foerd:0,     t:'e', note:''},
+  {id:'innenausbau',   n:'Innenausbau / Fliesen / Farbe',von:6000,  bis:10000, foerd:0,     t:'e', note:''},
+  {id:'kueche',        n:'Küche',                        von:10000, bis:20000, foerd:0,     t:'e', note:'Jul/Aug 27'},
+  {id:'energieberatung',n:'Energieberatung',             von:4500,  bis:4500,  foerd:2000,  t:'s', note:'Uwe Wäckerle · Eigenanteil 2.500€'},
+  {id:'bauheizer',     n:'Bauheizer Estrichtrocknung',   von:500,   bis:1200,  foerd:0,     t:'e', note:'~50–80€/Tag · 10–14 Tage'},
+  {id:'werkzeuge',     n:'Werkzeugmiete + Schutzausrüstung',von:2000,bis:3500, foerd:0,     t:'e', note:''},
+  {id:'puffer',        n:'Puffer +15%',                  von:33245, bis:46395, foerd:0,     t:'s', note:'Pflichtreserve'},
+],
+
+gewerke: [
+  {id:'asbest',    n:'Asbest-Entsorgung',          budget:3883,   icon:'☣️',  prio:1},
+  {id:'estrich',   n:'Estrich (Celar Estrichbau)', budget:6433.43,icon:'🪨',  prio:1},
+  {id:'container', n:'Container Klöppinger',       budget:5000,   icon:'📦',  prio:1},
+  {id:'heizung',   n:'Heizung / Wärmepumpe',       budget:35000,  icon:'🔥',  prio:1},
+  {id:'sanitaer',  n:'Sanitär & Wasser/Abwasser',  budget:18000,  icon:'🚿',  prio:1},
+  {id:'fenster',   n:'Fenster + Haustür',           budget:40000,  icon:'🪟',  prio:1},
+  {id:'dach',      n:'Dachsanierung',               budget:50000,  icon:'🏗️', prio:2},
+  {id:'elektro',   n:'Elektro',                     budget:8000,   icon:'⚡',  prio:2},
+  {id:'fassade',   n:'Fassadendämmung',             budget:35000,  icon:'🧱',  prio:2},
+  {id:'verputzen', n:'Verputzen Innen',              budget:5000,   icon:'🖌️', prio:3},
+  {id:'boden',     n:'Boden verlegen',               budget:11500,  icon:'🟫',  prio:3},
+  {id:'kueche',    n:'Küche',                        budget:15000,  icon:'🍳',  prio:3},
+],
+
+// fin = Finanzierungsquelle: 'ek' Eigenkapital · 'bank' separates Bankdarlehen (Restkaufpreis)
+// 'kredit' Sanierungskredit-fähig (233.000 €-Topf) · 'nicht' nicht kreditfähig, separat zu finanzieren · 'sonder' Sonderfall
+ausgabenKategorien: [
+  {id:'kauf_ek',     name:'Kaufpreis (Eigenanteil)',       budget:130000,   icon:'🏠', fin:'ek'},
+  {id:'makler',      name:'Makler',                        budget:12459.30, icon:'🤝', fin:'ek'},
+  {id:'notar',       name:'Notar & Grundbuch',             budget:6980,     icon:'📜', fin:'ek'},
+  {id:'grunderw',    name:'Grunderwerbsteuer',             budget:20940,    icon:'🏛️', fin:'ek'},
+  {id:'kauf_bank',   name:'Kaufpreis (Restkaufpreis)',     budget:219000,   icon:'🏦', fin:'bank'},
+  {id:'dach',        name:'Dachsanierung',                 budget:50000,    icon:'🏗️', fin:'kredit'},
+  {id:'heizung',     name:'Heizung / Wärmepumpe',          budget:35000,    icon:'🔥', fin:'kredit'},
+  {id:'fenster',     name:'Fenster + Haustür',              budget:40000,    icon:'🪟', fin:'kredit'},
+  {id:'lueftung',    name:'Lüftungsanlage',                 budget:2500,     icon:'💨', fin:'kredit'},
+  {id:'fassade',     name:'Fassadendämmung',                budget:35000,    icon:'🧱', fin:'kredit'},
+  {id:'estrich',     name:'Estrich (Celar)',                 budget:6433.43,  icon:'🪨', fin:'kredit'},
+  {id:'sanitaer',    name:'Sanitär & Abwasser',             budget:45000,    icon:'🚿', fin:'kredit'},
+  {id:'elektro',     name:'Elektro',                        budget:8000,     icon:'⚡', fin:'kredit'},
+  {id:'verputzen',   name:'Verputzen',                      budget:5000,     icon:'🖌️', fin:'kredit'},
+  {id:'boden',       name:'Boden verlegen',                 budget:11500,    icon:'🟫', fin:'kredit'},
+  {id:'trockenbau_bad', name:'Trockenbau & Fliesen Bad',    budget:14000,    icon:'🛁', fin:'kredit'},
+  {id:'stahltraeger_wz', name:'Stahlträger Wohnzimmer',     budget:2500,     icon:'🔩', fin:'kredit'},
+  {id:'fliesen_eingang', name:'Fliesen Eingang und Treppe', budget:3000,     icon:'🪜', fin:'kredit'},
+  {id:'material',    name:'Material für Eigenleistung',     budget:7000,     icon:'🧰', fin:'kredit'},
+  {id:'sonstiges',   name:'Sonstiges / Puffer',             budget:20000,    icon:'📋', fin:'kredit'},
+  {id:'asbest',      name:'Asbest-Entsorgung',              budget:3883,     icon:'☣️', fin:'nicht'},
+  {id:'container',   name:'Container & Entsorgung',         budget:5000,     icon:'📦', fin:'nicht'},
+  {id:'kueche',      name:'Küche',                          budget:3000,     icon:'🍳', fin:'nicht'},
+  {id:'werkzeuge',   name:'Werkzeuge & Schutzausrüstung',   budget:3000,     icon:'🔧', fin:'nicht'},
+  {id:'energie',     name:'Energieberatung',                budget:4500,     icon:'💡', fin:'sonder'},
+],
+
+}; // Ende BAU_DATA
+
+</script>
+<script>
+// Supabase dynamisch laden
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.onload = function() { if(window._supabaseReady) window._supabaseReady(); };
+  document.head.appendChild(s);
+})();
+
+const MONTHS=['Jul','Aug','Sep','Okt','Nov','Dez','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug'];
+const PRIO={h:{cls:'badge-red',l:'Hoch'},m:{cls:'badge-amber',l:'Mittel'},i:{cls:'badge-blue',l:'Info'},e:{cls:'badge-green',l:'Eigenl.'},n:{cls:'badge-purple',l:'Nach Einzug'},nb:{cls:'badge-grey',l:'Nachbarn'}};
+
+// State (user actions only - not content)
+let S={checks:{},todosEdited:null,kostenEdited:null,angebote:{
+  estrich:[
+    {firma:'Celar Estrichbau GmbH',betrag:9163,datum:'2026-05-12',status:'abgelehnt',notiz:'⚠️ Überholt: Bekotec+RapidoWitt · ersetzt durch neues Angebot vom 18.08.2026 (Tackersystem statt Bekotec)'},
+    {firma:'Celar Estrichbau GmbH',betrag:6433.43,datum:'2026-08-18',status:'offen',notiz:'Angebot P5654.6 · RapidoWitt CT-C30-F5, 50mm, 121,93m² EG/OG (39,50€/m²: 24€ Estrich + 1,50€ PE-Randstreifen + 14€ Dämm-Rollbahn EPS-DES mit Tacker-Rasterung) + 4 Messpunktstellen FBH + Baustelleneinrichtung · netto 5.406,24€ + 19% USt = 6.433,43€ brutto · gültig bis 29.09.2026 · ℹ️ Fenster können VOR Estrich eingebaut sein · beim Trocknen regelmäßig lüften (Feuchte raus!) · Laibungsfugen innen provisorisch abdichten wenn Heizlüfter im Einsatz'},
+  ],
+  container:[
+    {firma:'Klöppinger Containerdienst GmbH',betrag:0,datum:'2026-05-19',status:'offen',notiz:'95€/Container + Maut + 10% · Vorlaufzeit 2 Tage'},
+    {firma:'Windeck Containerdienst (Nieder-Ramstadt)',betrag:2490,datum:'2026-06-15',status:'offen',notiz:'80€ stellen+abfahren netto · Bauschutt 70€/m³ · Deponieschutt (Estrich/Fliesen/Putz >30%) 150€/m³ · max. 5m³ Container · ⚠️ Zufahrt prüfen: LKW braucht 2,5m Breite, sonst nur 2,5m³ Container möglich · 14 Tage mietfrei, dann 15€/Woche · Vorlaufzeit 1-2 Tage · Schuttrutschen 1€/m/Tag · Rechnungen zeitnah bezahlen sonst kein Tausch! · Kontakt: Katerina Bachmann-Fotiadis · 0160-98731731'},
+  ],
+  dach:[
+    {firma:'Hagen Schleidt',betrag:0,datum:'2026-05-29',status:'offen',notiz:'Vor-Ort-Termin 29.05. · Warten auf Angebot · ERST nach BAFA beauftragen!'},
+    {firma:'MG Dachdeckerei – Maksymilian Grzyb',betrag:42711,datum:'2026-05-29',status:'offen',notiz:'Angebot vorliegend · 35.891€ netto / 42.711€ brutto · EPS 035 Gefälledämmung 150mm (U≤0,14) · Bauder Abdichtung · Attikaabdeckung · 1 Lichtkuppel fest Velux · ERST nach BAFA beauftragen! · ⚠️ Gerüst NICHT enthalten – separat anfragen!'},
+    {firma:'MN Flachdach',betrag:0,datum:'2026-06-08',status:'offen',notiz:'Vor-Ort-Termin 08.06. 10:00 Uhr · ERST nach BAFA beauftragen!'},
+  ],
+  fenster:[
+    {firma:'Kühne',betrag:0,datum:'2026-05-27',status:'offen',notiz:'Ausstellung besucht · Angebot angefragt · ⚠️ Laibungsanschlüsse klären · Offen: Variante A/B/C, RAL-Farbe, Griffmulde, Shelly-Kompatibilität Warema'},
+    {firma:'Kolmer Erbach',betrag:41826,datum:'2026-06-15',status:'offen',notiz:'Angebot 4610364 · 35.148€ netto / 41.826€ brutto · FeBa NovoLife 76mm · Ug 0,6 · Uw 0,88 · ⚠️ Klären: Folienfarbe schriftlich fixieren (FO-FO = RAL 7044?), Pos.23 Tippfehler OG-04, Schwellenhöhe HST in mm, Montage 6.450€ aufschlüsseln, Haustür Ud 0,99 BAFA-kritisch · Varianten: Zip→Rollladen spart ~1.900€ netto (Südseite!), HST→Balkontür spart ~2.750€, Holz/Alu Aufpreis +10.246€ (nur ganz oder gar nicht!)'},
+  ],
+  sanitaer:[
+    {firma:'Marco Erdmann (GWI)',betrag:0,datum:'2026-06-03',status:'offen',notiz:'Vor-Ort-Termin 03.06. 15:00 Uhr · Patricks Bekannter · Sa 22.06. Elements Badausstellung gemeinsam besuchen'},
+    {firma:'Külah Sanitär (Ali Külah)',betrag:30702,datum:'2026-06-17',status:'offen',notiz:'Angebot AG26/0068 · 25.800€ netto / 30.702€ brutto · Bosch Monoblock AW 7 OR-S + 6800i AW · Pufferspeicher 200L + Warmwasserspeicher STORA 290L (KEINE separate Brauchwasser-WP, All-in-One) · Heizkreisverteiler HKV 2/25/25 enthalten · Demontage Altanlage + Gasrückbau + Fundament + Hydr. Abgleich enthalten · ⚠️ FBH-Rohre tackert Külah/Heizungsbauer auf die von Celar verlegte Dämm-Rollbahn (Tackersystem statt Bekotec) · keine Eigenleistung mehr für die Platten, das übernimmt jetzt Celar als Teil des Estrich-Angebots · Gültig bis 01.07.2026!'},
+    {firma:'Richter Reinheim',betrag:0,datum:'2026-06-01',status:'offen',notiz:'Angefragt · Wartet auf Rückruf'},
+  ],
+  verputzen:[
+    {firma:'Gärtner Bensheim',betrag:0,datum:'2026-06-30',status:'offen',notiz:'Vor-Ort-Termin 30.06. 18:00 Uhr · Empfehlung von Philip · auch Innenputz Schimmelstellen anfragen!'},
+  ],
+  asbest:[
+    {firma:'Asbestsanierung-RheinMain (Marcus Hiermes)',betrag:3883,datum:'2026-05-01',status:'beauftragt',notiz:'Angebot AN20260109 · 3.263€ netto / 3.883€ brutto · Floor-Flex 29m² + Kleber · Hiermes-Verfahren BT17 · ✍️ BEAUFTRAGT · Start 20.07. 7:30 Uhr · 3 Tage · 📱 19.07. WhatsApp mit Foto schicken wo Schlüssel liegt'},
+  ],
+},gewerkStatus:{
+  estrich:'beauftragt',
+  container:'angefragt',
+  fenster:'ausstehend',
+  heizung:'angefragt',
+  sanitaer:'termin',
+  asbest:'offen',
+  dach:'ausstehend',
+  verputzen:'termin',
+  boden:'offen',
+  elektro:'offen',
+  fassade:'offen',
+  kueche:'offen',
+},notizen:[]};
+let eTodoPI=null,eTodoII=null,eKostenI=null,eAngGw=null;
+
+// Übernimmt ALLE gespeicherten Felder (nicht mehr einzeln aufgezählt) —
+// sonst geht jedes Feld verloren, das hier vergessen wird (betraf zuletzt
+// budgetPlan, ausgaben und gewerkStatus: wurde brav gespeichert, aber beim
+// Laden nie zurückgeschrieben, sodass Änderungen nach einem Reload/Sync
+// wieder auf den alten Stand zurückfielen).
+function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);Object.assign(S,p);}}catch(e){}}
+var _cloudLoaded = false;
+var saveTimer = null;
+// Schützt eine gerade laufende Speicherung davor, von einem zeitgleichen
+// Cloud-Ladevorgang überschrieben zu werden (z.B. direkt nach dem Öffnen der
+// App, wenn der erste Cloud-Abruf noch läuft und man sofort etwas einträgt).
+// Ursache für "auf dem Handy eingetragen, auf dem PC nicht zu sehen": ohne
+// diesen Schutz konnte ein zeitgleicher loadFromCloud() den noch nicht
+// hochgeladenen lokalen Eintrag in S überschreiben, BEVOR er gespeichert war
+// — der Eintrag ging dann beim nächsten Speichern (mit dem überschriebenen,
+// alten Stand) faktisch wieder verloren, ohne dass eine Fehlermeldung kam.
+var _pendingSave = false;
 function saveS(){
-  try{localStorage.setItem('wochenplan',JSON.stringify(P));}catch(e){}
-  _pendingSave=true;
-  if(saveTimer)clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>saveToCloud(),800);
+  try{localStorage.setItem('bau_s',JSON.stringify(S));}catch(e){}
+  // Nur in Cloud speichern wenn Cloud bereits geladen oder eigener budgetPlan vorhanden
+  // Verhindert dass BUDGET_DEFAULT die Cloud-Daten überschreibt
+  if(!_cloudLoaded && !S.budgetPlan) return;
+  _pendingSave = true;
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){saveToCloud();}, 800);
 }
 
-async function saveToCloud(){
-  if(!supaClient){ _pendingSave=false; return; }
-  try{await supaClient.from('bau_state').upsert({id:SUPA_ROW,state:JSON.stringify(P),updated_at:new Date().toISOString()});}
-  catch(e){}
-  finally{ _pendingSave=false; }
+// ── SUPABASE (Frankfurt) ─────────────────────────────
+const SUPA_URL = 'https://ygjjhtfeavnkujetgvbh.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnampodGZlYXZua3VqZXRndmJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MzQ0MjYsImV4cCI6MjA5NTQxMDQyNn0.p_gDikzeTCKjsGEWvbS4r1gT3OaMzm7h5Sq-H96IfGA';
+let supaClient = null;
+
+function initSupabase(){
+  try{
+    if(typeof window.supabase !== 'undefined'){
+      supaClient = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    }
+  }catch(e){}
 }
 
-// Gleiches Zusammenführen-statt-Überschreiben wie in index.html: ein neu
-// hinzugefügter Punkt/Woche auf einem Gerät soll nicht verschwinden, nur
-// weil kurz danach vom anderen Gerät aus ein Cloud-Abruf reinkommt.
-function mergeItemsById(localArr, cloudArr){
+// ── ZUSAMMENFÜHREN STATT ÜBERSCHREIBEN ────────────────────────────────
+// Bisher hat jeder Cloud-Abruf die komplette lokale Liste durch die
+// Cloud-Liste ersetzt. Wenn zwei Geräte kurz hintereinander je einen neuen
+// Eintrag anlegen (du trägst einen Beleg ein, während euer anderes Gerät
+// kurz vorher/nachher einen anderen einträgt), hat das dazu geführt, dass
+// der Eintrag des einen Geräts beim nächsten Speichern des anderen
+// kommentarlos verschwunden ist — "wer zuletzt speichert, gewinnt".
+// Fix: Belege/Notizen/Aufgaben bekommen eine eindeutige id + Zeitstempel,
+// und beim Zusammenführen werden lokale + Cloud-Liste vereinigt statt die
+// eine durch die andere zu ersetzen. backfillIds() rüstet alte Einträge
+// ohne id einmalig nach, damit der Abgleich für sie ebenfalls funktioniert.
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function backfillIds(state){
+  if(state.ausgaben){
+    Object.keys(state.ausgaben).forEach(k=>{
+      (state.ausgaben[k]||[]).forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+    });
+  }
+  if(Array.isArray(state.notizen)){
+    state.notizen.forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+  }
+  if(Array.isArray(state.todosEdited)){
+    state.todosEdited.forEach(ph=>{ (ph.items||[]).forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} }); });
+  }
+}
+function mergeArraysById(localArr, cloudArr){
   localArr=localArr||[]; cloudArr=cloudArr||[];
   const byId={};
   localArr.forEach(it=>{ if(it&&it.id) byId[it.id]=it; });
@@ -496,81 +956,810 @@ function mergeItemsById(localArr, cloudArr){
   });
   return Object.values(byId);
 }
-function mergeWeeks(localWeeks, cloudWeeks){
-  localWeeks=localWeeks||[]; cloudWeeks=cloudWeeks||[];
-  const byId={}; const order=[];
-  localWeeks.forEach(w=>{ byId[w.id]=JSON.parse(JSON.stringify(w)); order.push(w.id); });
-  cloudWeeks.forEach(w=>{
-    if(!byId[w.id]){ byId[w.id]=JSON.parse(JSON.stringify(w)); order.push(w.id); }
-    else{ byId[w.id].tasks=mergeItemsById(byId[w.id].tasks,w.tasks); }
-  });
-  return order.map(id=>byId[id]);
+function mergeAusgaben(localA, cloudA){
+  localA=localA||{}; cloudA=cloudA||{};
+  const kats=new Set([...Object.keys(localA),...Object.keys(cloudA)]);
+  const merged={};
+  kats.forEach(k=>{ merged[k]=mergeArraysById(localA[k],cloudA[k]); });
+  return merged;
 }
-function mergePlan(localPlan, cloudPlan){
-  if(!localPlan) return cloudPlan;
-  if(!cloudPlan) return localPlan;
-  const byId={}; const order=[];
-  localPlan.forEach(m=>{ byId[m.id]=JSON.parse(JSON.stringify(m)); order.push(m.id); });
-  cloudPlan.forEach(m=>{
-    if(!byId[m.id]){ byId[m.id]=JSON.parse(JSON.stringify(m)); order.push(m.id); }
-    else{ byId[m.id].weeks=mergeWeeks(byId[m.id].weeks,m.weeks); }
+function mergeTodos(localT, cloudT){
+  if(!localT) return cloudT;
+  if(!cloudT) return localT;
+  const byPhase={}; const order=[];
+  localT.forEach(ph=>{ byPhase[ph.phase]=JSON.parse(JSON.stringify(ph)); order.push(ph.phase); });
+  cloudT.forEach(ph=>{
+    if(!byPhase[ph.phase]){ byPhase[ph.phase]=JSON.parse(JSON.stringify(ph)); order.push(ph.phase); }
+    else{ byPhase[ph.phase].items=mergeArraysById(byPhase[ph.phase].items,ph.items); }
   });
-  return order.map(id=>byId[id]);
+  return order.map(p=>byPhase[p]);
 }
 
+// Übernimmt ebenfalls ALLE Felder aus der Cloud (statt einzeln aufgezählter
+// Felder) — das war die eigentliche Ursache dafür, dass Budgetplan-Änderungen
+// (z.B. Estrich-Betrag) zwar in der Cloud gespeichert, aber nie wieder
+// heruntergeladen/angezeigt wurden: budgetPlan fehlte hier komplett in der Liste.
 async function loadFromCloud(){
-  if(!supaClient)return false;
-  if(_pendingSave)return false;
+  if(!supaClient) return false;
+  if(_pendingSave) return false; // eine lokale Änderung wartet noch aufs Hochladen — nicht überschreiben
   try{
-    const{data,error}=await supaClient.from('bau_state').select('state').eq('id',SUPA_ROW).single();
-    if(error||!data)return false;
-    if(_pendingSave)return false;
-    const d=JSON.parse(data.state);
-    if(d.plan)P.plan=mergePlan(P.plan,d.plan);
+    const {data,error} = await supaClient
+      .from('bau_state').select('state').eq('id','bau-muehltal-v1').single();
+    if(error||!data) return false;
+    if(_pendingSave) return false; // währenddessen könnte eine Änderung dazwischengekommen sein
+    const p=JSON.parse(data.state);
+    backfillIds(S); backfillIds(p);
+    p.ausgaben = mergeAusgaben(S.ausgaben, p.ausgaben);
+    p.notizen = mergeArraysById(S.notizen, p.notizen);
+    p.todosEdited = mergeTodos(S.todosEdited, p.todosEdited);
+    Object.assign(S,p);
     return true;
-  }catch(e){return false;}
+  }catch(e){ return false; }
 }
 
+let _saveTimer=null;
+function saveToCloud(){
+  if(!supaClient){ _pendingSave = false; return; }
+  if(_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(async function(){
+    try{
+      await supaClient.from('bau_state')
+        .upsert({id:'bau-muehltal-v1',state:JSON.stringify(S),updated_at:new Date().toISOString()});
+    }catch(e){}
+    finally{ _pendingSave = false; }
+  },1000);
+}
+
+function getTodos(){return S.todosEdited||BAU_DATA.todos;}
+// Heilt wie getBudget() unten fehlende Positionen nach: wenn in der Datei
+// neue Positionen zum Budgetplan hinzukommen, aber auf diesem Gerät schon
+// ein eigener (aus der Cloud geladener) kostenEdited-Stand existiert, wurden
+// die neuen Positionen bisher nie sichtbar — der eigene Stand hat die
+// Datei-Defaults komplett verdeckt, auch für Positionen, die es dort noch
+// gar nicht gab. Positionen bekamen hier gerade erst erstmals eine id; ein
+// schon bestehender kostenEdited-Stand hat davon noch keine. Deshalb zuerst
+// per Name nachrüsten (sonst würde jede bestehende Position fälschlich als
+// "fehlt noch" erkannt und dupliziert) — erst danach wird anhand der id
+// ergänzt, was wirklich neu ist. Handisch hinzugefügte eigene Positionen
+// ohne Namens-Treffer bleiben unangetastet.
+function getKosten(){
+  if(!S.kostenEdited){ S.kostenEdited=JSON.parse(JSON.stringify(BAU_DATA.kosten)); return S.kostenEdited; }
+  const byName={}; BAU_DATA.kosten.forEach(k=>{ byName[k.n]=k; });
+  let healed=false;
+  S.kostenEdited.forEach(k=>{
+    if(!k.id && byName[k.n]){ k.id=byName[k.n].id; healed=true; }
+  });
+  const existingIds = S.kostenEdited.map(k=>k.id).filter(Boolean);
+  const missing = BAU_DATA.kosten.filter(k=>k.id && !existingIds.includes(k.id));
+  if(missing.length){
+    S.kostenEdited = S.kostenEdited.concat(JSON.parse(JSON.stringify(missing)));
+    healed=true;
+  }
+  if(healed) saveS();
+  return S.kostenEdited;
+}
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');btn.classList.add('active');
+  const T={uebersicht:'🏗️ Kernsanierung Mühltal',ablauf:'📋 Ablaufplan Rohbau',zeitplan:'📅 Zeitplan',todos:'✅ To-Dos',kosten:'💶 Kosten',notizen:'📝 Notizen'};
+  const Sub={uebersicht:'Schleifmühlenweg 7a · Jul 2026–Aug 2027',ablauf:'Gewerke-Abhängigkeiten KW45/26–KW10/27',zeitplan:'Verputzen ab Mär · Umzug Aug 2027',todos:'Aufgaben verwalten',kosten:'Budget & Förderung',notizen:'Baustellentagebuch'};
+  document.getElementById('page-title').textContent=T[id]||id;
+  document.getElementById('page-sub').textContent=Sub[id]||'';
+}
+
+function renderGantt(){
+  // Legende
+  let leg='<div style="display:flex;flex-wrap:wrap;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)">';
+  BAU_DATA.legende.forEach(item=>{
+    leg+=`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:12px;height:12px;border-radius:3px;background:${item.c};flex-shrink:0;display:inline-block"></span>${item.l}</span>`;
+  });
+  leg+='</div>';
+  // Gantt
+  let h='<thead><tr><th>Gewerk / Phase</th>';
+  MONTHS.forEach(m=>h+=`<th>${m}</th>`);
+  h+='</tr></thead><tbody>';
+  BAU_DATA.gantt.forEach(row=>{
+    if(row.section){h+=`<tr class="gantt-section"><td colspan="${MONTHS.length+1}">${row.section}</td></tr>`;return;}
+    h+=`<tr><td>${row.l}</td>`;
+    for(let i=0;i<MONTHS.length;i++)h+=i>=row.s&&i<=row.e?`<td class="gantt-cell"><div class="gantt-bar" style="background:${row.c}"></div></td>`:`<td class="gantt-cell"></td>`;
+    h+='</tr>';
+  });
+  document.getElementById('gantt-wrap-inner').innerHTML=leg+'<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="gantt-table">'+h+'</tbody></table></div>';
+}
+
+function renderTodos(){
+  const todos=getTodos();
+  let tot=0,don=0,h='';
+  todos.forEach((ph,pi)=>{
+    let pd=0;ph.items.forEach((_,ii)=>{tot++;if(S.checks[`${pi}-${ii}`]){don++;pd++;}});
+    h+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px"><span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${ph.phase}</span><button style="padding:5px 10px;font-size:11px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer" onclick="openTodoModal(${pi},null)">+ Aufgabe</button></div>`;
+    ph.items.forEach((item,ii)=>{
+      const key=`${pi}-${ii}`,isDone=!!S.checks[key];
+      const p=PRIO[item.p]||PRIO.m;
+      h+=`<div style="display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)">
+        <div class="todo-check${isDone?' done':''}" onclick="togTodo('${key}')"></div>
+        <div style="flex:1;cursor:pointer" onclick="togTodo('${key}')">
+          <div style="font-size:14px;font-weight:500;line-height:1.4${isDone?';text-decoration:line-through;color:var(--small)':''}">${item.t}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">${item.s}</div>
+        </div>
+        <span class="badge ${p.cls}" style="flex-shrink:0;margin-top:2px">${p.l}</span>
+        <button style="font-size:16px;color:var(--small);background:none;border:none;cursor:pointer;padding:2px 4px;flex-shrink:0" onclick="openTodoModal(${pi},${ii})">✏️</button>
+      </div>`;
+    });
+  });
+  document.getElementById('todos-container').innerHTML=h;
+  document.getElementById('progress-text').textContent=`${don} / ${tot} erledigt`;
+  document.getElementById('progress-fill').style.width=tot?Math.round(don/tot*100)+'%':'0%';
+}
+function togTodo(k){S.checks[k]=!S.checks[k];saveS();renderTodos();}
+
+function openTodoModal(pi,ii){
+  eTodoPI=pi;eTodoII=ii;
+  const isNew=ii===null;
+  document.getElementById('todo-modal-title').textContent=isNew?'Neue Aufgabe':'Aufgabe bearbeiten';
+  document.getElementById('tm-del').style.display=isNew?'none':'block';
+  if(isNew){document.getElementById('tm-title').value='';document.getElementById('tm-sub').value='';document.getElementById('tm-prio').value='m';}
+  else{const item=getTodos()[pi].items[ii];document.getElementById('tm-title').value=item.t;document.getElementById('tm-sub').value=item.s;document.getElementById('tm-prio').value=item.p;}
+  document.getElementById('todo-modal').classList.add('open');
+}
+function saveTodo(){
+  const t=document.getElementById('tm-title').value.trim();if(!t){alert('Titel eingeben');return;}
+  if(!S.todosEdited)S.todosEdited=JSON.parse(JSON.stringify(BAU_DATA.todos));
+  const oldItem = eTodoII!==null ? S.todosEdited[eTodoPI].items[eTodoII] : null;
+  const item={id:(oldItem&&oldItem.id)||uid(), _t:Date.now(), t,s:document.getElementById('tm-sub').value.trim(),p:document.getElementById('tm-prio').value};
+  if(eTodoII===null)S.todosEdited[eTodoPI].items.push(item);
+  else S.todosEdited[eTodoPI].items[eTodoII]=item;
+  saveS();closeModals();renderTodos();
+}
+function deleteTodo(){
+  if(!confirm('Löschen?'))return;
+  if(!S.todosEdited)S.todosEdited=JSON.parse(JSON.stringify(BAU_DATA.todos));
+  S.todosEdited[eTodoPI].items.splice(eTodoII,1);
+  saveS();closeModals();renderTodos();
+}
+
+function renderKosten(){
+  const K=getKosten();let sv=0,sb=0,sf=0,h='';
+  K.forEach((k,i)=>{
+    sv+=k.von;sb+=k.bis;sf+=(k.foerd||0);
+    const tc=k.t==='g'?'badge-blue':k.t==='e'?'badge-green':'badge-grey';
+    const tl=k.t==='g'?'Gewerk':k.t==='e'?'EL':'Sonst.';
+    h+=`<div class="kosten-row">
+      <div class="kosten-left"><div class="kosten-name">${k.n} <span class="badge ${tc}" style="font-size:10px">${tl}</span></div>${k.note?`<div class="kosten-note">${k.note}</div>`:''}</div>
+      <div class="kosten-right">
+        <div class="kosten-amount"><div class="kosten-von-bis">${k.von.toLocaleString('de')}–${k.bis.toLocaleString('de')} €</div>${k.foerd?`<div class="kosten-foerd">−${k.foerd.toLocaleString('de')} € Förd.</div>`:''}</div>
+        <button class="kosten-edit-btn" onclick="openKostenModal(${i})">✏️</button>
+      </div>
+    </div>`;
+  });
+  const kl=document.getElementById('kosten-list'); if(kl) kl.innerHTML=h;
+  const mid=Math.round((sv+sb)/2);
+  const kt=document.getElementById('kosten-total'); if(!kt) return;
+  kt.innerHTML=`
+    <div class="row"><span>Minimum</span><span>${sv.toLocaleString('de')} €</span></div>
+    <div class="row"><span>Maximum</span><span>${sb.toLocaleString('de')} €</span></div>
+    <div class="row"><span class="green">Förderung BAFA+KfW</span><span class="green">−43.300 €</span></div>
+    <div class="row main"><span>Eigenanteil (realist.)</span><span>${(mid-43300).toLocaleString('de')} €</span></div>`;
+}
+function openKostenModal(i){
+  eKostenI=i;const isNew=i===null;
+  document.getElementById('kosten-modal-title').textContent=isNew?'Neue Position':'Position bearbeiten';
+  document.getElementById('km-del').style.display=isNew?'none':'block';
+  if(isNew){['km-name','km-note'].forEach(id=>document.getElementById(id).value='');document.getElementById('km-von').value='';document.getElementById('km-bis').value='';document.getElementById('km-foerd').value='0';document.getElementById('km-typ').value='g';}
+  else{const k=getKosten()[i];document.getElementById('km-name').value=k.n;document.getElementById('km-von').value=k.von;document.getElementById('km-bis').value=k.bis;document.getElementById('km-foerd').value=k.foerd||0;document.getElementById('km-typ').value=k.t;document.getElementById('km-note').value=k.note||'';}
+  document.getElementById('kosten-modal').classList.add('open');
+}
+function saveKosten(){
+  const n=document.getElementById('km-name').value.trim();if(!n){alert('Name eingeben');return;}
+  if(!S.kostenEdited)S.kostenEdited=JSON.parse(JSON.stringify(BAU_DATA.kosten));
+  const item={n,von:parseFloat(document.getElementById('km-von').value)||0,bis:parseFloat(document.getElementById('km-bis').value)||0,foerd:parseFloat(document.getElementById('km-foerd').value)||0,t:document.getElementById('km-typ').value,note:document.getElementById('km-note').value.trim()};
+  if(eKostenI===null)S.kostenEdited.push(item);else S.kostenEdited[eKostenI]=item;
+  saveS();closeModals();renderKosten();
+}
+function deleteKosten(){
+  if(!confirm('Löschen?'))return;
+  if(!S.kostenEdited)S.kostenEdited=JSON.parse(JSON.stringify(BAU_DATA.kosten));
+  S.kostenEdited.splice(eKostenI,1);
+  saveS();closeModals();renderKosten();
+}
+
+// Gewerk Status
+const GW_STATUS=[
+  {id:'offen',      l:'⚪ Noch nicht angefragt', cls:'badge-grey'},
+  {id:'angefragt',  l:'📤 Angefragt',             cls:'badge-amber'},
+  {id:'termin',     l:'📅 Termin vereinbart',      cls:'badge-blue'},
+  {id:'ausstehend', l:'📋 Angebot ausstehend',     cls:'badge-purple'},
+  {id:'erhalten',   l:'✅ Angebot erhalten',       cls:'badge-green'},
+  {id:'beauftragt', l:'✍️ Beauftragt',             cls:'badge-green'},
+];
+function getGwStatus(id){return S.gewerkStatus&&S.gewerkStatus[id]||'offen';}
+function cycleGwStatus(id){
+  if(!S.gewerkStatus)S.gewerkStatus={};
+  const cur=getGwStatus(id);
+  const idx=GW_STATUS.findIndex(s=>s.id===cur);
+  S.gewerkStatus[id]=GW_STATUS[(idx+1)%GW_STATUS.length].id;
+  saveS();renderAngebote();
+}
+
+function renderAngebote(){
+  let h='';
+  // Group by prio
+  const prios=[1,2,3];
+  const prioLabels={1:'🔴 Jetzt anfragen',2:'🟡 Bald anfragen',3:'🟢 Später'};
+  prios.forEach(p=>{
+    const gws=BAU_DATA.gewerke.filter(g=>g.prio===p);
+    if(!gws.length)return;
+    h+=`<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:14px 0 6px">${prioLabels[p]}</div>`;
+    gws.forEach(gw=>{
+      const liste=S.angebote[gw.id]||[];
+      const gwSt=GW_STATUS.find(s=>s.id===getGwStatus(gw.id))||GW_STATUS[0];
+      const best=liste.find(a=>a.status==='beauftragt');
+      const over=best&&best.betrag>gw.budget;
+      h+=`<div class="angebot-block">
+        <div class="angebot-gewerk" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+            <span style="font-size:15px">${gw.icon||''} ${gw.n}</span>
+            <span style="font-size:11px;color:${over?'#e74c3c':'#6b7280'};font-weight:500">Budget: ${gw.budget.toLocaleString('de')} €</span>
+          </div>
+          <button onclick="cycleGwStatus('${gw.id}')" style="padding:5px 12px;font-size:12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-weight:600">${gwSt.l}</button>
+        </div>`;
+      if(!liste.length)h+=`<p style="font-size:13px;color:#9ca3af;padding:6px 14px">Noch kein Angebot eingetragen</p>`;
+      else [...liste].sort((a,b)=>a.betrag-b.betrag).forEach((a,si)=>{
+        const oi=liste.indexOf(a),isBest=a.status==='beauftragt';
+        const sb=isBest?'<span class="badge badge-green">✓ Beauftragt</span>':a.status==='abgelehnt'?'<span class="badge badge-red">Abgelehnt</span>':'<span class="badge badge-amber">In Prüfung</span>';
+        h+=`<div class="angebot-card${isBest?' best':''}"><div style="font-size:20px">📄</div><div class="angebot-info"><div class="angebot-firma">${a.firma}</div><div class="angebot-meta">${a.datum?new Date(a.datum).toLocaleDateString('de-DE'):''}${a.notiz?' · '+a.notiz:''}</div></div><div class="angebot-right"><div class="angebot-price">${Number(a.betrag).toLocaleString('de')} €</div>${sb}<div class="angebot-actions"><button class="btn-small" onclick="cycleAng('${gw.id}',${oi})">Status ▾</button><button class="btn-small" onclick="delAng('${gw.id}',${oi})">✕</button></div></div></div>`;
+      });
+      h+=`<button class="add-btn" onclick="openAngModal('${gw.id}')">+ Angebot eintragen</button></div>`;
+    });
+  });
+  document.getElementById('angebote-container').innerHTML=h;
+}
+function openAngModal(gwId){eAngGw=gwId;const gw=BAU_DATA.gewerke.find(g=>g.id===gwId);document.getElementById('ang-title').textContent='Angebot: '+gw.n;['af-firma','af-notiz'].forEach(id=>document.getElementById(id).value='');document.getElementById('af-betrag').value='';document.getElementById('af-datum').value=new Date().toISOString().split('T')[0];document.getElementById('af-status').value='offen';document.getElementById('angebot-modal').classList.add('open');}
+function saveAngebot(){const f=document.getElementById('af-firma').value.trim(),b=parseFloat(document.getElementById('af-betrag').value)||0;if(!f||!b){alert('Firma und Betrag angeben');return;}if(!S.angebote[eAngGw])S.angebote[eAngGw]=[];S.angebote[eAngGw].push({firma:f,betrag:b,datum:document.getElementById('af-datum').value,status:document.getElementById('af-status').value,notiz:document.getElementById('af-notiz').value.trim()});saveS();closeModals();renderAngebote();}
+function cycleAng(gwId,i){const opts=['offen','beauftragt','abgelehnt'];S.angebote[gwId][i].status=opts[(opts.indexOf(S.angebote[gwId][i].status)+1)%3];saveS();renderAngebote();}
+function delAng(gwId,i){if(confirm('Löschen?')){S.angebote[gwId].splice(i,1);saveS();renderAngebote();}}
+
+function renderNotizen(){let h='';if(!S.notizen.length)h='<p style="color:#9ca3af;font-size:13px;margin-top:12px">Noch keine Notizen.</p>';else S.notizen.slice().reverse().forEach((n,ri)=>{const i=S.notizen.length-1-ri;h+=`<div class="notiz-card"><div class="notiz-ts">${n.ts}</div><button class="notiz-del" onclick="delN(${i})">×</button><div class="notiz-text">${n.text}</div></div>`;});document.getElementById('notiz-list').innerHTML=h;}
+function addNotiz(){const el=document.getElementById('notiz-input'),t=el.value.trim();if(!t)return;const now=new Date(),ts=now.toLocaleDateString('de-DE')+' '+now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});S.notizen.push({id:uid(),_t:Date.now(),text:t,ts});el.value='';saveS();renderNotizen();}
+function delN(i){S.notizen.splice(i,1);saveS();renderNotizen();}
+
+function closeModals(){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModals();}));
+
+
+// ── AUSGABEN ──────────────────────────────────────────
+let eAusgKat=null, eAusgIdx=null;
+
+function showKTab(tab){
+  document.getElementById('ktab-ist-content').style.display = tab==='ist'?'block':'none';
+  document.getElementById('ktab-plan-content').style.display = tab==='plan'?'block':'none';
+  document.getElementById('ktab-ist').style.background = tab==='ist'?'#1a1a2e':'transparent';
+  document.getElementById('ktab-ist').style.color = tab==='ist'?'#fff':'var(--muted)';
+  document.getElementById('ktab-plan').style.background = tab==='plan'?'#1a1a2e':'transparent';
+  document.getElementById('ktab-plan').style.color = tab==='plan'?'#fff':'var(--muted)';
+}
+
+function getAusgaben(katId){return (S.ausgaben||{})[katId]||[];}
+
+function renderAusgaben(){
+  // Budget aus Budgetplan übernehmen
+  const plan = getBudget();
+  const planMap = {};
+  plan.forEach(p => { planMap[p.id] = p.betrag||0; });
+
+  // Kategorien mit aktuellem Budget aus Budgetplan
+  const kats = BAU_DATA.ausgabenKategorien.map(k => {
+    const planBetrag = planMap[k.id];
+    return planBetrag !== undefined ? {...k, budget: planBetrag} : k;
+  });
+  // Totals – Gesamtbudget fest: 622.379,30 € (Eigenkapital + Bankdarlehen + Sanierungskredit)
+  const TOTAL_BUDGET = 622379.30;
+  let totalIst=0;
+  const istByFin={ek:0,bank:0,kredit:0,nicht:0,sonder:0};
+  kats.forEach(k=>getAusgaben(k.id).forEach(a=>{totalIst+=a.betrag; if(istByFin[k.fin]!==undefined)istByFin[k.fin]+=a.betrag;}));
+  const pct = Math.min(100,Math.round(totalIst/TOTAL_BUDGET*100));
+  const diff = TOTAL_BUDGET - totalIst;
+  const cls = pct<80?'ok':pct<100?'warn':'over';
+  const barColor = pct<80?'#1d9e75':pct<100?'#e8a838':'#e74c3c';
+
+  const as=document.getElementById('ausg-summary'); if(!as) return;
+  as.innerHTML=`
+    <div class="ausg-card"><div class="label">Ausgegeben</div><div class="value ${cls}">${totalIst.toLocaleString('de')} €</div><div class="sub">${pct}% des Gesamtbudgets</div></div>
+    <div class="ausg-card"><div class="label">${diff>=0?'Noch verfügbar':'Über Budget!'}</div><div class="value ${diff>=0?(pct<80?'ok':'warn'):'over'}">${diff.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div><div class="sub">Gesamt: 622.379 €</div></div>`;
+  const ab=document.getElementById('ausg-bar'); if(ab) ab.style.cssText=`width:${pct}%;background:${barColor}`;
+
+  const finSumEl=document.getElementById('ausg-fin-summary');
+  if(finSumEl){
+    finSumEl.innerHTML=`
+      <div class="budget-row"><div class="budget-name">🏦 davon Eigenkapital<span class="fin-badge ek">EK</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700">${istByFin.ek.toLocaleString('de')} €</span></div></div>
+      <div class="budget-row"><div class="budget-name">🏦 davon Restkaufpreis (Bank)<span class="fin-badge bank">Bank</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700">${istByFin.bank.toLocaleString('de')} €</span></div></div>
+      <div class="budget-row"><div class="budget-name">🔨 davon Sanierungskredit<span class="fin-badge kredit">Kredit</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700;color:${istByFin.kredit>233000?'#dc2626':'inherit'}">${istByFin.kredit.toLocaleString('de')} € / 233.000 €</span></div></div>
+      <div class="budget-row" style="border-bottom:none"><div class="budget-name">💶 davon nicht kreditfähig<span class="fin-badge nicht">separat</span></div><div class="budget-val" style="text-align:right;min-width:110px"><span style="font-weight:700">${istByFin.nicht.toLocaleString('de')} €</span></div></div>`;
+  }
+
+  let h='';
+  kats.forEach(k=>{
+    const belege=getAusgaben(k.id);
+    const ist=belege.reduce((s,a)=>s+a.betrag,0);
+    const pctK=k.budget>0?Math.min(100,Math.round(ist/k.budget*100)):ist>0?100:0;
+    const diffK=k.budget-ist;
+    const clsK=k.budget===0?'':pctK<80?'ok':pctK<100?'warn':'over';
+    const diffTxt=k.budget===0?(ist>0?`${ist.toLocaleString('de')} € ausgegeben`:'Kein Budget geplant'):(diffK>=0?`${diffK.toLocaleString('de')} € verfügbar`:`${Math.abs(diffK).toLocaleString('de')} € über Budget`);
+    const fin=FIN_LABELS[k.fin];
+
+    h+=`<div class="ausg-kat">
+      <div class="ausg-kat-head" onclick="togAusgKat('${k.id}')">
+        <div class="ausg-kat-icon">${k.icon}</div>
+        <div class="ausg-kat-info">
+          <div class="ausg-kat-name">${k.name}${fin?`<span class="fin-badge ${fin.cls}">${fin.label}</span>`:''}</div>
+          <div class="ausg-kat-nums">${k.budget>0?`Budget: ${k.budget.toLocaleString('de')} €`:'Kein Budget'} · ${belege.length} Beleg${belege.length!==1?'e':''}</div>
+        </div>
+        <div class="ausg-kat-right">
+          <div class="ausg-kat-ist">${ist>0?ist.toLocaleString('de')+' €':'–'}</div>
+          <div class="ausg-kat-diff ${clsK}">${diffTxt}</div>
+        </div>
+      </div>
+      <div class="ausg-kat-body" id="ausg-body-${k.id}">`;
+
+    if(belege.length){
+      [...belege].sort((a,b)=>new Date(b.datum)-new Date(a.datum)).forEach((b,bi)=>{
+        const oi=belege.indexOf(b);
+        h+=`<div class="ausg-beleg">
+          <div class="ausg-beleg-info">
+            <div class="ausg-beleg-titel">${b.titel}</div>
+            <div class="ausg-beleg-meta">${b.datum?new Date(b.datum).toLocaleDateString('de-DE'):''}${b.notiz?' · '+b.notiz:''}</div>
+          </div>
+          <div class="ausg-beleg-betrag">${b.betrag.toLocaleString('de')} €</div>
+          <button class="ausg-beleg-del" onclick="openAusgModal('${k.id}',${oi})">✏️</button>
+        </div>`;
+      });
+    } else {
+      h+=`<div style="padding:10px 14px;font-size:13px;color:var(--small)">Noch keine Ausgaben</div>`;
+    }
+    h+=`<button class="ausg-add-btn" onclick="openAusgModal('${k.id}',null)">+ Ausgabe / Rechnung eintragen</button>
+      </div>
+    </div>`;
+  });
+  const al=document.getElementById('ausg-list'); if(al) al.innerHTML=h;
+}
+
+function togAusgKat(id){
+  const el=document.getElementById('ausg-body-'+id);
+  el.style.display=el.style.display==='block'?'none':'block';
+}
+
+function openAusgModal(katId, idx){
+  eAusgKat=katId; eAusgIdx=idx;
+  const isNew=idx===null;
+  document.getElementById('ausg-modal-title').textContent=isNew?'Ausgabe eintragen':'Ausgabe bearbeiten';
+  document.getElementById('am-del').style.display=isNew?'none':'block';
+  // Populate category dropdown
+  const sel=document.getElementById('am-kat');
+  sel.innerHTML=BAU_DATA.ausgabenKategorien.map(k=>`<option value="${k.id}"${k.id===katId?' selected':''}>${k.icon} ${k.name}</option>`).join('');
+  if(isNew){
+    document.getElementById('am-titel').value='';
+    document.getElementById('am-betrag').value='';
+    document.getElementById('am-datum').value=new Date().toISOString().split('T')[0];
+    document.getElementById('am-notiz').value='';
+  } else {
+    const b=getAusgaben(katId)[idx];
+    document.getElementById('am-titel').value=b.titel;
+    document.getElementById('am-betrag').value=b.betrag;
+    document.getElementById('am-datum').value=b.datum;
+    document.getElementById('am-notiz').value=b.notiz||'';
+    sel.value=katId;
+  }
+  document.getElementById('ausg-modal').classList.add('open');
+}
+
+function saveAusg(){
+  const titel=document.getElementById('am-titel').value.trim();
+  const betrag=parseFloat(document.getElementById('am-betrag').value)||0;
+  if(!titel||!betrag){alert('Bezeichnung und Betrag angeben');return;}
+  if(!S.ausgaben)S.ausgaben={};
+  const newKat=document.getElementById('am-kat').value;
+  // id bleibt beim Bearbeiten erhalten (sonst wäre es für den Cloud-Abgleich
+  // ein neuer Eintrag statt eines aktualisierten) · bei neuen Einträgen wird
+  // eine neue id vergeben, damit sie beim Zusammenführen mit einem anderen
+  // Gerät nicht verloren gehen
+  const oldEntry = eAusgIdx!==null ? getAusgaben(eAusgKat)[eAusgIdx] : null;
+  const entry={id:(oldEntry&&oldEntry.id)||uid(), _t:Date.now(), titel,betrag,datum:document.getElementById('am-datum').value,notiz:document.getElementById('am-notiz').value.trim()};
+  // If category changed during edit, remove from old
+  if(eAusgIdx!==null && newKat!==eAusgKat){
+    if(S.ausgaben[eAusgKat])S.ausgaben[eAusgKat].splice(eAusgIdx,1);
+    if(!S.ausgaben[newKat])S.ausgaben[newKat]=[];
+    S.ausgaben[newKat].push(entry);
+  } else {
+    if(!S.ausgaben[newKat])S.ausgaben[newKat]=[];
+    if(eAusgIdx===null)S.ausgaben[newKat].push(entry);
+    else S.ausgaben[newKat][eAusgIdx]=entry;
+  }
+  saveS();closeModals();renderAusgaben();
+}
+
+function deleteAusg(){
+  if(!confirm('Ausgabe löschen?'))return;
+  if(S.ausgaben&&S.ausgaben[eAusgKat])S.ausgaben[eAusgKat].splice(eAusgIdx,1);
+  saveS();closeModals();renderAusgaben();
+}
+
+
+// ── BUDGETPLAN ───────────────────────────────────────
+// fin = Finanzierungsquelle: 'ek' Eigenkapital · 'bank' separates Bankdarlehen (Restkaufpreis)
+// 'kredit' Sanierungskredit-fähig (233.000 €-Topf) · 'nicht' nicht kreditfähig, separat zu finanzieren · 'sonder' Sonderfall
+const BUDGET_DEFAULT = [
+  {id:'kauf_ek',   n:'Kaufpreis (Eigenanteil)', betrag:130000,  foerd:0,     fin:'ek',     note:'Aus Eigenkapital erbracht'},
+  {id:'makler',    n:'Makler',                 betrag:12459.30,foerd:0,     fin:'ek',     note:''},
+  {id:'notar',     n:'Notar & Grundbuch',      betrag:6980,    foerd:0,     fin:'ek',     note:''},
+  {id:'grunderw',  n:'Grunderwerbsteuer',       betrag:20940,   foerd:0,     fin:'ek',     note:''},
+  {id:'kauf_bank', n:'Kaufpreis (Restkaufpreis)',betrag:219000, foerd:0,     fin:'bank',   note:'Direkt von der Bank beglichen · separates Darlehen, nicht Teil des Sanierungskredits'},
+  {id:'dach',      n:'Dachsanierung',           betrag:50000,   foerd:6000,  fin:'kredit', note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
+  {id:'heizung',   n:'Heizung / Wärmepumpe',   betrag:35000,   foerd:16500, fin:'kredit', note:'KfW BEG EM · Angebot Külah 30.702€ brutto'},
+  {id:'fenster',   n:'Fenster + Haustür',       betrag:40000,   foerd:8200,  fin:'kredit', note:'BAFA BEG EM'},
+  {id:'lueftung',  n:'Lüftung',                 betrag:2500,    foerd:500,   fin:'kredit', note:'BAFA BEG EM · 20% von 2.500€'},
+  {id:'fassade',   n:'Fassadendämmung',         betrag:35000,   foerd:6000,  fin:'kredit', note:'BAFA BEG EM · 20% von 30.000€ (50% der gedeckelten 60.000€ Dach+Fassade)'},
+  {id:'estrich',   n:'Estrich (Celar)',          betrag:6433.43, foerd:0,     fin:'kredit', note:'Angebot P5654.6 vom 18.08.2026 · RapidoWitt 50mm inkl. Dämm-Rollbahn (Tackersystem) + PE-Randstreifen · 121,93m² EG/OG · gültig bis 29.09.2026 · ersetzt vorheriges Bekotec-Angebot (9.163€)'},
+  {id:'sanitaer',  n:'Sanitär & Abwasser',      betrag:45000,   foerd:0,     fin:'kredit', note:'inkl. Bäder · 2 Bäder + alle Leitungen'},
+  {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     fin:'kredit', note:'Eigenleistung'},
+  {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     fin:'kredit', note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
+  {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     fin:'kredit', note:''},
+  {id:'trockenbau_bad', n:'Trockenbau & Fliesen Bad', betrag:14000, foerd:0, fin:'kredit', note:'Albrecht · Vorwand/Ständerwerk + Abdichtung + Fliesen Bad OG + Gäste-WC'},
+  {id:'stahltraeger_wz', n:'Stahlträger Wohnzimmer', betrag:2500,  foerd:0, fin:'kredit', note:''},
+  {id:'fliesen_eingang', n:'Fliesen Eingang und Treppe', betrag:3000, foerd:0, fin:'kredit', note:''},
+  {id:'material',  n:'Material für Eigenleistung',betrag:7000,   foerd:0,     fin:'kredit', note:'Material für alle Eigenleistungs-Gewerke (ohne Werkzeuge) · Betrag prüfen/anpassen!'},
+  {id:'sonstiges', n:'Sonstiges / Puffer',       betrag:20000,   foerd:0,     fin:'kredit', note:''},
+  {id:'asbest',    n:'Asbest-Entsorgung',        betrag:3883,    foerd:0,     fin:'nicht',  note:'Asbestsanierung-RheinMain · beauftragt'},
+  {id:'container', n:'Container & Entsorgung',   betrag:5000,    foerd:0,     fin:'nicht',  note:''},
+  {id:'kueche',    n:'Küche',                    betrag:3000,    foerd:0,     fin:'nicht',  note:'Gesamtkosten ~15.000 € · davon 12.000 € Zuschuss Eltern'},
+  {id:'werkzeuge', n:'Werkzeuge & Schutzausrüstung',betrag:3000, foerd:0,     fin:'nicht',  note:'Miete + Kauf Werkzeug/Schutzausrüstung · Betrag prüfen/anpassen!'},
+  {id:'energie',   n:'Energieberatung',          betrag:4500,    foerd:2000,  fin:'sonder', note:'Uwe Wäckerle (heat consult) · iSFP läuft i.d.R. über eigenen BAFA-Zuschuss (nicht über den Sanierungskredit) · Baubegleitung ggf. bis 5.000€ in KfW-261-Kredit einrechenbar – bitte konkret mit ihm klären'},
+];
+
+const FIN_LABELS = {
+  ek:     {label:'Eigenkapital',           cls:'ek'},
+  bank:   {label:'Bankdarlehen (Kauf)',    cls:'bank'},
+  kredit: {label:'Sanierungskredit',       cls:'kredit'},
+  nicht:  {label:'nicht kreditfähig',      cls:'nicht'},
+  sonder: {label:'Sonderfall',             cls:'sonder'},
+};
+
+// Füllt einen vorhandenen (ggf. alten/unvollständigen) S.budgetPlan um alle
+// Positionen aus BUDGET_DEFAULT auf, die dort noch fehlen — ohne bereits
+// eingetragene eigene Werte anzufassen. Sonst würde ein früher gespeicherter,
+// schlanker Budgetplan für immer verhindern, dass neu hinzugefügte
+// Kategorien (z.B. Material/Werkzeuge oder die Finanzierungs-Umstrukturierung)
+// überhaupt sichtbar werden — genau das Problem, wenn "Budgetplan ist leer".
+// Die veraltete Kaufpreis-Sammelposition ('kauf') wird dabei durch die neue
+// Aufteilung Eigenanteil/Restkaufpreis ersetzt, damit nichts doppelt zählt.
+function getBudget(){
+  if(!S.budgetPlan){
+    S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+    return S.budgetPlan;
+  }
+  let healed = false;
+  const legacyKauf = S.budgetPlan.findIndex(p=>p.id==='kauf');
+  if(legacyKauf!==-1 && !S.budgetPlan.some(p=>p.id==='kauf_ek')){
+    S.budgetPlan.splice(legacyKauf,1);
+    healed = true;
+  }
+  // Positionen, die schon VOR der Finanzierungs-Umstrukturierung existierten
+  // (z.B. Dach, Heizung, Makler …), haben noch kein `fin`-Tag. Die Anzeige
+  // sortiert Positionen aber strikt nach `fin` in ihre Sektion ein — ohne
+  // dieses Tag verschwindet die Position komplett aus der Ansicht, obwohl
+  // ihr Betrag weiterhin gespeichert ist. Deshalb hier nachträglich ergänzen,
+  // per ID aus BUDGET_DEFAULT nachgeschlagen (Beträge bleiben unangetastet).
+  const defaultMap = {};
+  BUDGET_DEFAULT.forEach(b=>{ defaultMap[b.id]=b; });
+  S.budgetPlan.forEach(p=>{
+    if(!p.fin && defaultMap[p.id]){
+      p.fin = defaultMap[p.id].fin;
+      healed = true;
+    }
+  });
+  const existingIds = S.budgetPlan.map(p=>p.id);
+  const missing = BUDGET_DEFAULT.filter(b=>!existingIds.includes(b.id));
+  if(missing.length){
+    S.budgetPlan = S.budgetPlan.concat(JSON.parse(JSON.stringify(missing)));
+    healed = true;
+  }
+  if(healed) saveS();
+  return S.budgetPlan;
+}
+
+function renderBudget(){
+  const plan = getBudget();
+  const knownIds = BUDGET_DEFAULT.map(b=>b.id);
+
+  // Gruppierung nach Finanzierungsquelle statt nach Gewerk-Kategorie —
+  // so lässt sich direkt ablesen, was aus dem 233.000€-Sanierungskredit,
+  // was aus dem Eigenkapital und was gar nicht kreditfähig ist.
+  const sections = [
+    {label:'🏦 Eigenkapital · Kauf & Nebenkosten', fin:'ek', cap:170379.30},
+    {label:'🏦 Restkaufpreis · separates Bankdarlehen', fin:'bank', cap:null},
+    {label:'🔨 Sanierungskredit · kreditfähig', fin:'kredit', cap:233000},
+    {label:'💶 Nicht kreditfähig · separat zu finanzieren', fin:'nicht', cap:null},
+    {label:'💡 Energieberatung · Sonderfall', fin:'sonder', cap:null},
+    {label:'❓ Weitere Positionen (Finanzierung noch offen)', fin:null, cap:null},
+  ];
+
+  let h = '';
+  let sumBetrag = 0, sumFoerd = 0;
+  let sumEk = 0, sumBank = 0, sumKredit = 0, sumNicht = 0, sumSonder = 0;
+
+  sections.forEach(sec => {
+    const items = sec.fin ? plan.filter(p => p.fin===sec.fin) : plan.filter(p => !knownIds.includes(p.id));
+    if(!items.length) return;
+    const secSum = items.reduce((s,p)=>s+(p.betrag||0),0);
+    h += `<div class="budget-section"><span>${sec.label}</span>${sec.cap?`<span class="budget-section-cap">Budget: ${sec.cap.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`:''}</div>`;
+    items.forEach(item => {
+      const pi = plan.indexOf(item);
+      sumBetrag += item.betrag||0;
+      sumFoerd += item.foerd||0;
+      if(item.fin==='ek')sumEk+=item.betrag||0;
+      else if(item.fin==='bank')sumBank+=item.betrag||0;
+      else if(item.fin==='kredit')sumKredit+=item.betrag||0;
+      else if(item.fin==='nicht')sumNicht+=item.betrag||0;
+      else if(item.fin==='sonder')sumSonder+=item.betrag||0;
+      h += `<div class="budget-row">
+        <div style="flex:1;min-width:0">
+          <div class="budget-name">${item.n}</div>
+          ${item.note?`<div class="budget-note">${item.note}</div>`:''}
+          ${item.foerd?`<div class="budget-foerd" onclick="editFoerd(${pi},this)" style="cursor:pointer" title="Klicken zum Bearbeiten">−${item.foerd.toLocaleString('de')} € Förderung ✏️</div>`:'<div class="budget-foerd" onclick="editFoerd(${pi},this)" style="cursor:pointer;color:var(--small)" title="Förderung hinzufügen">+ Förderung</div>'}
+        </div>
+        <div class="budget-val" onclick="editBudget(${pi},this)" style="cursor:pointer;min-width:90px;text-align:right">
+          <span style="font-size:14px;font-weight:700">${item.betrag?item.betrag.toLocaleString('de')+' €':'– €'}</span>
+        </div>
+        <button class="budget-del" onclick="deleteBudgetPos(${pi})">✕</button>
+      </div>`;
+    });
+    if(sec.cap){
+      const over = secSum > sec.cap;
+      h += `<div class="budget-subtotal ${over?'over':'ok'}"><span>Zwischensumme</span><span>${secSum.toLocaleString('de')} € ${over?'⚠️ +':'✅ −'}${Math.abs(sec.cap-secSum).toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} € ${over?'über':'unter'} Budget</span></div>`;
+    } else {
+      h += `<div class="budget-subtotal info"><span>Zwischensumme</span><span>${secSum.toLocaleString('de')} €</span></div>`;
+    }
+  });
+
+  const bl=document.getElementById('budget-list'); if(!bl) return;
+  bl.innerHTML = h;
+
+  // Dynamischer Förderblock
+  const foerdItems = plan.filter(p => p.foerd > 0);
+  let foerdHtml = '<h3>💡 Förderung (Uwe Wäckerle, heat consult)</h3>';
+  foerdItems.forEach(p => {
+    foerdHtml += `<div class="foerder-row"><span>${p.n}${p.note?' ('+p.note+')':''}</span><span>${p.foerd.toLocaleString('de')} €</span></div>`;
+  });
+  foerdHtml += `<div class="foerder-row"><span>Gesamt Förderung</span><span>${sumFoerd.toLocaleString('de')} €</span></div>`;
+  const foerdBox = document.getElementById('foerder-box-dynamic');
+  if(foerdBox) foerdBox.innerHTML = foerdHtml;
+  // Update Ist-Kosten Hinweis
+  const foerdIstSum = document.getElementById('foerder-ist-sum');
+  if(foerdIstSum) foerdIstSum.textContent = sumFoerd.toLocaleString('de') + ' €';
+
+  const GESAMT = 622379.30; // Eigenkapital 170.379,30 + Bankdarlehen 219.000 + Sanierungskredit 233.000
+  const nachFoerd = sumBetrag - sumFoerd;
+  const bt = document.getElementById('budget-total'); if(!bt) return;
+  bt.innerHTML = `
+    <div class="row"><span>🏦 Eigenkapital (Kauf & Nebenkosten)</span><span>${sumEk.toLocaleString('de',{minimumFractionDigits:2,maximumFractionDigits:2})} € / 170.379,30 €</span></div>
+    <div class="row"><span>🏦 Restkaufpreis (Bankdarlehen)</span><span>${sumBank.toLocaleString('de')} €</span></div>
+    <div class="row"><span>🔨 Sanierungskredit (kreditfähig)</span><span style="color:${sumKredit>233000?'#f87171':'#6ee7b7'}">${sumKredit.toLocaleString('de')} € / 233.000 €</span></div>
+    <div class="row"><span>💶 Nicht kreditfähig (separat)</span><span>${sumNicht.toLocaleString('de')} €</span></div>
+    <div class="row"><span>💡 Energieberatung (Sonderfall)</span><span>${sumSonder.toLocaleString('de')} €</span></div>
+    <div style="border-top:1px dashed rgba(255,255,255,.2);margin:10px 0"></div>
+    <div class="row"><span>Geplant gesamt (alle Positionen)</span><span>${sumBetrag.toLocaleString('de')} €</span></div>
+    <div class="row"><span style="color:var(--teal)">− Förderung BAFA+KfW</span><span style="color:var(--teal)">−${sumFoerd.toLocaleString('de')} €</span></div>
+    <div class="row main"><span>Eigenanteil nach Förderung</span><span>${nachFoerd.toLocaleString('de')} €</span></div>`;
+}
+
+function editBudget(idx, el){
+  const plan = getBudget();
+  const cur = plan[idx].betrag||0;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = cur||'';
+  input.style.cssText = 'width:90px;padding:5px 8px;font-size:14px;font-weight:700;border:1.5px solid var(--teal);border-radius:8px;text-align:right;font-family:inherit';
+  input.placeholder = '0';
+  el.innerHTML = '';
+  el.appendChild(input);
+  input.focus();
+  input.select();
+  let _saved = false;
+  function save(){
+    if(_saved) return;
+    _saved = true;
+    if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+    const raw = input.value.replace(/[^0-9,.]/g,'').replace(',','.');
+    S.budgetPlan[idx].betrag = parseFloat(raw)||0;
+    saveS(); renderBudget(); renderAusgaben();
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){_saved=true;renderBudget();} });
+}
+
+function editFoerd(idx, el){
+  const plan = getBudget();
+  const cur = plan[idx].foerd||0;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = cur||'';
+  input.style.cssText = 'width:90px;padding:4px 8px;font-size:11px;border:1.5px solid var(--teal);border-radius:6px;text-align:right;font-family:inherit;color:#065f46';
+  input.placeholder = '0';
+  el.innerHTML = '';
+  el.appendChild(input);
+  input.focus();
+  input.select();
+  let _savedF = false;
+  function save(){
+    if(_savedF) return;
+    _savedF = true;
+    if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+    const raw = input.value.replace(/[^0-9,.]/g,'').replace(',','.');
+    S.budgetPlan[idx].foerd = parseFloat(raw)||0;
+    saveS(); renderBudget(); renderAusgaben();
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){_savedF=true;renderBudget();} });
+}
+
+function updateBudget(idx, val){
+  if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+  S.budgetPlan[idx].betrag = parseFloat(val)||0;
+  saveS(); renderBudget();
+}
+
+function deleteBudgetPos(idx){
+  if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+  S.budgetPlan.splice(idx,1);
+  saveS(); renderBudget();
+}
+
+function addBudgetPos(){
+  const n = prompt('Bezeichnung der neuen Position:');
+  if(!n) return;
+  const finChoice = (prompt('Finanzierung – eine Zahl eingeben:\n1 = Sanierungskredit (233.000€-Topf)\n2 = Eigenkapital (Kauf & Nebenkosten)\n3 = nicht kreditfähig (separat zu finanzieren)\n4 = Sonderfall / weiß ich noch nicht', '1')||'').trim();
+  const finMap = {1:'kredit',2:'ek',3:'nicht',4:'sonder'};
+  const fin = finMap[finChoice] || 'sonder';
+  if(!S.budgetPlan) S.budgetPlan = JSON.parse(JSON.stringify(BUDGET_DEFAULT));
+  S.budgetPlan.push({id:'custom_'+Date.now(), n, betrag:0, foerd:0, fin, note:''});
+  saveS(); renderBudget();
+}
+
+// ── SYNC ─────────────────────────────────────────────
 async function syncCloud(){
-  const btn=document.getElementById('sync-btn');
-  btn.textContent='↻ ...';
-  const ok=await loadFromCloud();
-  if(ok){render();btn.textContent='✓ Sync';}
-  else btn.textContent='✗ Fehler';
-  setTimeout(()=>btn.textContent='↻ Sync',2000);
+  _cloudLoaded = true;
+  const btn = document.getElementById('sync-btn');
+  btn.textContent = '↻ ...';
+  btn.style.opacity = '0.6';
+  const ok = await loadFromCloud();
+  if(ok){
+    renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+    btn.textContent = '✓ Sync';
+    setTimeout(()=>{ btn.textContent = '↻ Sync'; btn.style.opacity = '1'; }, 2000);
+  } else {
+    btn.textContent = '✗ Fehler';
+    setTimeout(()=>{ btn.textContent = '↻ Sync'; btn.style.opacity = '1'; }, 2000);
+  }
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────
+function exportDaten(){
+  const exportData = {
+    version: 1,
+    exportiert: new Date().toISOString(),
+    checks: S.checks,
+    todosEdited: S.todosEdited,
+    kostenEdited: S.kostenEdited,
+    angebote: S.angebote,
+    ausgaben: S.ausgaben||{},
+    notizen: S.notizen,
+  };
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const datum = new Date().toLocaleDateString('de-DE').replace(/\./g,'-');
+  a.href = url;
+  a.download = `bau-muehltal-${datum}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importDaten(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.version){alert('Ungültige Datei');return;}
+      if(!confirm(`Daten vom ${new Date(data.exportiert).toLocaleDateString('de-DE')} importieren? Aktuelle Einträge werden überschrieben.`))return;
+      S.checks = data.checks||{};
+      S.todosEdited = data.todosEdited||null;
+      S.kostenEdited = data.kostenEdited||null;
+      S.angebote = data.angebote||{};
+      S.ausgaben = data.ausgaben||{};
+      S.notizen = data.notizen||[];
+      saveS();
+      renderGantt();renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+      alert('✓ Import erfolgreich!');
+    }catch(err){
+      alert('Fehler beim Import: '+err.message);
+    }
+    event.target.value='';
+  };
+  reader.readAsText(file);
 }
 
 // Init
-try{const s=localStorage.getItem('wochenplan');if(s){const d=JSON.parse(s);if(d.plan)P.plan=d.plan;}}catch(e){}
-render();
-if(window.supabase){
-  initSupa();
-  loadFromCloud().then(ok=>{if(ok)render();});
-} else {
-  const sdk=document.createElement('script');
-  sdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-  sdk.onload=function(){initSupa();loadFromCloud().then(ok=>{if(ok)render();});};
-  document.head.appendChild(sdk);
+initSupabase();
+loadS();
+backfillIds(S);
+renderGantt();
+renderTodos();
+renderKosten();
+renderAngebote();
+renderNotizen();
+renderAusgaben();
+renderBudget();
+
+// Cloud laden - überschreibt lokale Daten mit aktuellen Cloud-Daten
+function tryCloudLoad(){
+  if(supaClient){
+    loadFromCloud().then(function(ok){
+      if(ok){
+        _cloudLoaded = true;
+        renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+      }
+    });
+  } else {
+    var supaSdk=document.createElement('script');
+    supaSdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    supaSdk.onload=function(){
+      initSupabase();
+      loadFromCloud().then(function(ok){
+        if(ok){
+          _cloudLoaded = true;
+          renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+        }
+      });
+    };
+    document.head.appendChild(supaSdk);
+  }
 }
+// Sofort versuchen, dann nochmal nach 1s als Fallback
+tryCloudLoad();
+setTimeout(function(){
+  if(!supaClient){ tryCloudLoad(); }
+}, 1000);
 
 // ── AUTO-REFRESH BEIM ZURÜCKKEHREN ───────────────────
-// Gleicher Fix wie in index.html: als Homescreen-Verknüpfung wird die Seite
-// beim Wieder-Öffnen oft nur aus dem Hintergrund reaktiviert statt neu
-// geladen, wodurch der einmalige Ladevorgang oben nie erneut läuft und
-// veraltete Daten stehen bleiben. Deshalb bei jedem Wieder-Sichtbarwerden
-// automatisch neu aus der Cloud laden (außer ein Bearbeiten-Fenster ist offen).
-let _lastAutoSync=0;
+// Ursache für "bei meinem Mann ist der Kostenstand nicht aktuell": als
+// Homescreen-Verknüpfung wird die Seite beim erneuten Öffnen meist NICHT neu
+// geladen, sondern nur aus dem Hintergrund/Cache reaktiviert (bfcache) — dann
+// läuft der obige einmalige Ladevorgang nie wieder, und die App zeigt ewig
+// den Stand vom allerersten Öffnen. Fix: bei jedem Wieder-Sichtbarwerden
+// automatisch neu aus der Cloud laden (außer es ist gerade ein Bearbeiten-
+// Fenster offen, um laufende Eingaben nicht zu überschreiben).
+let _lastAutoSync = 0;
 function autoSyncOnReturn(){
-  const now=Date.now();
-  if(now-_lastAutoSync<3000)return;
-  if(document.querySelector('.modal-overlay.open'))return;
-  _lastAutoSync=now;
-  if(!supaClient){ if(window.supabase){initSupa();loadFromCloud().then(ok=>{if(ok)render();});} return; }
-  loadFromCloud().then(ok=>{if(ok)render();});
+  const now = Date.now();
+  if(now - _lastAutoSync < 3000) return; // Doppelaufrufe (visibilitychange + pageshow) abfangen
+  if(document.querySelector('.modal-overlay.open')) return; // laufende Bearbeitung nicht stören
+  _lastAutoSync = now;
+  if(!supaClient){ tryCloudLoad(); return; }
+  loadFromCloud().then(function(ok){
+    if(ok){
+      _cloudLoaded = true;
+      renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+    }
+  });
 }
-document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible')autoSyncOnReturn(); });
-window.addEventListener('pageshow',function(){autoSyncOnReturn();});
-window.addEventListener('focus',function(){autoSyncOnReturn();});
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible') autoSyncOnReturn();
+});
+window.addEventListener('pageshow', function(){ autoSyncOnReturn(); });
+window.addEventListener('focus', function(){ autoSyncOnReturn(); });
 </script>
 </body>
 </html>
