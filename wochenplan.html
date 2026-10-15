@@ -128,6 +128,11 @@ const SUPA_URL='https://ygjjhtfeavnkujetgvbh.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnampodGZlYXZua3VqZXRndmJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MzQ0MjYsImV4cCI6MjA5NTQxMDQyNn0.p_gDikzeTCKjsGEWvbS4r1gT3OaMzm7h5Sq-H96IfGA';
 const SUPA_ROW='wochenplan-muehltal-v1';
 let supaClient=null,saveTimer=null;
+// Gleicher Schutz wie in index.html: verhindert, dass ein zeitgleicher
+// Cloud-Ladevorgang eine gerade erst lokal eingetragene, noch nicht
+// hochgeladene Änderung überschreibt (Ursache für "auf dem einen Gerät
+// eingetragen, auf dem anderen nicht zu sehen").
+let _pendingSave=false;
 
 // Zentrales State-Objekt – hält den (ggf. vom Nutzer bearbeiteten) Plan.
 // War in der Vorversion nirgends deklariert, deshalb schlug jeder Zugriff (P.plan…) fehl.
@@ -389,11 +394,12 @@ function saveTask(){
   const plan=getPlan();
   const tasks=plan[eTaskMI].weeks[eTaskWI].tasks;
   if(eTaskI===null){
-    tasks.push({id:uid(),title,sub,color:selectedTaskColor});
+    tasks.push({id:uid(),_t:Date.now(),title,sub,color:selectedTaskColor});
   }else{
     tasks[eTaskI].title=title;
     tasks[eTaskI].sub=sub;
     tasks[eTaskI].color=selectedTaskColor;
+    tasks[eTaskI]._t=Date.now();
   }
   saveS();closeModals();render();
 }
@@ -420,9 +426,9 @@ function saveWeek(){
   const label=document.getElementById('wm-label').value.trim();
   if(!label){alert('Bezeichnung eingeben');return;}
   const plan=getPlan();
-  const week={id:uid(),label,dates:document.getElementById('wm-dates').value.trim(),tasks:[]};
+  const week={id:uid(),_t:Date.now(),label,dates:document.getElementById('wm-dates').value.trim(),tasks:[]};
   if(eWeekI===null)plan[eWeekMI].weeks.push(week);
-  else{plan[eWeekMI].weeks[eWeekI].label=week.label;plan[eWeekMI].weeks[eWeekI].dates=week.dates;}
+  else{plan[eWeekMI].weeks[eWeekI].label=week.label;plan[eWeekMI].weeks[eWeekI].dates=week.dates;plan[eWeekMI].weeks[eWeekI]._t=Date.now();}
   saveS();closeModals();render();
 }
 
@@ -447,8 +453,8 @@ function saveMonth(){
   const label=document.getElementById('mm-label').value.trim();
   if(!label){alert('Bezeichnung eingeben');return;}
   const plan=getPlan();
-  if(eMonthI===null)plan.push({id:uid(),label,weeks:[]});
-  else plan[eMonthI].label=label;
+  if(eMonthI===null)plan.push({id:uid(),_t:Date.now(),label,weeks:[]});
+  else{plan[eMonthI].label=label;plan[eMonthI]._t=Date.now();}
   saveS();closeModals();render();
 }
 
@@ -464,23 +470,63 @@ document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click
 
 function saveS(){
   try{localStorage.setItem('wochenplan',JSON.stringify(P));}catch(e){}
+  _pendingSave=true;
   if(saveTimer)clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>saveToCloud(),800);
 }
 
 async function saveToCloud(){
-  if(!supaClient)return;
+  if(!supaClient){ _pendingSave=false; return; }
   try{await supaClient.from('bau_state').upsert({id:SUPA_ROW,state:JSON.stringify(P),updated_at:new Date().toISOString()});}
   catch(e){}
+  finally{ _pendingSave=false; }
+}
+
+// Gleiches Zusammenführen-statt-Überschreiben wie in index.html: ein neu
+// hinzugefügter Punkt/Woche auf einem Gerät soll nicht verschwinden, nur
+// weil kurz danach vom anderen Gerät aus ein Cloud-Abruf reinkommt.
+function mergeItemsById(localArr, cloudArr){
+  localArr=localArr||[]; cloudArr=cloudArr||[];
+  const byId={};
+  localArr.forEach(it=>{ if(it&&it.id) byId[it.id]=it; });
+  cloudArr.forEach(it=>{
+    if(!it||!it.id) return;
+    const ex=byId[it.id];
+    if(!ex||(it._t||0)>(ex._t||0)) byId[it.id]=it;
+  });
+  return Object.values(byId);
+}
+function mergeWeeks(localWeeks, cloudWeeks){
+  localWeeks=localWeeks||[]; cloudWeeks=cloudWeeks||[];
+  const byId={}; const order=[];
+  localWeeks.forEach(w=>{ byId[w.id]=JSON.parse(JSON.stringify(w)); order.push(w.id); });
+  cloudWeeks.forEach(w=>{
+    if(!byId[w.id]){ byId[w.id]=JSON.parse(JSON.stringify(w)); order.push(w.id); }
+    else{ byId[w.id].tasks=mergeItemsById(byId[w.id].tasks,w.tasks); }
+  });
+  return order.map(id=>byId[id]);
+}
+function mergePlan(localPlan, cloudPlan){
+  if(!localPlan) return cloudPlan;
+  if(!cloudPlan) return localPlan;
+  const byId={}; const order=[];
+  localPlan.forEach(m=>{ byId[m.id]=JSON.parse(JSON.stringify(m)); order.push(m.id); });
+  cloudPlan.forEach(m=>{
+    if(!byId[m.id]){ byId[m.id]=JSON.parse(JSON.stringify(m)); order.push(m.id); }
+    else{ byId[m.id].weeks=mergeWeeks(byId[m.id].weeks,m.weeks); }
+  });
+  return order.map(id=>byId[id]);
 }
 
 async function loadFromCloud(){
   if(!supaClient)return false;
+  if(_pendingSave)return false;
   try{
     const{data,error}=await supaClient.from('bau_state').select('state').eq('id',SUPA_ROW).single();
     if(error||!data)return false;
+    if(_pendingSave)return false;
     const d=JSON.parse(data.state);
-    if(d.plan)P.plan=d.plan;
+    if(d.plan)P.plan=mergePlan(P.plan,d.plan);
     return true;
   }catch(e){return false;}
 }
