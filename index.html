@@ -112,11 +112,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tl-item.urlaub::before{background:var(--amber);box-shadow:0 0 0 2px var(--amber)}
 .tl-item.helfer::before{background:var(--purple);box-shadow:0 0 0 2px var(--purple)}
 .tl-item.asbest::before{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+.tl-item.marco::before{background:#0f3460;box-shadow:0 0 0 2px #0f3460}
+.tl-item.celar::before{background:#6b7280;box-shadow:0 0 0 2px #6b7280}
+.tl-item.kuehne::before{background:#378ADD;box-shadow:0 0 0 2px #378ADD}
 .tl-date{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .tl-card{background:#fff;border-radius:10px;padding:12px 14px;box-shadow:var(--shadow);border-left:3px solid var(--teal)}
 .tl-card.urlaub{border-left-color:var(--amber)}
 .tl-card.helfer{border-left-color:var(--purple)}
 .tl-card.asbest{border-left-color:var(--red)}
+.tl-card.marco{border-left-color:#0f3460}
+.tl-card.celar{border-left-color:#6b7280}
+.tl-card.kuehne{border-left-color:#378ADD}
+.gewerk-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;color:#fff;margin-left:6px;vertical-align:middle}
 .tl-card h4{font-size:13px;font-weight:700;margin-bottom:6px}
 .tl-task{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-top:1px solid #f5f5f5;font-size:13px}
 .tl-task:first-of-type{border-top:none}
@@ -268,132 +275,124 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   </div>
 
-  <div class="page" id="page-entkernung">
+  <div class="page" id="page-ablauf">
     <div class="card">
-      <div class="card-header"><h2>Entkernungsplan Jul–Aug 2026</h2></div>
+      <div class="card-header"><h2>Ablaufplan Rohbau · KW45/26–KW10/27</h2></div>
       <div class="card-body" style="padding:10px 16px">
+        <div class="alert red" style="margin-bottom:14px"><strong>⚠️ Zwei kritische Gates</strong>Druckprüfung Wasser-/Heizungsrohre (Nov) muss bestehen, bevor verputzt/geschlossen wird. Dichtheitsprüfung Heizkreise (Feb) muss bestehen, bevor Celar den Estrich einbaut.</div>
         <div class="timeline">
-          <div class="tl-item">
-            <div class="tl-date">01.–08. Juli · Schlüsselübergabe</div>
-            <div class="tl-card">
-              <h4>🏠 Erste Erkundung + Start</h4>
-              <div class="tl-task"><div class="tl-task-icon">📸</div><div class="tl-task-text">Haus dokumentieren, alle Räume fotografieren<small>Schimmelstellen OG markieren</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">📢</div><div class="tl-task-text">Holzvertäfelung auf Ebay Kleinanzeigen einstellen<small>Selbst abschrauben + abholen – spart Arbeit und Container</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🧻</div><div class="tl-task-text">Mit Tapeten anfangen (Raum für Raum)<small>Sprühflasche mit Wasser · mehrere Lagen möglich · kein Leihen nötig</small></div></div>
+
+          <div class="tl-item marco">
+            <div class="tl-date">KW45–48 · 2.–29. Nov 2026</div>
+            <div class="tl-card marco">
+              <h4>🔧 Marco: Wasser-/Heizungs-Rohinstallation</h4>
+              <div class="tl-task"><div class="tl-task-icon">💧</div><div class="tl-task-text">Wasser-/Abwasserrohre + Heizkreisläufe/Verteiler verlegen<small>Ein Rohbau-Termin für Sanitär UND Heizung · ca. 3 Wochen (eure Angabe) · Keller muss zugänglich sein</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🕳️</div><div class="tl-task-text">Kernbohrung Küche (Dunstabzugshaube)<small>Wanddurchführung für Abluft, ca. 100–150mm · idealerweise gebündelt mit Marcos Rohbau · wer genau macht das noch klären (Kernbohr-Spezialist oder Küchen-/Lüftungsbauer)</small><span class="gewerk-tag" style="background:#0f3460">Marco?</span></div></div>
             </div>
           </div>
-          <div class="tl-item">
-            <div class="tl-date">08.–16. Juli · Eigenleistung alleine / zu zweit</div>
-            <div class="tl-card">
-              <h4>🧻 Tapeten + Teppiche + Kleinarbeiten</h4>
-              <div class="tl-task"><div class="tl-task-icon">🧻</div><div class="tl-task-text">Tapeten im gesamten Haus abziehen<small>Sprühflasche · realistisch 4–5 Tage · abends gut machbar</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🟫</div><div class="tl-task-text">Teppiche entfernen – zuerst anfangen! (~120m²)<small>Spachtelaufsatz für Bosch Bohrmaschine · Keller zuerst (Asbest-Firma braucht freien Boden!)</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🚿</div><div class="tl-task-text">Heizkörper + Sanitärkeramik demontieren wenn Zeit</div></div>
-              <div class="tl-task"><div class="tl-task-icon">🚪</div><div class="tl-task-text">Türen + Zargen vorerst drin lassen<small>Schutz vor Staub · Elektriker/Verputzer fragen ob sie lieber ohne arbeiten</small></div></div>
-              <div class="maschinen-block">
-                <h5>🔧 Werkzeug</h5>
-                <div class="maschinen-row">Sprühflaschen für Tapeten (kein Leihen nötig)</div>
-                <div class="maschinen-row">Spachtelaufsatz für Bosch Bohrmaschine (Teppich)</div>
-                <div class="maschinen-row">Bodenspachtel 40cm für hartnäckigen Kleber</div>
-                <div class="maschinen-row">Cuttermesser · Akkuschrauber</div>
-              </div>
+
+          <div class="tl-item asbest">
+            <div class="tl-date">Ende KW48 · ~29. Nov 2026 — GATE 1</div>
+            <div class="tl-card asbest">
+              <h4>🚨 Druckprüfung Wasser- + Heizungsrohre (Wände)</h4>
+              <div class="tl-task"><div class="tl-task-icon">✅</div><div class="tl-task-text">Pflicht vor Einputzen & vor Schließen der Vorwände!<small>⚠️ Frostschutz der Heizkreise über den Winter klären (Bauheizer durchgängig, Luft statt Wasser, oder zwischenzeitlich entleeren)</small></div></div>
             </div>
           </div>
+
+          <div class="tl-item kuehne">
+            <div class="tl-date">KW48–49 · 23. Nov–6. Dez 2026</div>
+            <div class="tl-card kuehne">
+              <h4>🪟 Fenster-Vorbereitung + Einbau</h4>
+              <div class="tl-task"><div class="tl-task-icon">🧱</div><div class="tl-task-text">Glattstrich an den Fensterlaibungen<small>Eigenleistung oder extern · nötig für sauberen Fensteranschluss · Dauer offen</small><span class="gewerk-tag" style="background:#1d9e75">Eigenleistung</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪟</div><div class="tl-task-text">Fenster einbauen (ohne Haustür)<small>Haustür kommt erst Apr/Mai 27 · Hülle wird dicht · muss vor Verputzen (Jan) fertig sein</small><span class="gewerk-tag" style="background:#378ADD">Kühne</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">❓</div><div class="tl-task-text">Laibungsanschlüsse klären<small>Wer macht Außenputz + Fensterbank — Kühne oder Gärtner?</small></div></div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-date">KW01/27 · 4.–10. Jan 2027</div>
+            <div class="tl-card">
+              <h4>🧱 Patrick: Spachteln + grundieren</h4>
+              <div class="tl-task"><div class="tl-task-icon">🪣</div><div class="tl-task-text">Unebenheiten ausgleichen, damit Gregor direkt drüber verputzen kann<small>Vorbereitung — läuft VOR Gregors Start, nicht parallel</small><span class="gewerk-tag" style="background:#1d9e75">Eigenleistung</span></div></div>
+            </div>
+          </div>
+
           <div class="tl-item urlaub">
-            <div class="tl-date">17.–28. Juli · Urlaub 🌴</div>
+            <div class="tl-date">KW02/27 · 11.–17. Jan 2027 — bestätigt</div>
             <div class="tl-card urlaub">
-              <h4>☣️ Asbest-Firma arbeitet</h4>
-              <div class="tl-task"><div class="tl-task-icon">☣️</div><div class="tl-task-text">Asbest-Entfernung Küche + Keller<small>Fachfirma · niemand sonst im Haus!</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">📋</div><div class="tl-task-text">Schriftliche Freigabemeldung anfordern<small>Muss vorliegen bevor ihr am 02. Aug wieder reingeht!</small></div></div>
+              <h4>🎨 Verputzen + Trockenbau Bad (parallel)</h4>
+              <div class="tl-task"><div class="tl-task-icon">🎨</div><div class="tl-task-text">Verputzen Rest des Hauses (Schimmelstellen + Schlitze)<small>✅ Start bestätigt: 15. Januar · OHNE Bad (das macht komplett Albrecht/Trockenbau) · muss fertig+trocken sein, bevor Celar den Boden aufbaut</small><span class="gewerk-tag" style="background:#e8a838">Gregor</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪵</div><div class="tl-task-text">Ständerwerk Vorwand Bad aufstellen<small>✅ Termin bestätigt: 2. Januarwoche, parallel zu Gregor (andere Baustelle/Raum, kein Konflikt) · komplett neu, es stand noch nichts</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">♨️</div><div class="tl-task-text">Wärmepumpe installieren<small>Außen- + Inneneinheit + Anschlüsse · unabhängig, Fundament seit September ausgehärtet</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
             </div>
           </div>
-          <div class="tl-item">
-            <div class="tl-date">28. Juli – 01. August · Patrick alleine vor Ort</div>
-            <div class="tl-card">
-              <h4>🔨 Eigenleistung ganze Woche</h4>
-              <div class="tl-task"><div class="tl-task-icon">🟫</div><div class="tl-task-text">Teppiche entfernen (Spachtelaufsatz Bohrmaschine)<small>Keller zuerst! Muss frei sein bevor Asbest-Firma kommt</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🧻</div><div class="tl-task-text">Tapeten abziehen (Sprühflasche)<small>Realistisch 4–5 Tage · abends gut machbar</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🟦</div><div class="tl-task-text">Fliesen Bad + Küche stemmen<small>→ Container 2 (Bauschutt)</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🦠</div><div class="tl-task-text">Schimmelputz OG abschlagen (FFP3 Pflicht!)<small>→ Container 3 · trocken, in Säcke!</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">🧱</div><div class="tl-task-text">Wanddurchbruch Küche → Esszimmer<small>Nicht tragend · nach Statiker-Freigabe</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">👥</div><div class="tl-task-text">Wer spontan Zeit hat ist herzlich willkommen!<small>Einfach vorbeikommen · Schleifmühlenweg 7a</small></div></div>
-              <div style="margin-top:8px">
-                <div class="container-badge">📦 Container 2: Do 31. Jul · 6m³ Bauschutt</div>
-                <div class="container-badge">📦 Container 3: Do 31. Jul · 7m³ Leichtbaustoffe</div>
-              </div>
-            </div>
-          </div>
+
           <div class="tl-item helfer">
-            <div class="tl-date">Samstag, 02. August · Samstagsdienst 1</div>
+            <div class="tl-date">KW03/27 · 18.–24. Jan 2027</div>
             <div class="tl-card helfer">
-              <h4>💥 Estrichabbruch Erdgeschoss <span class="badge badge-purple">4–5 Helfer</span></h4>
-              <div class="tl-task"><div class="tl-task-icon">💪</div><div class="tl-task-text">Estrich EG stemmen (~60m², ca. 7–8 Tonnen)<small>Alle 30–45 Min. wechseln!</small></div></div>
-              <div class="helfer-block">
-                <h5>👥 Einteilung 4–5 Personen</h5>
-                <div class="helfer-row">2 Pers: Presslufthammer (IMMER abwechseln!)</div>
-                <div class="helfer-row">1–2 Pers: Schutt schleppen</div>
-                <div class="helfer-row">1 Pers: Container-Management + Verpflegung</div>
-              </div>
-              <div class="maschinen-block">
-                <h5>🔧 Maschinen</h5>
-                <div class="maschinen-row">2× Presslufthammer Hilti TE 500/700 · FRÜH buchen!</div>
-                <div class="maschinen-row">2× Schubkarre · FFP3-Masken · Erste-Hilfe</div>
-              </div>
-              <div style="margin-top:8px">
-                <div class="container-badge">📦 3× 6m³ Bauschutt: Do 31. Jul oder Do 07. Aug</div>
-              </div>
+              <h4>🚿 Bad-Anschlüsse + Vorwände schließen</h4>
+              <div class="tl-task"><div class="tl-task-icon">🔧</div><div class="tl-task-text">WC-/Bad-Anschlüsse an Albrechts Vorwand anschließen<small>Erst möglich sobald Albrechts Ständerwerk steht · separater Kurztermin, zusätzlich zur Rohinstallation im November</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪵</div><div class="tl-task-text">Vorwände schließen/beplanken<small>Erst nach Marcos WC-Anschluss + bestandener Druckprüfung</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
             </div>
           </div>
-          <div class="tl-item">
-            <div class="tl-date">03.–08. August · Einer hat frei</div>
-            <div class="tl-card">
-              <h4>🔧 Flexible Einzelarbeiten</h4>
-              <div class="tl-task"><div class="tl-task-icon">🏚️</div><div class="tl-task-text">Kellerentkernung<small>Kein Lärm, gut alleine</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">✏️</div><div class="tl-task-text">Elektroschlitze markieren</div></div>
-              <div class="tl-task"><div class="tl-task-icon">📦</div><div class="tl-task-text">Container 4+5+6 bestellen: Do 07. August<small>3× 6m³ für Estrich – 3 Stück wegen 15–16t!</small></div></div>
+
+          <div class="tl-item celar">
+            <div class="tl-date">KW04/27 · 25.–31. Jan 2027</div>
+            <div class="tl-card celar">
+              <h4>🏗️ Celar: Bodenaufbau (jetzt erst — nach Verputzen!)</h4>
+              <div class="tl-task"><div class="tl-task-icon">📏</div><div class="tl-task-text">Randdämmstreifen verlegen<small>PE-Randstreifen 8/120mm umlaufend · NEU: erst jetzt, nachdem Gregors Verputzen fertig+trocken ist (nicht vorher — sonst beschädigt der Verputzer die Dämmung) · Teil des Estrich-Angebots P5654.6</small><span class="gewerk-tag" style="background:#6b7280">Celar</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">📏</div><div class="tl-task-text">Dämm-Rollbahn (Tackersystem) verlegen<small>EPS-DES Rollbahn mit Tacker-Rasterung · 121,93m² EG/OG · Albrechts Vorwand steht schon, Celar baut drumherum</small><span class="gewerk-tag" style="background:#6b7280">Celar</span></div></div>
             </div>
           </div>
+
+          <div class="tl-item asbest">
+            <div class="tl-date">KW05/27 · 1.–7. Feb 2027 — GATE 2</div>
+            <div class="tl-card asbest">
+              <h4>🔥 Heizrohre + Dichtheitsprüfung</h4>
+              <div class="tl-task"><div class="tl-task-icon">🔥</div><div class="tl-task-text">Heizrohre auf Celars Rollbahn tackern + an Verteiler anschließen<small>Erst nach Celars Dämm-Rollbahn möglich</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🚨</div><div class="tl-task-text">Dichtheitsprüfung Heizkreise<small>Muss fertig + dicht sein vor Celars Estrich-Einbau</small></div></div>
+            </div>
+          </div>
+
+          <div class="tl-item celar">
+            <div class="tl-date">KW06/27 · 8.–14. Feb 2027</div>
+            <div class="tl-card celar">
+              <h4>🏗️ Celar: Estrich einbauen + trocknen</h4>
+              <div class="tl-task"><div class="tl-task-icon">🏗️</div><div class="tl-task-text">RapidoWitt-Estrich einbauen<small>50mm, 121,93m² EG/OG · nach 12h begehbar</small><span class="gewerk-tag" style="background:#6b7280">Celar</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🌬️</div><div class="tl-task-text">Estrich trocknen: 10 Tage (RapidoWitt)<small>Bauheizer · regelmäßig lüften · danach belegereif · Objektvlies/Streichen kann schon in dieser Phase starten (begehbar, nur noch nicht belegereif)</small></div></div>
+            </div>
+          </div>
+
           <div class="tl-item helfer">
-            <div class="tl-date">Samstag, 09. August · Samstagsdienst 2</div>
+            <div class="tl-date">KW08/27 · 22.–28. Feb 2027</div>
             <div class="tl-card helfer">
-              <h4>💥 Estrichabbruch Obergeschoss <span class="badge badge-purple">4–5 Helfer</span></h4>
-              <div class="tl-task"><div class="tl-task-icon">💪</div><div class="tl-task-text">Estrich OG stemmen (~62m², ca. 7–8 Tonnen)<small>Alle 30–45 Min. wechseln!</small></div></div>
-              <div class="tl-task"><div class="tl-task-icon">⚠️</div><div class="tl-task-text">Blumenkasten Balkon (Stahlbeton)<small>NUR nach Statiker-Freigabe · eigener Betoncontainer!</small></div></div>
-              <div class="helfer-block">
-                <h5>👥 Einteilung 4–5 Personen</h5>
-                <div class="helfer-row">2 Pers: Presslufthammer (IMMER abwechseln!)</div>
-                <div class="helfer-row">1–2 Pers: Schutt schleppen</div>
-                <div class="helfer-row">1 Pers: Container-Management + Verpflegung</div>
-              </div>
-              <div class="maschinen-block">
-                <h5>🔧 Maschinen</h5>
-                <div class="maschinen-row">2× Presslufthammer Hilti TE 500/700 (~70€/Tag je) · FRÜH buchen!</div>
-                <div class="maschinen-row">KEIN normaler Bohrhammer – zu schwach!</div>
-                <div class="maschinen-row">2× Schubkarre · FFP3-Masken · Erste-Hilfe</div>
-              </div>
-              <div style="margin-top:8px">
-                <div class="container-badge">📦 3× 6m³ Bauschutt: Do 07. Aug</div>
-                <div class="container-badge" style="background:#fee2e2;border-color:#e74c3c;color:#7f1d1d">⚠️ Balkon-Beton: eigener Container</div>
-              </div>
+              <h4>🚿 Bad-Abdichtung + Fliesen + Streichen</h4>
+              <div class="tl-task"><div class="tl-task-icon">💦</div><div class="tl-task-text">Bad abdichten (Verbundabdichtung)<small>Boden + Wände vollflächig, nach Estrich belegereif · Marcos Angebot (26-585-AN) deckt nur das Wannenabdichtband an der Anschlussfuge ab (DIN 18534), NICHT die vollflächige Abdichtung</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🟦</div><div class="tl-task-text">Fliesen Bad OG + Gäste-WC<small>Erst nach Abdichtung ausgehärtet</small><span class="gewerk-tag" style="background:#534ab7">Albrecht</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🖌️</div><div class="tl-task-text">Objektvlies/Streichen<small>Patrick + Julika · nach Estrich, vor Parkett (Kleister/Farbe nicht auf neuem Boden!)</small><span class="gewerk-tag" style="background:#1d9e75">Eigenleistung</span></div></div>
             </div>
           </div>
+
+          <div class="tl-item marco">
+            <div class="tl-date">KW09/27 · 1.–7. Mär 2027</div>
+            <div class="tl-card marco">
+              <h4>🚽 Sanitär-Endmontage + Boden</h4>
+              <div class="tl-task"><div class="tl-task-icon">🚽</div><div class="tl-task-text">Sanitär-Endmontage<small>Armaturen, WC, Dusche, Badewanne · erst nach Fliesen fertig</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">🪵</div><div class="tl-task-text">Parkett/Vinyl verlegen<small>Erst nach Estrich belegereif + Wände fertig (Objektvlies/Streichen)</small><span class="gewerk-tag" style="background:#378ADD">Bodenleger</span></div></div>
+            </div>
+          </div>
+
+          <div class="tl-item marco">
+            <div class="tl-date">KW09–10/27 · 1.–14. Mär 2027</div>
+            <div class="tl-card marco">
+              <h4>✅ Abnahme Heizung + Elektro</h4>
+              <div class="tl-task"><div class="tl-task-icon">⚖️</div><div class="tl-task-text">Hydraulischer Abgleich + WP-Inbetriebnahme<small>Pflicht KfW/BAFA</small><span class="gewerk-tag" style="background:#0f3460">Marco</span></div></div>
+              <div class="tl-task"><div class="tl-task-icon">⚡</div><div class="tl-task-text">E-Check (Elektriker nimmt Anlage ab)</div></div>
+            </div>
+          </div>
+
         </div>
-        <div class="alert amber" style="margin-top:4px"><strong>💡 Sperrmüll anmelden</strong>Teppiche, Tapeten, Holzvertäfelung, Türen → Landkreis Darmstadt-Dieburg kostenlos. NICHT in Container!</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><h2>Flexibel (alleine / zu zweit)</h2></div>
-      <div class="card-body" style="padding:0 16px">
-        <div class="flex-title">Jederzeit möglich</div>
-        <div class="flex-item"><div class="flex-item-icon">🧻</div><div class="flex-item-text">Tapeten abziehen<small>Abends gut · Dampftapetenlöser leihen</small></div><span class="badge badge-green">Alleine</span></div>
-        <div class="flex-item"><div class="flex-item-icon">🚿</div><div class="flex-item-text">Heizkörper + Sanitär demontieren</div><span class="badge badge-green">Zu zweit</span></div>
-        <div class="flex-item"><div class="flex-item-icon">🏚️</div><div class="flex-item-text">Kellerentkernung<small>Kein Lärm, perfekt abends</small></div><span class="badge badge-green">Alleine</span></div>
-        <div class="flex-item"><div class="flex-item-icon">🚪</div><div class="flex-item-text">Türen + Zargen demontieren</div><span class="badge badge-green">Zu zweit</span></div>
-        <div class="flex-title">Braucht Helfer</div>
-        <div class="flex-item"><div class="flex-item-icon">🟫</div><div class="flex-item-text">Teppiche raus (geklebt!)</div><span class="badge badge-red">4–5 Pers.</span></div>
-        <div class="flex-item"><div class="flex-item-icon">💪</div><div class="flex-item-text">Estrichabbruch (~122m²)</div><span class="badge badge-red">6–7 Pers.</span></div>
-        <div class="flex-item"><div class="flex-item-icon">🔧</div><div class="flex-item-text">❓ Altes Rohrnetz raus<small>Datum offen · nach Heizungsbauer-Termin</small></div><span class="badge badge-amber">3–4 Pers.</span></div>
-        <div class="flex-item"><div class="flex-item-icon">⚠️</div><div class="flex-item-text">Balkon Blumenkasten<small>Erst nach Statiker-Freigabe!</small></div><span class="badge badge-red">3–4 Pers.</span></div>
+        <div class="alert amber" style="margin-top:4px"><strong>💡 Alle Termine sind Planwerte</strong>Basis: Rohinstallation startet Mitte Okt 2026, dauert 2–3 Wochen (eure Angabe) + bestehende Gewerke-Abhängigkeiten. Verzögerung bei einem Gewerk verschiebt automatisch alle nachfolgenden Schritte — nach jeder Phase kurz gegenchecken, ob der nächste Termin noch passt. Mehr Details: <a href="wochenplan.html">Detaillierter Wochenplan</a>.</div>
       </div>
     </div>
   </div>
@@ -467,9 +466,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
     <span>Übersicht</span>
   </button>
-  <button class="nav-btn" onclick="showPage('entkernung',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-    <span>Entkernung</span>
+  <button class="nav-btn" onclick="showPage('ablauf',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+    <span>Ablauf</span>
   </button>
   <button class="nav-btn" onclick="showPage('zeitplan',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -585,29 +584,32 @@ gantt: [
   {section:'Phase 2 – Elektro + Vorbereitung (Sep/Okt 2026)'},
   {l:'Elektro Schlitze + Kabel',                 s:2, e:3, c:'#1d9e75'},
   {l:'Fundament WP',                             s:2, e:3, c:'#1d9e75'},
-  {section:'Phase 3 – Sanitär + Heizung Rohbau (Nov 2026)'},
-  {l:'Marco: Gasleitung Stilllegung',            s:4, e:4, c:'#0f3460'},
-  {l:'Marco: Neue Wasser-/Abwasserrohre',        s:4, e:4, c:'#0f3460'},
-  {l:'Marco: Heizungsverteiler + Leitungen',     s:4, e:4, c:'#0f3460'},
-  {l:'Marco: Druckprüfung',                      s:4, e:4, c:'#0f3460'},
-  {l:'Celar: Randdämmstreifen verlegen',         s:4, e:4, c:'#6b7280'},
-  {l:'Celar: Dämm-Rollbahn (Tackersystem) verlegen', s:4, e:4, c:'#6b7280'},
-  {l:'Heizungsbauer: Heizrohre tackern',          s:4, e:4, c:'#0f3460'},
-  {section:'Phase 4 – Hülle + Vorbereitung Estrich (Dez 2026)'},
-  {l:'Fenster einbauen (Kühne)',                 s:5, e:5, c:'#378ADD'},
-  {l:'Trockenbau Vorwände Bad (Marcos Kollege)', s:5, e:5, c:'#534ab7'},
-  {l:'Schlitze + Schimmel verputzen (Gregor)',   s:5, e:5, c:'#e8a838'},
-  {section:'Phase 5 – WP + Estrich (Jan 2027)'},
-  {l:'Wärmepumpe Installation (Marco)',          s:6, e:6, c:'#0f3460'},
-  {l:'Celar: RapidoWitt-Estrich einbauen',        s:6, e:6, c:'#6b7280'},
-  {l:'Estrich trocknet (10 Tage)',               s:6, e:6, c:'#6b7280'},
+  {section:'Phase 3 – Sanitär/Heizung Rohbau + Fenster-Vorbereitung (Nov/Dez 2026)'},
+  {l:'Marco: Wasser-/Abwasserrohre + Heizkreisläufe verlegen', s:4, e:4, c:'#0f3460'},
+  {l:'Kernbohrung Küche (Dunstabzugshaube)',     s:4, e:4, c:'#0f3460'},
+  {l:'Marco: Druckprüfung Wasser-/Heizungsrohre', s:4, e:4, c:'#e74c3c'},
+  {l:'Glattstrich Fensterlaibungen (Eigenleistung)', s:4, e:5, c:'#1d9e75'},
+  {l:'Kühne: Fenster einbauen (ohne Haustür)',   s:5, e:5, c:'#378ADD'},
+  {section:'Phase 4 – Verputzen + Trockenbau Bad + Wärmepumpe (Jan 2027)'},
+  {l:'Patrick: Spachteln + grundieren (Vorbereitung)', s:6, e:6, c:'#1d9e75'},
+  {l:'Gregor: Verputzen Rest des Hauses (ohne Bad)', s:6, e:6, c:'#e8a838'},
+  {l:'Albrecht: Ständerwerk Vorwand Bad aufstellen', s:6, e:6, c:'#534ab7'},
+  {l:'Marco: Wärmepumpe installieren',           s:6, e:6, c:'#0f3460'},
+  {l:'Marco: WC-/Bad-Anschlüsse an Vorwand anschließen', s:6, e:6, c:'#0f3460'},
+  {l:'Albrecht: Vorwände schließen/beplanken',   s:6, e:6, c:'#534ab7'},
+  {section:'Phase 5 – Bodenaufbau + Estrich (Feb 2027)'},
+  {l:'Celar: Randdämmstreifen verlegen (nach Verputzen!)', s:7, e:7, c:'#6b7280'},
+  {l:'Celar: Dämm-Rollbahn (Tackersystem) verlegen', s:7, e:7, c:'#6b7280'},
+  {l:'Marco: Heizrohre tackern + Dichtheitsprüfung', s:7, e:7, c:'#e74c3c'},
+  {l:'Celar: RapidoWitt-Estrich einbauen',        s:7, e:7, c:'#6b7280'},
+  {l:'Estrich trocknet (10 Tage)',               s:7, e:7, c:'#6b7280'},
   {section:'Phase 6 – Fliesen + Innenausbau (Feb/Mär 2027)'},
-  {l:'Marcos Kollege: Bad abdichten (Verbundabdichtung)', s:7, e:7, c:'#534ab7'},
-  {l:'Fliesen Bad (Marcos Kollege)',             s:7, e:7, c:'#534ab7'},
-  {l:'Sanitär Endmontage (Marco)',               s:7, e:8, c:'#0f3460'},
-  {l:'Boden verlegen (Gewerk)',                  s:7, e:7, c:'#378ADD'},
-  {l:'Streichen (Eigenleistung)',                s:7, e:8, c:'#1d9e75'},
-  {l:'Hydr. Abgleich + E-Check (Marco)',         s:8, e:8, c:'#0f3460'},
+  {l:'Albrecht: Bad abdichten (Verbundabdichtung)', s:7, e:8, c:'#534ab7'},
+  {l:'Albrecht: Fliesen Bad OG + Gäste-WC',       s:8, e:8, c:'#534ab7'},
+  {l:'Objektvlies/Streichen (Eigenleistung)',    s:7, e:8, c:'#1d9e75'},
+  {l:'Marco: Sanitär-Endmontage',                s:8, e:8, c:'#0f3460'},
+  {l:'Boden verlegen (Parkett/Vinyl)',           s:8, e:8, c:'#378ADD'},
+  {l:'Hydr. Abgleich + WP-Inbetriebnahme + E-Check (Marco)', s:8, e:8, c:'#0f3460'},
   {section:'Phase 7 – Dach + Fassade (Mär–Mai 2027)'},
   {l:'Flachdachsanierung (nach BAFA!)',          s:8, e:9, c:'#378ADD'},
   {l:'Haustür (Kühne)',                          s:9, e:9, c:'#378ADD'},
@@ -621,7 +623,7 @@ gantt: [
 legende: [
   {c:'#1d9e75', l:'Eigenleistung'},
   {c:'#0f3460', l:'Marco Erdmann (Heizung/Sanitär)'},
-  {c:'#534ab7', l:'Marcos Kollege (Trockenbau/Fliesen)'},
+  {c:'#534ab7', l:'Albrecht (Trockenbau/Fliesen)'},
   {c:'#e8a838', l:'Gregor (Verputzer Innen)'},
   {c:'#6b7280', l:'Celar (Estrich)'},
   {c:'#378ADD', l:'Gewerk (Fachfirma)'},
@@ -635,6 +637,8 @@ todos: [
     {t:'❓ Balkon teilweise abstemmen – Baugenehmigung?', s:'Klären ob Rückbau genehmigungspflichtig · Gemeinde Mühltal oder Statiker fragen', p:'h'},
     {t:'Stammumfang Baum vor Hauswand messen',          s:'Bei nächstem Besuch · ab 80cm Umfang (ca. 25cm Durchmesser) Fällgenehmigung Gemeinde Mühltal nötig!', p:'h'},
     {t:'Heizkreisplanung mit Heizungsbauer klären',     s:'Wer berechnet Rohrlänge/Heizkreise pro Raum für FBH-Verlegung? Heizungsbauer braucht diese Info bevor er Rohre auf Celars Dämm-Rollbahn tackert', p:'h'},
+    {t:'✅ Reihenfolge geklärt: Albrecht (Jan) vor Celars Bodenaufbau (Feb)',s:'Albrecht baut Ständerwerk in der 2. Januarwoche (parallel zu Gregors Verputzen) · Celars Randdämmstreifen/Rollbahn/Estrich kommt erst danach, im Februar, nachdem Gregors Verputzen fertig+trocken ist – kein Konflikt mehr',p:'nb'},
+    {t:'Marco: separaten Termin für WC-/Bad-Anschluss einplanen',s:'Erst möglich sobald Albrechts Vorwand-Montageelement steht (Januar) · zusätzlich zur Rohinstallation im November',p:'h'},
     {t:'Uwe Wäckerle: Efficiency Smart Home in iSFP aufnehmen', s:'Shelly Rollläden + FBH-Steuerung + Lüftungssteuerung → 20% BAFA Förderung (BEG EM Anlagentechnik) · VOR Beauftragung Elektriker!', p:'h'},
     {t:'Uwe Wäckerle beauftragen (iSFP)',           s:'heat consult · +49 151 54073185',                            p:'h'},
     {t:'Celar Estrichbau beauftragen',              s:'Angebot läuft 23.06.2026 ab!',                               p:'h'},
@@ -935,8 +939,8 @@ function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');btn.classList.add('active');
-  const T={uebersicht:'🏗️ Kernsanierung Mühltal',entkernung:'🔨 Entkernung & Container',zeitplan:'📅 Zeitplan',todos:'✅ To-Dos',kosten:'💶 Kosten',notizen:'📝 Notizen'};
-  const Sub={uebersicht:'Schleifmühlenweg 7a · Jul 2026–Aug 2027',entkernung:'Samstagsdienste + Maschinen',zeitplan:'Verputzen ab Mär · Umzug Aug 2027',todos:'Aufgaben verwalten',kosten:'Budget & Förderung',notizen:'Baustellentagebuch'};
+  const T={uebersicht:'🏗️ Kernsanierung Mühltal',ablauf:'📋 Ablaufplan Rohbau',zeitplan:'📅 Zeitplan',todos:'✅ To-Dos',kosten:'💶 Kosten',notizen:'📝 Notizen'};
+  const Sub={uebersicht:'Schleifmühlenweg 7a · Jul 2026–Aug 2027',ablauf:'Gewerke-Abhängigkeiten KW45/26–KW10/27',zeitplan:'Verputzen ab Mär · Umzug Aug 2027',todos:'Aufgaben verwalten',kosten:'Budget & Förderung',notizen:'Baustellentagebuch'};
   document.getElementById('page-title').textContent=T[id]||id;
   document.getElementById('page-sub').textContent=Sub[id]||'';
 }
@@ -1614,6 +1618,34 @@ tryCloudLoad();
 setTimeout(function(){
   if(!supaClient){ tryCloudLoad(); }
 }, 1000);
+
+// ── AUTO-REFRESH BEIM ZURÜCKKEHREN ───────────────────
+// Ursache für "bei meinem Mann ist der Kostenstand nicht aktuell": als
+// Homescreen-Verknüpfung wird die Seite beim erneuten Öffnen meist NICHT neu
+// geladen, sondern nur aus dem Hintergrund/Cache reaktiviert (bfcache) — dann
+// läuft der obige einmalige Ladevorgang nie wieder, und die App zeigt ewig
+// den Stand vom allerersten Öffnen. Fix: bei jedem Wieder-Sichtbarwerden
+// automatisch neu aus der Cloud laden (außer es ist gerade ein Bearbeiten-
+// Fenster offen, um laufende Eingaben nicht zu überschreiben).
+let _lastAutoSync = 0;
+function autoSyncOnReturn(){
+  const now = Date.now();
+  if(now - _lastAutoSync < 3000) return; // Doppelaufrufe (visibilitychange + pageshow) abfangen
+  if(document.querySelector('.modal-overlay.open')) return; // laufende Bearbeitung nicht stören
+  _lastAutoSync = now;
+  if(!supaClient){ tryCloudLoad(); return; }
+  loadFromCloud().then(function(ok){
+    if(ok){
+      _cloudLoaded = true;
+      renderTodos();renderKosten();renderAngebote();renderNotizen();renderAusgaben();renderBudget();
+    }
+  });
+}
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible') autoSyncOnReturn();
+});
+window.addEventListener('pageshow', function(){ autoSyncOnReturn(); });
+window.addEventListener('focus', function(){ autoSyncOnReturn(); });
 </script>
 </body>
 </html>
