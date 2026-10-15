@@ -748,27 +748,30 @@ todos: [
 ],
 
 kosten: [
-  {n:'Dachsanierung',               von:40000, bis:40000, foerd:8000,  t:'g', note:'Sep/Okt 26'},
-  {n:'Heizung: WP + Brauchwasser-WP',von:45000,bis:50000, foerd:16500, t:'g', note:'KfW BEG EM bis 55% · ❓ Termin offen'},
-  {n:'Fenster + Haustür (4-fach)',   von:39000, bis:41000, foerd:8200,  t:'g', note:'Okt/Nov 26 · OG bodentief'},
-  {n:'Lüftung',                      von:2000,  bis:2500,  foerd:1600,  t:'g', note:'❓ Entscheidung offen: a) Lunos ego Bad OG (2 Geräte, ~2.000€) b) 6x Bosch V2000D alle Räume OG + Shelly (~2.500€)'},
-  {n:'Fassadendämmung',              von:35000, bis:35000, foerd:7000,  t:'g', note:'EPS 140–160mm WDVS'},
-  {n:'Estrich – Celar Estrichbau',   von:6300,  bis:9163,  foerd:0,     t:'g', note:'Angebot 9.163€ brutto · 💡 Option EL Platten: Bekotec+Ethafoam selbst verlegen → Celar ca. 6.300€ brutto · Ersparnis ~2.900€ · Celar fragen!'},
-  {n:'FBH Rohre verlegen',           von:5000,  bis:6000,  foerd:0,     t:'g', note:'GWI-Freund'},
-  {n:'Wasser-/Abwasserleitungen',    von:6000,  bis:10000, foerd:0,     t:'g', note:'Gewerk + GWI-Freund'},
-  {n:'Verputzen Innen',              von:8000,  bis:14000, foerd:0,     t:'g', note:'~135m²'},
-  {n:'Boden verlegen',               von:8000,  bis:15000, foerd:0,     t:'g', note:'~100m²'},
-  {n:'Elektro (Material)',           von:5000,  bis:8000,  foerd:0,     t:'e', note:'Eigenleistung'},
-  {n:'Sanitär & Bäder',              von:12000, bis:18000, foerd:0,     t:'e', note:'2 Bäder + Leitungen'},
-  {n:'Asbest-Entsorgung',            von:3000,  bis:6000,  foerd:0,     t:'s', note:'Fachfirma Küche + Keller'},
-  {n:'Container Klöppinger',         von:3500,  bis:5000,  foerd:0,     t:'e', note:'~6 Container'},
-  {n:'Sperrmüll / Wertstoffstation', von:0,     bis:300,   foerd:0,     t:'e', note:''},
-  {n:'Innenausbau / Fliesen / Farbe',von:6000,  bis:10000, foerd:0,     t:'e', note:''},
-  {n:'Küche',                        von:10000, bis:20000, foerd:0,     t:'e', note:'Jul/Aug 27'},
-  {n:'Energieberatung',              von:4500,  bis:4500,  foerd:2000,  t:'s', note:'Uwe Wäckerle · Eigenanteil 2.500€'},
-  {n:'Bauheizer Estrichtrocknung',   von:500,   bis:1200,  foerd:0,     t:'e', note:'~50–80€/Tag · 10–14 Tage'},
-  {n:'Werkzeugmiete + Schutzausrüstung',von:2000,bis:3500, foerd:0,     t:'e', note:''},
-  {n:'Puffer +15%',                  von:33245, bis:46395, foerd:0,     t:'s', note:'Pflichtreserve'},
+  {id:'dach',          n:'Dachsanierung',               von:40000, bis:40000, foerd:8000,  t:'g', note:'Sep/Okt 26'},
+  {id:'heizung',       n:'Heizung: WP + Brauchwasser-WP',von:45000,bis:50000, foerd:16500, t:'g', note:'KfW BEG EM bis 55% · ❓ Termin offen'},
+  {id:'fenster',       n:'Fenster + Haustür (4-fach)',   von:39000, bis:41000, foerd:8200,  t:'g', note:'Okt/Nov 26 · OG bodentief'},
+  {id:'lueftung',      n:'Lüftung',                      von:2000,  bis:2500,  foerd:1600,  t:'g', note:'❓ Entscheidung offen: a) Lunos ego Bad OG (2 Geräte, ~2.000€) b) 6x Bosch V2000D alle Räume OG + Shelly (~2.500€)'},
+  {id:'fassade',       n:'Fassadendämmung',              von:35000, bis:35000, foerd:7000,  t:'g', note:'EPS 140–160mm WDVS'},
+  {id:'estrich',       n:'Estrich – Celar Estrichbau',   von:6300,  bis:9163,  foerd:0,     t:'g', note:'Angebot 9.163€ brutto · 💡 Option EL Platten: Bekotec+Ethafoam selbst verlegen → Celar ca. 6.300€ brutto · Ersparnis ~2.900€ · Celar fragen!'},
+  {id:'fbh_rohre',     n:'FBH Rohre verlegen',           von:5000,  bis:6000,  foerd:0,     t:'g', note:'GWI-Freund'},
+  {id:'wasser_abwasser',n:'Wasser-/Abwasserleitungen',   von:6000,  bis:10000, foerd:0,     t:'g', note:'Gewerk + GWI-Freund'},
+  {id:'verputzen',     n:'Verputzen Innen',              von:8000,  bis:14000, foerd:0,     t:'g', note:'~135m²'},
+  {id:'boden',         n:'Boden verlegen',               von:8000,  bis:15000, foerd:0,     t:'g', note:'~100m²'},
+  {id:'trockenbau_bad',n:'Trockenbau & Fliesen Bad',     von:14000, bis:14000, foerd:0,     t:'g', note:'Albrecht · Vorwand/Ständerwerk + Abdichtung + Fliesen Bad OG + Gäste-WC'},
+  {id:'stahltraeger_wz',n:'Stahlträger Wohnzimmer',      von:2500,  bis:2500,  foerd:0,     t:'g', note:''},
+  {id:'fliesen_eingang',n:'Fliesen Eingang und Treppe',  von:3000,  bis:3000,  foerd:0,     t:'g', note:''},
+  {id:'elektro_material',n:'Elektro (Material)',         von:5000,  bis:8000,  foerd:0,     t:'e', note:'Eigenleistung'},
+  {id:'sanitaer_baeder',n:'Sanitär & Bäder',              von:12000, bis:18000, foerd:0,     t:'e', note:'2 Bäder + Leitungen'},
+  {id:'asbest',        n:'Asbest-Entsorgung',            von:3000,  bis:6000,  foerd:0,     t:'s', note:'Fachfirma Küche + Keller'},
+  {id:'container',     n:'Container Klöppinger',         von:3500,  bis:5000,  foerd:0,     t:'e', note:'~6 Container'},
+  {id:'sperrmuell',    n:'Sperrmüll / Wertstoffstation', von:0,     bis:300,   foerd:0,     t:'e', note:''},
+  {id:'innenausbau',   n:'Innenausbau / Fliesen / Farbe',von:6000,  bis:10000, foerd:0,     t:'e', note:''},
+  {id:'kueche',        n:'Küche',                        von:10000, bis:20000, foerd:0,     t:'e', note:'Jul/Aug 27'},
+  {id:'energieberatung',n:'Energieberatung',             von:4500,  bis:4500,  foerd:2000,  t:'s', note:'Uwe Wäckerle · Eigenanteil 2.500€'},
+  {id:'bauheizer',     n:'Bauheizer Estrichtrocknung',   von:500,   bis:1200,  foerd:0,     t:'e', note:'~50–80€/Tag · 10–14 Tage'},
+  {id:'werkzeuge',     n:'Werkzeugmiete + Schutzausrüstung',von:2000,bis:3500, foerd:0,     t:'e', note:''},
+  {id:'puffer',        n:'Puffer +15%',                  von:33245, bis:46395, foerd:0,     t:'s', note:'Pflichtreserve'},
 ],
 
 gewerke: [
@@ -804,6 +807,9 @@ ausgabenKategorien: [
   {id:'elektro',     name:'Elektro',                        budget:8000,     icon:'⚡', fin:'kredit'},
   {id:'verputzen',   name:'Verputzen',                      budget:5000,     icon:'🖌️', fin:'kredit'},
   {id:'boden',       name:'Boden verlegen',                 budget:11500,    icon:'🟫', fin:'kredit'},
+  {id:'trockenbau_bad', name:'Trockenbau & Fliesen Bad',    budget:14000,    icon:'🛁', fin:'kredit'},
+  {id:'stahltraeger_wz', name:'Stahlträger Wohnzimmer',     budget:2500,     icon:'🔩', fin:'kredit'},
+  {id:'fliesen_eingang', name:'Fliesen Eingang und Treppe', budget:3000,     icon:'🪜', fin:'kredit'},
   {id:'material',    name:'Material für Eigenleistung',     budget:7000,     icon:'🧰', fin:'kredit'},
   {id:'sonstiges',   name:'Sonstiges / Puffer',             budget:20000,    icon:'📋', fin:'kredit'},
   {id:'asbest',      name:'Asbest-Entsorgung',              budget:3883,     icon:'☣️', fin:'nicht'},
@@ -1005,7 +1011,33 @@ function saveToCloud(){
 }
 
 function getTodos(){return S.todosEdited||BAU_DATA.todos;}
-function getKosten(){return S.kostenEdited||BAU_DATA.kosten;}
+// Heilt wie getBudget() unten fehlende Positionen nach: wenn in der Datei
+// neue Positionen zum Budgetplan hinzukommen, aber auf diesem Gerät schon
+// ein eigener (aus der Cloud geladener) kostenEdited-Stand existiert, wurden
+// die neuen Positionen bisher nie sichtbar — der eigene Stand hat die
+// Datei-Defaults komplett verdeckt, auch für Positionen, die es dort noch
+// gar nicht gab. Positionen bekamen hier gerade erst erstmals eine id; ein
+// schon bestehender kostenEdited-Stand hat davon noch keine. Deshalb zuerst
+// per Name nachrüsten (sonst würde jede bestehende Position fälschlich als
+// "fehlt noch" erkannt und dupliziert) — erst danach wird anhand der id
+// ergänzt, was wirklich neu ist. Handisch hinzugefügte eigene Positionen
+// ohne Namens-Treffer bleiben unangetastet.
+function getKosten(){
+  if(!S.kostenEdited){ S.kostenEdited=JSON.parse(JSON.stringify(BAU_DATA.kosten)); return S.kostenEdited; }
+  const byName={}; BAU_DATA.kosten.forEach(k=>{ byName[k.n]=k; });
+  let healed=false;
+  S.kostenEdited.forEach(k=>{
+    if(!k.id && byName[k.n]){ k.id=byName[k.n].id; healed=true; }
+  });
+  const existingIds = S.kostenEdited.map(k=>k.id).filter(Boolean);
+  const missing = BAU_DATA.kosten.filter(k=>k.id && !existingIds.includes(k.id));
+  if(missing.length){
+    S.kostenEdited = S.kostenEdited.concat(JSON.parse(JSON.stringify(missing)));
+    healed=true;
+  }
+  if(healed) saveS();
+  return S.kostenEdited;
+}
 
 function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1373,6 +1405,9 @@ const BUDGET_DEFAULT = [
   {id:'elektro',   n:'Elektro',                 betrag:8000,    foerd:0,     fin:'kredit', note:'Eigenleistung'},
   {id:'verputzen', n:'Verputzen Innen',          betrag:5000,    foerd:0,     fin:'kredit', note:'Nur Schimmelstellen + Bad + Schlitze · Rest Eigenleistung'},
   {id:'boden',     n:'Boden verlegen',           betrag:11500,   foerd:0,     fin:'kredit', note:''},
+  {id:'trockenbau_bad', n:'Trockenbau & Fliesen Bad', betrag:14000, foerd:0, fin:'kredit', note:'Albrecht · Vorwand/Ständerwerk + Abdichtung + Fliesen Bad OG + Gäste-WC'},
+  {id:'stahltraeger_wz', n:'Stahlträger Wohnzimmer', betrag:2500,  foerd:0, fin:'kredit', note:''},
+  {id:'fliesen_eingang', n:'Fliesen Eingang und Treppe', betrag:3000, foerd:0, fin:'kredit', note:''},
   {id:'material',  n:'Material für Eigenleistung',betrag:7000,   foerd:0,     fin:'kredit', note:'Material für alle Eigenleistungs-Gewerke (ohne Werkzeuge) · Betrag prüfen/anpassen!'},
   {id:'sonstiges', n:'Sonstiges / Puffer',       betrag:20000,   foerd:0,     fin:'kredit', note:''},
   {id:'asbest',    n:'Asbest-Entsorgung',        betrag:3883,    foerd:0,     fin:'nicht',  note:'Asbestsanierung-RheinMain · beauftragt'},
@@ -1404,6 +1439,24 @@ function getBudget(){
     return S.budgetPlan;
   }
   let healed = false;
+  // Entfernt Positionen, die mehrfach mit derselben id im Budgetplan stehen.
+  // Das kann passieren, wenn zwei Geräte zur gleichen Zeit offline/unsynced
+  // dieselbe fehlende Position nachgerüstet haben, bevor sie sich
+  // untereinander abgleichen konnten — jedes Gerät hat dann unabhängig
+  // voneinander dieselbe id angehängt. Pro id wird nur der erste Eintrag
+  // behalten; Positionen ohne id (z.B. ganz alte, manuell angelegte) bleiben
+  // unangetastet.
+  const seenIds = new Set();
+  const deduped = S.budgetPlan.filter(p=>{
+    if(!p.id) return true;
+    if(seenIds.has(p.id)) return false;
+    seenIds.add(p.id);
+    return true;
+  });
+  if(deduped.length !== S.budgetPlan.length){
+    S.budgetPlan = deduped;
+    healed = true;
+  }
   const legacyKauf = S.budgetPlan.findIndex(p=>p.id==='kauf');
   if(legacyKauf!==-1 && !S.budgetPlan.some(p=>p.id==='kauf_ek')){
     S.budgetPlan.splice(legacyKauf,1);
