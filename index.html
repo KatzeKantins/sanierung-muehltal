@@ -882,11 +882,21 @@ let eTodoPI=null,eTodoII=null,eKostenI=null,eAngGw=null;
 function loadS(){try{const s=localStorage.getItem('bau_s');if(s){const p=JSON.parse(s);Object.assign(S,p);}}catch(e){}}
 var _cloudLoaded = false;
 var saveTimer = null;
+// Schützt eine gerade laufende Speicherung davor, von einem zeitgleichen
+// Cloud-Ladevorgang überschrieben zu werden (z.B. direkt nach dem Öffnen der
+// App, wenn der erste Cloud-Abruf noch läuft und man sofort etwas einträgt).
+// Ursache für "auf dem Handy eingetragen, auf dem PC nicht zu sehen": ohne
+// diesen Schutz konnte ein zeitgleicher loadFromCloud() den noch nicht
+// hochgeladenen lokalen Eintrag in S überschreiben, BEVOR er gespeichert war
+// — der Eintrag ging dann beim nächsten Speichern (mit dem überschriebenen,
+// alten Stand) faktisch wieder verloren, ohne dass eine Fehlermeldung kam.
+var _pendingSave = false;
 function saveS(){
   try{localStorage.setItem('bau_s',JSON.stringify(S));}catch(e){}
   // Nur in Cloud speichern wenn Cloud bereits geladen oder eigener budgetPlan vorhanden
   // Verhindert dass BUDGET_DEFAULT die Cloud-Daten überschreibt
   if(!_cloudLoaded && !S.budgetPlan) return;
+  _pendingSave = true;
   if(saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(function(){saveToCloud();}, 800);
 }
@@ -904,17 +914,78 @@ function initSupabase(){
   }catch(e){}
 }
 
+// ── ZUSAMMENFÜHREN STATT ÜBERSCHREIBEN ────────────────────────────────
+// Bisher hat jeder Cloud-Abruf die komplette lokale Liste durch die
+// Cloud-Liste ersetzt. Wenn zwei Geräte kurz hintereinander je einen neuen
+// Eintrag anlegen (du trägst einen Beleg ein, während euer anderes Gerät
+// kurz vorher/nachher einen anderen einträgt), hat das dazu geführt, dass
+// der Eintrag des einen Geräts beim nächsten Speichern des anderen
+// kommentarlos verschwunden ist — "wer zuletzt speichert, gewinnt".
+// Fix: Belege/Notizen/Aufgaben bekommen eine eindeutige id + Zeitstempel,
+// und beim Zusammenführen werden lokale + Cloud-Liste vereinigt statt die
+// eine durch die andere zu ersetzen. backfillIds() rüstet alte Einträge
+// ohne id einmalig nach, damit der Abgleich für sie ebenfalls funktioniert.
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function backfillIds(state){
+  if(state.ausgaben){
+    Object.keys(state.ausgaben).forEach(k=>{
+      (state.ausgaben[k]||[]).forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+    });
+  }
+  if(Array.isArray(state.notizen)){
+    state.notizen.forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} });
+  }
+  if(Array.isArray(state.todosEdited)){
+    state.todosEdited.forEach(ph=>{ (ph.items||[]).forEach(it=>{ if(it&&!it.id){it.id=uid();it._t=it._t||Date.now();} }); });
+  }
+}
+function mergeArraysById(localArr, cloudArr){
+  localArr=localArr||[]; cloudArr=cloudArr||[];
+  const byId={};
+  localArr.forEach(it=>{ if(it&&it.id) byId[it.id]=it; });
+  cloudArr.forEach(it=>{
+    if(!it||!it.id) return;
+    const ex=byId[it.id];
+    if(!ex||(it._t||0)>(ex._t||0)) byId[it.id]=it;
+  });
+  return Object.values(byId);
+}
+function mergeAusgaben(localA, cloudA){
+  localA=localA||{}; cloudA=cloudA||{};
+  const kats=new Set([...Object.keys(localA),...Object.keys(cloudA)]);
+  const merged={};
+  kats.forEach(k=>{ merged[k]=mergeArraysById(localA[k],cloudA[k]); });
+  return merged;
+}
+function mergeTodos(localT, cloudT){
+  if(!localT) return cloudT;
+  if(!cloudT) return localT;
+  const byPhase={}; const order=[];
+  localT.forEach(ph=>{ byPhase[ph.phase]=JSON.parse(JSON.stringify(ph)); order.push(ph.phase); });
+  cloudT.forEach(ph=>{
+    if(!byPhase[ph.phase]){ byPhase[ph.phase]=JSON.parse(JSON.stringify(ph)); order.push(ph.phase); }
+    else{ byPhase[ph.phase].items=mergeArraysById(byPhase[ph.phase].items,ph.items); }
+  });
+  return order.map(p=>byPhase[p]);
+}
+
 // Übernimmt ebenfalls ALLE Felder aus der Cloud (statt einzeln aufgezählter
 // Felder) — das war die eigentliche Ursache dafür, dass Budgetplan-Änderungen
 // (z.B. Estrich-Betrag) zwar in der Cloud gespeichert, aber nie wieder
 // heruntergeladen/angezeigt wurden: budgetPlan fehlte hier komplett in der Liste.
 async function loadFromCloud(){
   if(!supaClient) return false;
+  if(_pendingSave) return false; // eine lokale Änderung wartet noch aufs Hochladen — nicht überschreiben
   try{
     const {data,error} = await supaClient
       .from('bau_state').select('state').eq('id','bau-muehltal-v1').single();
     if(error||!data) return false;
+    if(_pendingSave) return false; // währenddessen könnte eine Änderung dazwischengekommen sein
     const p=JSON.parse(data.state);
+    backfillIds(S); backfillIds(p);
+    p.ausgaben = mergeAusgaben(S.ausgaben, p.ausgaben);
+    p.notizen = mergeArraysById(S.notizen, p.notizen);
+    p.todosEdited = mergeTodos(S.todosEdited, p.todosEdited);
     Object.assign(S,p);
     return true;
   }catch(e){ return false; }
@@ -922,13 +993,14 @@ async function loadFromCloud(){
 
 let _saveTimer=null;
 function saveToCloud(){
-  if(!supaClient) return;
+  if(!supaClient){ _pendingSave = false; return; }
   if(_saveTimer) clearTimeout(_saveTimer);
   _saveTimer=setTimeout(async function(){
     try{
       await supaClient.from('bau_state')
         .upsert({id:'bau-muehltal-v1',state:JSON.stringify(S),updated_at:new Date().toISOString()});
     }catch(e){}
+    finally{ _pendingSave = false; }
   },1000);
 }
 
@@ -1003,7 +1075,8 @@ function openTodoModal(pi,ii){
 function saveTodo(){
   const t=document.getElementById('tm-title').value.trim();if(!t){alert('Titel eingeben');return;}
   if(!S.todosEdited)S.todosEdited=JSON.parse(JSON.stringify(BAU_DATA.todos));
-  const item={t,s:document.getElementById('tm-sub').value.trim(),p:document.getElementById('tm-prio').value};
+  const oldItem = eTodoII!==null ? S.todosEdited[eTodoPI].items[eTodoII] : null;
+  const item={id:(oldItem&&oldItem.id)||uid(), _t:Date.now(), t,s:document.getElementById('tm-sub').value.trim(),p:document.getElementById('tm-prio').value};
   if(eTodoII===null)S.todosEdited[eTodoPI].items.push(item);
   else S.todosEdited[eTodoPI].items[eTodoII]=item;
   saveS();closeModals();renderTodos();
@@ -1117,7 +1190,7 @@ function cycleAng(gwId,i){const opts=['offen','beauftragt','abgelehnt'];S.angebo
 function delAng(gwId,i){if(confirm('Löschen?')){S.angebote[gwId].splice(i,1);saveS();renderAngebote();}}
 
 function renderNotizen(){let h='';if(!S.notizen.length)h='<p style="color:#9ca3af;font-size:13px;margin-top:12px">Noch keine Notizen.</p>';else S.notizen.slice().reverse().forEach((n,ri)=>{const i=S.notizen.length-1-ri;h+=`<div class="notiz-card"><div class="notiz-ts">${n.ts}</div><button class="notiz-del" onclick="delN(${i})">×</button><div class="notiz-text">${n.text}</div></div>`;});document.getElementById('notiz-list').innerHTML=h;}
-function addNotiz(){const el=document.getElementById('notiz-input'),t=el.value.trim();if(!t)return;const now=new Date(),ts=now.toLocaleDateString('de-DE')+' '+now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});S.notizen.push({text:t,ts});el.value='';saveS();renderNotizen();}
+function addNotiz(){const el=document.getElementById('notiz-input'),t=el.value.trim();if(!t)return;const now=new Date(),ts=now.toLocaleDateString('de-DE')+' '+now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});S.notizen.push({id:uid(),_t:Date.now(),text:t,ts});el.value='';saveS();renderNotizen();}
 function delN(i){S.notizen.splice(i,1);saveS();renderNotizen();}
 
 function closeModals(){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
@@ -1255,7 +1328,12 @@ function saveAusg(){
   if(!titel||!betrag){alert('Bezeichnung und Betrag angeben');return;}
   if(!S.ausgaben)S.ausgaben={};
   const newKat=document.getElementById('am-kat').value;
-  const entry={titel,betrag,datum:document.getElementById('am-datum').value,notiz:document.getElementById('am-notiz').value.trim()};
+  // id bleibt beim Bearbeiten erhalten (sonst wäre es für den Cloud-Abgleich
+  // ein neuer Eintrag statt eines aktualisierten) · bei neuen Einträgen wird
+  // eine neue id vergeben, damit sie beim Zusammenführen mit einem anderen
+  // Gerät nicht verloren gehen
+  const oldEntry = eAusgIdx!==null ? getAusgaben(eAusgKat)[eAusgIdx] : null;
+  const entry={id:(oldEntry&&oldEntry.id)||uid(), _t:Date.now(), titel,betrag,datum:document.getElementById('am-datum').value,notiz:document.getElementById('am-notiz').value.trim()};
   // If category changed during edit, remove from old
   if(eAusgIdx!==null && newKat!==eAusgKat){
     if(S.ausgaben[eAusgKat])S.ausgaben[eAusgKat].splice(eAusgIdx,1);
@@ -1581,6 +1659,7 @@ function importDaten(event){
 // Init
 initSupabase();
 loadS();
+backfillIds(S);
 renderGantt();
 renderTodos();
 renderKosten();
