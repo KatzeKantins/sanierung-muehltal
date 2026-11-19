@@ -70,6 +70,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="leg"><div class="leg-dot" style="background:#e74c3c"></div>Blockiert</div>
     <div class="leg"><div class="leg-dot" style="background:#534ab7"></div>Meilenstein</div>
   </div>
+  <button id="reset-plan-btn" onclick="resetPlanFromDefaults()" style="display:block;width:100%;margin:0 0 16px;padding:10px 12px;background:#e74c3c;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;">🔄 Plan aus Datei übernehmen (überschreibt den gespeicherten Stand)</button>
   <div id="plan-container"></div>
   <button class="add-month-btn" onclick="openMonthModal()">+ Monat / Phase hinzufügen</button>
 </div>
@@ -187,39 +188,35 @@ const DEFAULT_PLAN=[
       {id:'t15b',title:'Kabel ziehen EG + OG · Dosen setzen',sub:'',color:'#1d9e75'},
     ]},
   ]},
-  {id:'m4',label:'November 2026 — Marco: Wasser-/Heizungs-Rohinstallation + Fenster-Vorbereitung',weeks:[
+  {id:'m4',label:'November 2026 — Marco: Wasser-/Heizungs-Rohinstallation',weeks:[
     {id:'w8',label:'KW48–50',dates:'23. Nov–13. Dez',tasks:[
       {id:'t19',title:'Marco: Wasser-/Abwasserrohre + Heizkreisläufe/Verteiler verlegen',sub:'Ein Rohbau-Termin für Sanitär UND Heizung · 2–3 Wochen · Keller muss zugänglich sein · ⏰ verschoben: Start jetzt ca. 23. Nov statt Anfang Nov',color:'#0f3460'},
       {id:'t19b',title:'Kernbohrung Küche (Dunstabzugshaube)',sub:'Wanddurchführung für Abluft, ca. 100–150mm · idealerweise gebündelt mit Marcos Rohbau · wer genau macht das noch klären (Kernbohr-Spezialist oder Küchen-/Lüftungsbauer)',color:'#0f3460'},
       {id:'t25',title:'Druckprüfung Wasser- + Heizungsrohre (Wände)',sub:'Pflicht vor Einputzen & vor Schließen der Vorwände! · ⚠️ Frostschutz der Heizkreise über den Winter klären (Bauheizer durchgängig, Luft statt Wasser, oder zwischenzeitlich entleeren)',color:'#e74c3c'},
     ]},
-    {id:'w8b',label:'KW47 — diese Woche',dates:'16.–22. Nov',tasks:[
-      {id:'t27',title:'Fenster ausbauen (alte Fenster raus)',sub:'Gitterfolie-Abdichtung bis 25. Januar',color:'#1d9e75'},
-    ]},
-    {id:'w9',label:'KW48–52',dates:'23. Nov–23. Dez',tasks:[
-      {id:'t26',title:'Glattstrich an den Fensterlaibungen',sub:'Eigenleistung oder extern · nötig für sauberen Fensteranschluss · bis Weihnachten',color:'#1d9e75'},
-    ]},
   ]},
   {id:'m5',label:'Januar 2027 — Trockenbau Bad + Wärmepumpe',weeks:[
-    {id:'w10',label:'KW01',dates:'4.–10. Jan',tasks:[
-      {id:'t35',title:'Patrick: Spachteln + grundieren (Vorbereitung)',sub:'Unebenheiten ausgleichen, damit der Verputzer (noch offen, wer) direkt drüber verputzen kann · vor Punkt unten',color:'#1d9e75'},
-    ]},
     {id:'w11',label:'KW02',dates:'11.–17. Jan',tasks:[
-      {id:'t31a',title:'Albrecht: Ständerwerk Vorwand Bad aufstellen',sub:'✅ Termin bestätigt: 2. Januarwoche · komplett neu, es stand noch nichts',color:'#534ab7'},
-      {id:'t33',title:'Marco: Wärmepumpe installieren',sub:'Außen- + Inneneinheit + Anschlüsse · unabhängig, Fundament seit September ausgehärtet',color:'#0f3460'},
+      {id:'t31a',title:'Marco: WC-Vorwand (Duofix) aufstellen – Bad + Gäste-WC',sub:'Fertigsystem, 2x · ✅ Termin bestätigt: 2. Januarwoche',color:'#0f3460'},
+      {id:'t27',title:'Fenster ausbauen (alte Fenster raus)',sub:'Termin: 16. Januar (Sa)',color:'#1d9e75'},
     ]},
     {id:'w12',label:'KW03',dates:'18.–24. Jan',tasks:[
-      {id:'t31aa',title:'Marco: WC-/Bad-Anschlüsse an Albrechts Vorwand anschließen',sub:'Erst möglich sobald Albrechts Ständerwerk steht · separater Kurztermin, zusätzlich zur Rohinstallation im November',color:'#0f3460'},
-      {id:'t31b2',title:'Albrecht: Vorwände schließen/beplanken',sub:'Erst nach Marcos WC-Anschluss + bestandener Druckprüfung',color:'#534ab7'},
+      {id:'t31aa',title:'Marco: WC-/Bad-Anschlüsse an die Vorwand anschließen',sub:'Erst möglich sobald die Vorwand steht · separater Kurztermin, zusätzlich zur Rohinstallation im November',color:'#0f3460'},
+      {id:'t31b2',title:'Albrecht: Vorwände schließen/beplanken',sub:'Erst nach Marcos WC-Anschluss + bestandener Druckprüfung · ⚠️ offen: wer beplankt den Duofix-Rahmen – steht in keinem der beiden Angebote eindeutig drin',color:'#534ab7'},
+      {id:'t26',title:'Glattstrich an den Fensterlaibungen',sub:'❓ Verputzer noch nicht gefunden · kommt in der Woche vom 18. Januar',color:'#e8a838'},
+      {id:'t48',title:'Albrecht: Verputzen Bad (Unterputz Kalk-Zementputz)',sub:'Bad hat durchgehend sein Fenster, kein Timing-Konflikt',color:'#534ab7'},
     ]},
     {id:'w12b',label:'KW04',dates:'25.–31. Jan',tasks:[
       {id:'t29',title:'Kolmer: Fenster einbauen (ohne Haustür)',sub:'Haustür kommt erst Apr/Mai 27 · Hülle wird dicht · muss vor dem Verputzen (ab Feb) fertig sein',color:'#0f3460'},
       {id:'t30',title:'Gregor: Laibungsanschlüsse (Außenputz + Fensterbank)',sub:'Nach Kolmers Fenstereinbau',color:'#e8a838'},
+      {id:'t33',title:'Marco: Wärmepumpe installieren',sub:'Außen- + Inneneinheit + Anschlüsse · unabhängig, Fundament seit September ausgehärtet',color:'#0f3460'},
+      {id:'t47',title:'Dachdecker: Anschluss Fenster/Balkon + vermutlich Balkon-/Vordach-Ausbau',sub:'Nach Kolmers Fenstereinbau · Umfang (nur Anschluss oder kompletter Balkon-/Vordach-Ausbau) + genauer Termin noch mit Dachdecker klären',color:'#0f3460'},
     ]},
   ]},
   {id:'m6',label:'Februar/März 2027 — Verputzen + Bodenaufbau + Estrich',weeks:[
     {id:'w13v',label:'KW05 — vorläufig',dates:'1.–7. Feb (abhängig von Fenstereinbau + Verputzer-Suche)',tasks:[
-      {id:'t34',title:'Verputzen Rest des Hauses (Schimmelstellen + Schlitze)',sub:'❓ Verputzer noch nicht gefunden (NICHT Gregor) · kann erst nach Fenstereinbau starten, da offene Laibungen das Trocknen verhindern · OHNE Bad (macht komplett Albrecht/Trockenbau) · muss fertig+trocken sein, bevor Celar den Boden aufbaut',color:'#e8a838'},
+      {id:'t34',title:'Verputzen Rest des Hauses (Schimmelstellen + Schlitze)',sub:'❓ Verputzer noch nicht gefunden (NICHT Gregor) · kann erst nach Fenstereinbau starten, da offene Laibungen das Trocknen verhindern · OHNE Bad (macht Albrecht, siehe Januar) · muss fertig+trocken sein, bevor Celar den Boden aufbaut',color:'#e8a838'},
+      {id:'t49',title:'Albrecht: Verputzen Gäste-WC (Unterputz)',sub:'Erst nach Kolmers neuem Fenster dort (nicht vorher, gleiches Bauheizer-Problem wie bei den Laibungen)',color:'#534ab7'},
     ]},
     {id:'w13',label:'KW07 — vorläufig',dates:'15.–21. Feb (ca. 2 Wochen nach Verputzen-Start)',tasks:[
       {id:'t22a',title:'Celar: Randdämmstreifen verlegen',sub:'PE-Randstreifen 8/120mm umlaufend · erst, nachdem das Verputzen fertig+trocken ist (nicht vorher — sonst beschädigt der Verputzer die Dämmung) · Teil des Estrich-Angebots P5654.6',color:'#6b7280'},
@@ -249,9 +246,9 @@ const DEFAULT_PLAN=[
       {id:'t42',title:'E-Check (Elektriker nimmt Anlage ab)',sub:'',color:'#0f3460'},
     ]},
   ]},
-  {id:'m8',label:'März–Mai 2027 — Dach + Fassade',weeks:[
-    {id:'w15',label:'Mär–Apr 27',dates:'4–6 Wochen',tasks:[
-      {id:'t44',title:'Dachdecker: Flachdachsanierung',sub:'Erst nach BAFA-Bescheid · 4–6 Wochen',color:'#0f3460'},
+  {id:'m8',label:'April–Mai 2027 — Dach + Fassade',weeks:[
+    {id:'w15',label:'Apr 27',dates:'4–6 Wochen',tasks:[
+      {id:'t44',title:'Dachdecker: Flachdachsanierung',sub:'Erst nach BAFA-Bescheid · 4–6 Wochen · auf April verschoben',color:'#0f3460'},
       {id:'t44b',title:'Kolmer: Haustür einbauen',sub:'Apr/Mai 27 · parallel zum Dach',color:'#0f3460'},
     ]},
     {id:'w16',label:'Apr–Mai 27',dates:'4–6 Wochen',tasks:[
@@ -536,6 +533,17 @@ async function loadFromCloud(){
     if(d.plan)P.plan=mergePlan(P.plan,d.plan);
     return true;
   }catch(e){return false;}
+}
+
+function resetPlanFromDefaults(){
+  if(!confirm('Das überschreibt den kompletten Wochenplan (alle Monate/Wochen/Aufgaben) mit dem Stand aus dieser Datei, auch in der Cloud. Fortfahren?'))return;
+  const now=Date.now();
+  const fresh=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  fresh.forEach(m=>{ m._t=now; (m.weeks||[]).forEach(w=>{ w._t=now; (w.tasks||[]).forEach(t=>{ t._t=now; }); }); });
+  P.plan=fresh;
+  saveS();
+  render();
+  alert('Plan übernommen und gespeichert.');
 }
 
 async function syncCloud(){
